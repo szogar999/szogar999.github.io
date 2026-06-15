@@ -122,32 +122,13 @@ tr.sb td.v{text-align:right}
 /* PRINT */
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  @page{size:A4 portrait;margin:0mm}
-  html,body{
-    margin:0!important;padding:0!important;
-    background:#0f1923!important;
-    width:210mm!important;height:auto!important;
-  }
+  @page{size:A4 portrait;margin:0}
+  html,body{margin:0!important;padding:0!important;background:#0f1923!important;height:auto!important;overflow:visible!important}
   .topbar,.panel{display:none!important}
-  .app{display:block!important;width:210mm!important;background:#0f1923!important;margin:0!important;padding:0!important;}
-  .preview-wrap{display:block!important;width:210mm!important;background:#0f1923!important;margin:0!important;padding:0!important;overflow:visible!important;}
-  .preview-scale{
-    display:block!important;
-    width:210mm!important;
-    margin:0!important;padding:0!important;
-    transform:none!important;
-    transform-origin:top left!important;
-  }
-  .doc{
-    width:210mm!important;
-    min-height:297mm!important;
-    background:#0f1923!important;
-    margin:0!important;padding:0!important;
-    font-size:11px!important;
-  }
+  .app,.preview-wrap,.preview-scale{display:block!important;background:#0f1923!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important;transform:none!important;width:100%!important}
+  .doc{width:210mm!important;min-height:297mm!important;background:#0f1923!important;margin:0!important;padding:0!important;zoom:0.963!important}
   img{filter:none!important;-webkit-filter:none!important}
   a,a:link,a:visited{text-decoration:none!important;color:inherit!important}
-  *{-webkit-text-size-adjust:none!important;text-size-adjust:none!important}
 }
 a{text-decoration:none!important;color:inherit!important}
 </style>
