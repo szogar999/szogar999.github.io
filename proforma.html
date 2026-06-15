@@ -131,6 +131,15 @@ tr.sb td.v{text-align:right}
   a,a:link,a:visited{text-decoration:none!important;color:inherit!important}
 }
 a{text-decoration:none!important;color:inherit!important}
+
+/* Kill iOS auto-detected links */
+a[href^="tel"], a[href^="mailto"], a[x-apple-data-detectors] {
+  color: inherit !important;
+  text-decoration: none !important;
+  pointer-events: none !important;
+}
+* { -webkit-text-size-adjust: 100%; }
+
 </style>
 </head>
 <body>
