@@ -139,12 +139,12 @@ tr.sb td.v{text-align:right}
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   @page{size:A4 portrait;margin:0}
-  html,body{margin:0!important;padding:0!important;background:#0f1923!important;height:auto!important;width:210mm!important}
+  html,body{margin:0!important;padding:0!important;background:#0f1923!important;height:auto!important}
   .topbar,.panel{display:none!important}
-  .app,.preview-wrap{display:block!important;background:#0f1923!important;margin:0!important;padding:0!important;width:210mm!important;height:auto!important;overflow:hidden!important}
-  .preview-scale{transform:none!important;width:210mm!important;margin:0!important;padding:0!important;display:block!important;height:auto!important}
-  .doc{width:210mm!important;min-height:0!important;height:auto!important;background:#0f1923!important;margin:0!important;padding:0!important;overflow:hidden!important;zoom:0.75!important}
-  img{-webkit-}
+  .app,.preview-wrap{display:block!important;background:#0f1923!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}
+  .preview-scale{transform:none!important;width:100%!important;margin:0!important;padding:0!important;display:block!important;height:auto!important}
+  .doc{width:100%!important;min-height:0!important;height:auto!important;background:#0f1923!important;margin:0!important;padding:0!important;}
+  img{filter:none!important;-webkit-filter:none!important}
 }
 }
 </style>
