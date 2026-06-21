@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>OSG Platform</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:system-ui,sans-serif;background:#0f1923;color:#fff;min-height:100vh;}
+body{font-family:'Barlow',sans-serif;background:#0f1923;color:#fff;min-height:100vh;}
 ::-webkit-scrollbar{display:none;}
-.bc{font-family:system-ui,sans-serif;}
+.bc{font-family:'Barlow Condensed',sans-serif;}
 .screen{display:none;min-height:100vh;padding-bottom:90px;}
 .screen.active{display:block;}
 .hdr{background:#0f1923;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:50;}
@@ -19,14 +19,14 @@ body{font-family:system-ui,sans-serif;background:#0f1923;color:#fff;min-height:1
 .nav-btn.on{color:#e8601c;}
 .nav-btn .ic{font-size:20px;}
 .card{background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;}
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:system-ui,sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#e8601c;color:#fff;}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Barlow',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#e8601c;color:#fff;}
 .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15);}
 .btn.green{background:#22c55e;}
 .tag{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-input,textarea{font-family:system-ui,sans-serif;}
+input,textarea{font-family:'Barlow',sans-serif;}
 .toggle-wrap{padding:12px 20px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);}
 .toggle{background:#1e2f42;border-radius:10px;padding:4px;display:flex;gap:4px;}
-.toggle-btn{flex:1;padding:9px;border:none;border-radius:8px;font-family:system-ui,sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:#8a9ab0;transition:all .2s;}
+.toggle-btn{flex:1;padding:9px;border:none;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:#8a9ab0;transition:all .2s;}
 .toggle-btn.on{background:#e8601c;color:#fff;}
 .loc-bar{background:#162130;padding:10px 20px;display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9ab0;border-bottom:1px solid rgba(255,255,255,.07);}
 .search-wrap{padding:16px 20px;}
@@ -249,7 +249,7 @@ input,textarea{font-family:system-ui,sans-serif;}
       </div>
     </div></div>
     <button class="btn" onclick="showRfqResult()">📨 Wyślij zapytanie do 12 dostawców</button>
-    <div id="rfq-result" style="display:none;display:flex;flex-direction:column;gap:16px;">
+    <div id="rfq-result" style="display:none;flex-direction:column;gap:16px;">
       <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:16px;text-align:center;">
         <div style="font-size:24px;margin-bottom:6px;">✅</div>
         <div style="font-size:15px;font-weight:700;margin-bottom:3px;">Wysłano do 12 dostawców</div>
@@ -341,7 +341,7 @@ input,textarea{font-family:system-ui,sans-serif;}
       <div style="margin-bottom:14px;">
         <div class="field-label">Cena (netto / m²)</div>
         <div style="display:flex;align-items:center;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;overflow:hidden;">
-          <input type="number" value="28" style="flex:1;background:transparent;border:none;outline:none;padding:12px 14px;color:#fff;font-family:system-ui,sans-serif;font-size:22px;font-weight:800;">
+          <input type="number" value="28" style="flex:1;background:transparent;border:none;outline:none;padding:12px 14px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;">
           <div style="padding:0 14px;color:#8a9ab0;font-size:13px;font-weight:600;">zł / m²</div>
         </div>
         <div style="font-size:11px;color:#22c55e;margin-top:4px;">✓ Wartość całkowita: 8 400 zł netto</div>
@@ -503,7 +503,7 @@ input,textarea{font-family:system-ui,sans-serif;}
 </button>
 
 <!-- AI PANEL -->
-<div class="ai-panel hidden" id="ai-panel">
+<div class="ai-panel hidden" id="ai-panel" style="display:none;">
   <div class="ai-hdr">
     <div style="width:40px;height:40px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
     <div><div style="font-size:15px;font-weight:700;">OSG Asystent AI</div><div style="font-size:11px;color:#22c55e;">● Online · Ekspert budowlany</div></div>
