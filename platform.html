@@ -156,7 +156,7 @@ input,textarea{font-family:'Barlow',sans-serif;}
       <div>
         <div style="font-size:11px;color:#8a9ab0;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">W tym miesiącu zaoszczędziłeś</div>
         <div style="font-size:36px;font-weight:800;color:#22c55e;font-family:system-ui,sans-serif;line-height:1;">4 820 zł</div>
-        <div style="font-size:11px;color:#8a9ab0;margin-top:3px;">vs średnia cena rynkowa</div><div onclick="go('s-history')" style="font-size:11px;color:#e8601c;font-weight:700;margin-top:6px;cursor:pointer;">🔁 Historia zamówień →</div>
+        <div style="font-size:11px;color:#8a9ab0;margin-top:3px;">vs średnia cena rynkowa</div><div style="display:flex;gap:12px;margin-top:6px;"><div onclick="go('s-history')" style="font-size:11px;color:#e8601c;font-weight:700;cursor:pointer;">🔁 Historia →</div><div onclick="go('s-calc')" style="font-size:11px;color:#22c55e;font-weight:700;cursor:pointer;">🧮 Kalkulator →</div></div>
       </div>
       <div style="text-align:center;">
         <div style="font-size:32px;">📈</div>
@@ -164,7 +164,89 @@ input,textarea{font-family:'Barlow',sans-serif;}
       </div>
     </div>
 
-    <!-- HISTORIA ZAMÓWIEŃ -->
+    <!-- GŁOSOWE ZAPYTANIE -->
+<div class="screen" id="s-voice">
+  <div class="hdr"><button class="hdr-back" onclick="go('s-rfq')">←</button><span style="font-size:20px;font-weight:800;flex:1;">Zapytanie głosowe</span></div>
+  <div style="padding:40px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;">
+
+    <div style="font-size:16px;color:#8a9ab0;max-width:280px;line-height:1.6;">Naciśnij i powiedz czego potrzebujesz. Platforma automatycznie stworzy zapytanie.</div>
+
+    <div style="font-size:13px;color:#8a9ab0;background:#162130;border-radius:12px;padding:12px 20px;border:1px solid rgba(255,255,255,.07);">
+      <div style="color:#8a9ab0;margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Przykład:</div>
+      <div style="color:#fff;font-style:italic;">"Potrzebuję 30 worków SMS30, 50 metrów profila CD60 i 20 płyt GK"</div>
+    </div>
+
+    <button id="voice-btn" onclick="startVoiceScreen()" style="width:120px;height:120px;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:50%;font-size:44px;cursor:pointer;box-shadow:0 8px 32px rgba(232,96,28,.5);transition:transform .1s;display:flex;align-items:center;justify-content:center;">🎤</button>
+
+    <div id="voice-status" style="font-size:14px;color:#8a9ab0;">Naciśnij aby mówić</div>
+
+    <div id="voice-result-box" style="display:none;width:100%;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:16px;text-align:left;">
+      <div style="font-size:11px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">✅ Rozpoznano:</div>
+      <div id="voice-result-text" style="font-size:14px;line-height:1.6;margin-bottom:14px;"></div>
+      <button onclick="go('s-rfq')" class="btn">📨 Wyślij jako zapytanie →</button>
+    </div>
+
+    <div style="font-size:11px;color:#8a9ab0;margin-top:8px;">Działa w Chrome · wymaga mikrofonu</div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nav-btn on" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nav-btn" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nav-btn" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
+<!-- KALKULATOR ROCZNY -->
+<div class="screen" id="s-calc">
+  <div class="hdr"><button class="hdr-back" onclick="go('s-home')">←</button><span style="font-size:20px;font-weight:800;flex:1;">Kalkulator oszczędności</span></div>
+  <div style="padding:24px 20px;display:flex;flex-direction:column;gap:20px;">
+
+    <div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">💰</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:6px;">Ile zaoszczędzisz rocznie?</div>
+      <div style="font-size:13px;color:#8a9ab0;">Wpisz miesięczne wydatki na materiały</div>
+    </div>
+
+    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:#8a9ab0;margin-bottom:8px;">Miesięczne zakupy materiałów (zł)</div>
+      <input type="number" id="monthly-spend" value="50000" oninput="calcSavings()"
+        style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;color:#fff;font-size:24px;font-weight:800;outline:none;text-align:center;">
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button onclick="document.getElementById('monthly-spend').value=20000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">20k</button>
+        <button onclick="document.getElementById('monthly-spend').value=50000;calcSavings()" style="flex:1;padding:8px;background:#e8601c;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">50k</button>
+        <button onclick="document.getElementById('monthly-spend').value=100000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">100k</button>
+        <button onclick="document.getElementById('monthly-spend').value=200000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">200k</button>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:12px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">💰 Potencjalna oszczędność roczna</div>
+      <div style="font-size:48px;font-weight:800;color:#22c55e;font-family:system-ui,sans-serif;line-height:1;" id="annual-savings">90 000 zł</div>
+      <div style="font-size:13px;color:#8a9ab0;margin-top:6px;" id="annual-range">przy oszczędności 15–30% vs ceny rynkowe</div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;">
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Scenariusz min. (15%)</div>
+          <div style="font-size:16px;font-weight:800;" id="savings-min">45 000 zł</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Scenariusz max. (30%)</div>
+          <div style="font-size:16px;font-weight:800;color:#22c55e;" id="savings-max">90 000 zł</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="go('s-rfq')">📨 Zacznij oszczędzać teraz →</button>
+    <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+  </div>
+  <div class="nav">
+    <button class="nav-btn on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nav-btn" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nav-btn" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nav-btn" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
+<!-- HISTORIA ZAMÓWIEŃ -->
 <div class="screen" id="s-history">
   <div class="hdr"><button class="hdr-back" onclick="go('s-home')">←</button><span style="font-size:20px;font-weight:800;flex:1;">Historia zamówień</span></div>
   <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
@@ -345,13 +427,16 @@ input,textarea{font-family:'Barlow',sans-serif;}
     <div style="font-size:10px;color:#8a9ab0;font-weight:700;text-transform:uppercase;text-align:center;">Warunki</div>
   </div>
   <div style="padding:0 20px 16px;">
-    <div class="offer-row" style="border:2px solid #22c55e;" onclick="go('s-order')">
-      <div style="background:rgba(34,197,94,.1);padding:5px 14px;"><span style="font-size:11px;font-weight:700;color:#22c55e;">🏆 NAJTANIEJ</span></div>
+    <div class="offer-row" style="border:2px solid #e8601c;" onclick="go('s-order')">
+      <div style="background:rgba(232,96,28,.12);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;font-weight:800;color:#e8601c;">🏆 OSG POLECA</span>
+        <span style="font-size:10px;color:#8a9ab0;">najniższa cena · dostawa jutro · ocena 4.8</span>
+      </div>
       <div class="offer-grid">
         <div><div style="font-size:14px;font-weight:700;">Baumit Partner</div><div style="font-size:10px;color:#8a9ab0;">⭐ 4.8 · 📦 843 dostaw · ⏱️ 8 min</div></div>
-        <div style="text-align:right;"><div class="bc" style="font-size:20px;font-weight:800;color:#22c55e;">37,90zł</div><div style="font-size:9px;color:#8a9ab0;">netto/worek</div></div>
-        <div style="text-align:center;font-size:11px;font-weight:600;">Jutro rano</div>
-        <div style="text-align:center;font-size:10px;color:#8a9ab0;">min. paleta</div>
+        <div style="text-align:right;"><div class="bc" style="font-size:20px;font-weight:800;color:#e8601c;">37,90zł</div><div style="font-size:9px;color:#8a9ab0;">netto/worek</div></div>
+        <div style="text-align:center;font-size:11px;font-weight:600;color:#e8601c;">Jutro rano</div>
+        <div style="text-align:center;font-size:10px;color:#22c55e;">🟢 Na stanie</div>
       </div>
     </div>
     <div class="offer-row" style="border:2px solid #e8601c;" onclick="go('s-order')">
@@ -370,6 +455,7 @@ input,textarea{font-family:'Barlow',sans-serif;}
         <div style="text-align:center;font-size:11px;font-weight:600;">Dziś 14:00</div>
         <div style="text-align:center;font-size:10px;color:#8a9ab0;">min. 500 zł</div>
       </div>
+      <div style="padding:6px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:11px;color:#22c55e;">🟢 Wszystko dostępne od ręki</div>
     </div>
     <div class="offer-row" onclick="go('s-order')">
       <div class="offer-grid">
@@ -378,6 +464,7 @@ input,textarea{font-family:'Barlow',sans-serif;}
         <div style="text-align:center;font-size:11px;font-weight:600;">Jutro rano</div>
         <div style="text-align:center;font-size:10px;color:#8a9ab0;">min. paleta</div>
       </div>
+      <div style="padding:6px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:11px;color:#f59e0b;">🟡 2 produkty na zamówienie (3 dni)</div>
     </div>
     <div class="offer-row" onclick="go('s-order')">
       <div class="offer-grid">
@@ -386,6 +473,7 @@ input,textarea{font-family:'Barlow',sans-serif;}
         <div style="text-align:center;font-size:11px;font-weight:600;">2–3 dni</div>
         <div style="text-align:center;font-size:10px;color:#8a9ab0;">min. paleta</div>
       </div>
+      <div style="padding:6px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:11px;color:#ff6b6b;">🔴 Braki magazynowe — termin 7 dni</div>
     </div>
     <div class="offer-row" style="opacity:.55;">
       <div class="offer-grid">
@@ -441,6 +529,88 @@ input,textarea{font-family:'Barlow',sans-serif;}
     <button class="nav-btn" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
     <button class="nav-btn on" onclick="go('s-compare')"><span class="ic">⚖️</span>Porównaj</button>
     <button class="nav-btn" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nav-btn" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
+<!-- GŁOSOWE ZAPYTANIE -->
+<div class="screen" id="s-voice">
+  <div class="hdr"><button class="hdr-back" onclick="go('s-rfq')">←</button><span style="font-size:20px;font-weight:800;flex:1;">Zapytanie głosowe</span></div>
+  <div style="padding:40px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;">
+
+    <div style="font-size:16px;color:#8a9ab0;max-width:280px;line-height:1.6;">Naciśnij i powiedz czego potrzebujesz. Platforma automatycznie stworzy zapytanie.</div>
+
+    <div style="font-size:13px;color:#8a9ab0;background:#162130;border-radius:12px;padding:12px 20px;border:1px solid rgba(255,255,255,.07);">
+      <div style="color:#8a9ab0;margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Przykład:</div>
+      <div style="color:#fff;font-style:italic;">"Potrzebuję 30 worków SMS30, 50 metrów profila CD60 i 20 płyt GK"</div>
+    </div>
+
+    <button id="voice-btn" onclick="startVoiceScreen()" style="width:120px;height:120px;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:50%;font-size:44px;cursor:pointer;box-shadow:0 8px 32px rgba(232,96,28,.5);transition:transform .1s;display:flex;align-items:center;justify-content:center;">🎤</button>
+
+    <div id="voice-status" style="font-size:14px;color:#8a9ab0;">Naciśnij aby mówić</div>
+
+    <div id="voice-result-box" style="display:none;width:100%;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:16px;text-align:left;">
+      <div style="font-size:11px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">✅ Rozpoznano:</div>
+      <div id="voice-result-text" style="font-size:14px;line-height:1.6;margin-bottom:14px;"></div>
+      <button onclick="go('s-rfq')" class="btn">📨 Wyślij jako zapytanie →</button>
+    </div>
+
+    <div style="font-size:11px;color:#8a9ab0;margin-top:8px;">Działa w Chrome · wymaga mikrofonu</div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nav-btn on" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nav-btn" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nav-btn" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
+<!-- KALKULATOR ROCZNY -->
+<div class="screen" id="s-calc">
+  <div class="hdr"><button class="hdr-back" onclick="go('s-home')">←</button><span style="font-size:20px;font-weight:800;flex:1;">Kalkulator oszczędności</span></div>
+  <div style="padding:24px 20px;display:flex;flex-direction:column;gap:20px;">
+
+    <div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">💰</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:6px;">Ile zaoszczędzisz rocznie?</div>
+      <div style="font-size:13px;color:#8a9ab0;">Wpisz miesięczne wydatki na materiały</div>
+    </div>
+
+    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:#8a9ab0;margin-bottom:8px;">Miesięczne zakupy materiałów (zł)</div>
+      <input type="number" id="monthly-spend" value="50000" oninput="calcSavings()"
+        style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;color:#fff;font-size:24px;font-weight:800;outline:none;text-align:center;">
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button onclick="document.getElementById('monthly-spend').value=20000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">20k</button>
+        <button onclick="document.getElementById('monthly-spend').value=50000;calcSavings()" style="flex:1;padding:8px;background:#e8601c;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">50k</button>
+        <button onclick="document.getElementById('monthly-spend').value=100000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">100k</button>
+        <button onclick="document.getElementById('monthly-spend').value=200000;calcSavings()" style="flex:1;padding:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:12px;cursor:pointer;">200k</button>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:12px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">💰 Potencjalna oszczędność roczna</div>
+      <div style="font-size:48px;font-weight:800;color:#22c55e;font-family:system-ui,sans-serif;line-height:1;" id="annual-savings">90 000 zł</div>
+      <div style="font-size:13px;color:#8a9ab0;margin-top:6px;" id="annual-range">przy oszczędności 15–30% vs ceny rynkowe</div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;">
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Scenariusz min. (15%)</div>
+          <div style="font-size:16px;font-weight:800;" id="savings-min">45 000 zł</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Scenariusz max. (30%)</div>
+          <div style="font-size:16px;font-weight:800;color:#22c55e;" id="savings-max">90 000 zł</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="go('s-rfq')">📨 Zacznij oszczędzać teraz →</button>
+    <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+  </div>
+  <div class="nav">
+    <button class="nav-btn on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nav-btn" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nav-btn" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
     <button class="nav-btn" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
   </div>
 </div>
@@ -603,8 +773,8 @@ input,textarea{font-family:'Barlow',sans-serif;}
       <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">✍️ Opisz czego potrzebujesz</div>
       <textarea id="rfq-textarea" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:12px;color:#fff;font-size:13px;line-height:1.6;resize:none;outline:none;min-height:90px;">Potrzebuję: styropian grafit 20 cm, 300 m², dostawa Warszawa Bemowo, jutro rano.</textarea>
       <div style="margin-top:10px;display:flex;gap:8px;">
-        <button onclick="startVoice()" style="flex:1;padding:11px;background:#1e2f42;border:1px solid rgba(232,96,28,.4);border-radius:8px;color:#e8601c;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-          🎤 Dodaj z głosu
+        <button onclick="go('s-voice')" style="flex:1;padding:11px;background:#1e2f42;border:1px solid rgba(232,96,28,.4);border-radius:8px;color:#e8601c;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+          🎤 Zapytanie głosowe
         </button>
         <button onclick="document.getElementById('rfq-textarea').value=''" style="padding:11px 16px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#8a9ab0;font-size:13px;cursor:pointer;">Wyczyść</button>
       </div>
@@ -935,6 +1105,66 @@ input,textarea{font-family:'Barlow',sans-serif;}
 </div>
 
 <script>
+// Annual savings calculator
+function calcSavings(){
+  var m = parseInt(document.getElementById('monthly-spend').value) || 0;
+  var annual = m * 12;
+  var min = Math.round(annual * 0.15);
+  var max = Math.round(annual * 0.30);
+  var avg = Math.round((min+max)/2);
+  function fmt(n){ return n.toLocaleString('pl-PL')+' zł'; }
+  document.getElementById('annual-savings').textContent = fmt(avg);
+  document.getElementById('savings-min').textContent = fmt(min);
+  document.getElementById('savings-max').textContent = fmt(max);
+  document.getElementById('annual-range').textContent = 'przy oszczędności 15–30% vs ceny rynkowe';
+}
+
+// Voice screen
+function startVoiceScreen(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    document.getElementById('voice-status').textContent = 'Brak obsługi mowy w tej przeglądarce. Użyj Chrome.';
+    return;
+  }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var r=new SR();
+  r.lang='pl-PL';
+  r.continuous=false;
+  r.interimResults=false;
+  var btn=document.getElementById('voice-btn');
+  var status=document.getElementById('voice-status');
+  btn.style.background='linear-gradient(135deg,#dc2626,#b91c1c)';
+  btn.textContent='🔴';
+  status.textContent='Słucham... mów teraz';
+  r.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    document.getElementById('voice-result-text').textContent=txt;
+    document.getElementById('voice-result-box').style.display='block';
+    document.getElementById('rfq-textarea').value=txt;
+    btn.style.background='linear-gradient(135deg,#e8601c,#c94e10)';
+    btn.textContent='🎤';
+    status.textContent='Gotowe! Sprawdź zapytanie poniżej.';
+  };
+  r.onerror=r.onend=function(){
+    btn.style.background='linear-gradient(135deg,#e8601c,#c94e10)';
+    btn.textContent='🎤';
+    if(status.textContent==='Słucham... mów teraz') status.textContent='Naciśnij aby mówić';
+  };
+  r.start();
+}
+
+// Live stats animation
+function animateStats(){
+  var q = document.getElementById('stat-queries');
+  var s = document.getElementById('stat-suppliers');
+  if(q) setInterval(function(){
+    q.textContent = (120 + Math.floor(Math.random()*10));
+  }, 5000);
+  if(s) setInterval(function(){
+    s.textContent = (35 + Math.floor(Math.random()*5));
+  }, 7000);
+}
+setTimeout(animateStats, 2000);
+
 // RFQ Timer
 var rfqTimerInterval = null;
 var rfqSeconds = 0;
