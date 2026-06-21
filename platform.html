@@ -78,30 +78,58 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 
   <div style="padding:14px 16px;">
 
-    <!-- STATS -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;">
-        <div style="font-size:22px;font-weight:800;color:#e8601c;" id="stat-q">124</div>
-        <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">📋 Aktywne zapytania</div>
+    <!-- DASHBOARD UŻYTKOWNIKA -->
+    <div style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:13px 14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
+        <div style="font-size:13px;font-weight:800;">📊 Twój dashboard</div>
+        <div style="font-size:10px;color:#8a9ab0;">Jan Kierownik · Bemowo</div>
       </div>
-      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;">
-        <div style="font-size:22px;font-weight:800;color:#22c55e;" id="stat-s">37</div>
-        <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">🏪 Dostawców online</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px;">
+        <div style="background:#1e2f42;border-radius:9px;padding:9px 10px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#e8601c;">7</div>
+          <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">📍 Budowy</div>
+        </div>
+        <div style="background:#1e2f42;border-radius:9px;padding:9px 10px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#3b82f6;">12</div>
+          <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">📋 Zapytania</div>
+        </div>
+        <div style="background:#1e2f42;border-radius:9px;padding:9px 10px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#f59e0b;">43</div>
+          <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🏪 Oferty</div>
+        </div>
       </div>
-      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;">
-        <div style="font-size:20px;font-weight:800;color:#f59e0b;">842 000 zł</div>
-        <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">💰 Oszczędności dziś</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:9px;padding:9px 12px;">
+          <div style="font-size:17px;font-weight:800;color:#22c55e;">12 840 zł</div>
+          <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">💰 Zaoszczędzone</div>
+        </div>
+        <div style="background:rgba(232,96,28,.1);border:1px solid rgba(232,96,28,.25);border-radius:9px;padding:9px 12px;">
+          <div style="font-size:17px;font-weight:800;color:#e8601c;">3</div>
+          <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🚚 Dostawy dziś</div>
+        </div>
       </div>
-      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;">
-        <div style="font-size:22px;font-weight:800;color:#3b82f6;">11 min</div>
-        <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">⚡ Śr. czas odpowiedzi</div>
+    </div>
+
+    <!-- STATYSTYKI PLATFORMY -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px;">
+      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 10px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#e8601c;" id="stat-q">48</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🔥 Zapytań dziś</div>
+      </div>
+      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 10px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#22c55e;" id="stat-s">17</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🏪 Dostawców</div>
+      </div>
+      <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 10px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#3b82f6;">126</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">📍 Budów</div>
       </div>
     </div>
 
     <!-- HERO -->
     <div onclick="go('s-rfq')" style="background:linear-gradient(135deg,#e8601c,#c94e10);border-radius:14px;padding:18px;cursor:pointer;margin-bottom:10px;">
       <div style="font-size:20px;font-weight:800;line-height:1.25;margin-bottom:10px;">Wpisz czego potrzebuje budowa.<br>Dostawcy walczą ofertami.</div>
-      <div style="background:rgba(255,255,255,.25);border-radius:9px;padding:14px 16px;text-align:center;">
+      <div style="background:rgba(255,255,255,.2);border-radius:9px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:16px;font-weight:800;color:#fff;">🚀 Dodaj zapytanie teraz</span>
       </div>
     </div>
@@ -117,6 +145,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
         </div>
       </div>
       <div style="text-align:center;"><div style="font-size:28px;">📈</div><div style="font-size:10px;color:#22c55e;font-weight:700;margin-top:3px;">+23%</div></div>
+    </div>
+
+    <!-- CENTRUM DOSTAW -->
+    <div onclick="go('s-delivery')" style="background:#162130;border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🚚</div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Centrum dostaw</div><div style="font-size:11px;color:#8a9ab0;">Kierowca 15 km od budowy · ~18 min</div></div>
+      <div style="background:#e8601c;color:#fff;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;flex-shrink:0;">Live →</div>
+    </div>
+
+    <!-- INTELIGENTNA LISTA -->
+    <div onclick="go('s-smart')" style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;background:rgba(59,130,246,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✨</div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Inteligentna lista zakupów</div><div style="font-size:11px;color:#8a9ab0;">Opisz budowę → AI generuje listę materiałów</div></div>
+      <div style="background:#3b82f6;color:#fff;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;flex-shrink:0;">AI →</div>
     </div>
 
     <!-- MAPA BUDÓW -->
@@ -179,25 +221,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Nowe zapytanie</span></div>
     <div style="padding:10px 16px 8px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div>
-          <div style="font-size:9px;font-weight:700;color:#e8601c;">Zapytanie</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div><div style="font-size:9px;font-weight:700;color:#e8601c;">Zapytanie</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Oferty</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Oferty</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Wybór</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Wybór</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div></div>
       </div>
     </div>
   <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
@@ -296,25 +326,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Porównaj oferty</span></div>
     <div style="padding:10px 16px 8px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div>
-          <div style="font-size:9px;font-weight:700;color:#e8601c;">Oferty</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div><div style="font-size:9px;font-weight:700;color:#e8601c;">Oferty</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Wybór</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Wybór</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div></div>
       </div>
     </div>
 
@@ -560,25 +578,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div class="hdr"><button class="back" onclick="go('s-compare')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Twoje zamówienie</span></div>
     <div style="padding:10px 16px 8px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Oferty</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Oferty</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div>
-          <div style="font-size:9px;font-weight:700;color:#e8601c;">Wybór</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div><div style="font-size:9px;font-weight:700;color:#e8601c;">Wybór</div></div>
         <div style="flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div>
-          <div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#1e2f42;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div><div style="font-size:9px;font-weight:700;color:#8a9ab0;">Dostawa</div></div>
       </div>
     </div>
   <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
@@ -617,25 +623,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 <div class="screen" id="s-confirm">
     <div style="padding:10px 16px 8px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">📋</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Zapytanie</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Oferty</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Oferty</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div>
-          <div style="font-size:9px;font-weight:700;color:#22c55e;">Wybór</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">⚖️</div><div style="font-size:9px;font-weight:700;color:#22c55e;">Wybór</div></div>
         <div style="flex:1;height:2px;background:#e8601c;margin:0 3px;margin-bottom:12px;border-radius:2px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div>
-          <div style="font-size:9px;font-weight:700;color:#e8601c;">Dostawa</div>
-        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="width:26px;height:26px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:11px;">🚚</div><div style="font-size:9px;font-weight:700;color:#e8601c;">Dostawa</div></div>
       </div>
     </div>
   <div style="min-height:calc(100vh - 90px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;text-align:center;">
@@ -669,7 +663,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     </div>
     <div style="font-size:15px;font-weight:800;">📍 Aktywne budowy</div>
     <div class="card">
-      <div class="row" style="cursor:pointer;" onclick="go('s-building')"><div><div style="font-size:13px;font-weight:700;">Budowa Bemowo</div><div style="font-size:11px;color:#8a9ab0;">ul. Prosta 12 · Kierownik: Jan K.</div></div><div style="text-align:right;"><div style="font-size:11px;color:#ff6b6b;font-weight:700;">2 braki</div><div style="font-size:10px;color:#8a9ab0;">● aktywna</div></div></div>
+      <div class="row" style="cursor:pointer;" onclick="go('s-status')"><div><div style="font-size:13px;font-weight:700;">Budowa Bemowo</div><div style="font-size:11px;color:#8a9ab0;">ul. Prosta 12 · Kierownik: Jan K.</div></div><div style="text-align:right;"><div style="font-size:11px;color:#ff6b6b;font-weight:700;">2 braki</div><div style="font-size:10px;color:#8a9ab0;">● aktywna</div></div></div>
       <div class="row" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">Budowa Wola</div><div style="font-size:11px;color:#8a9ab0;">ul. Kolejowa 5 · Kierownik: Adam P.</div></div><div style="text-align:right;"><div style="font-size:11px;color:#22c55e;font-weight:700;">OK</div><div style="font-size:10px;color:#8a9ab0;">● aktywna</div></div></div>
       <div class="row" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">Budowa Ursus</div><div style="font-size:11px;color:#8a9ab0;">ul. Traktorzystów 3 · Kierownik: Piotr W.</div></div><div style="text-align:right;"><div style="font-size:11px;color:#f59e0b;font-weight:700;">1 brak</div><div style="font-size:10px;color:#8a9ab0;">● w toku</div></div></div>
       <div class="row" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">Budowa Pruszków</div><div style="font-size:11px;color:#8a9ab0;">ul. Chopina 8 · Kierownik: Marek S.</div></div><div style="text-align:right;"><div style="font-size:11px;color:#f59e0b;font-weight:700;">3 braki</div><div style="font-size:10px;color:#8a9ab0;">● w toku</div></div></div>
@@ -847,6 +841,130 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 </div>
 
 
+<div class="screen" id="s-delivery">
+  <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Centrum dostaw</span><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">3 dziś</div></div>
+  <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+
+    <!-- AKTYWNA DOSTAWA Z MAPĄ -->
+    <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.4);border-radius:13px;overflow:hidden;">
+      <div style="background:rgba(232,96,28,.1);padding:8px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;font-weight:800;color:#e8601c;">🚚 DOSTAWA W DRODZE</span>
+        <span style="font-size:10px;color:#8a9ab0;">#OSG-2026-0047</span>
+      </div>
+      <div style="padding:14px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;">SMS30 x40, CT17 x20, GK x80</div>
+        <div style="font-size:11px;color:#8a9ab0;margin-bottom:12px;">Baumit Partner → ul. Prosta 12, Bemowo</div>
+        <div style="background:#162130;border-radius:10px;padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:28px;">🚛</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Kierowca Marek</div>
+            <div style="font-size:12px;color:#e8601c;font-weight:700;">15 km od budowy · ~18 min</div>
+          </div>
+          <div style="background:#e8601c;color:#fff;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">Zadzwoń</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;"><div style="width:16px;height:16px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Zamówienie przyjęte · 06:15</span></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;"><div style="width:16px;height:16px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Kierowca wyjechał · 07:02</span></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;"><div style="width:16px;height:16px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">🚛</div><span style="font-weight:700;">15 km od budowy · teraz</span></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;opacity:.4;"><div style="width:16px;height:16px;border-radius:50%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);flex-shrink:0;"></div><span style="color:#8a9ab0;">Dostarczono</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOSTAWA 2 - POTWIERDZONA -->
+    <div class="card">
+      <div style="padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:13px;font-weight:700;">Płyta GK x80, Profil CD60 x40</div><div style="font-size:10px;color:#8a9ab0;">Knauf · jutro 7:00–9:00</div></div>
+        <div style="font-size:11px;color:#f59e0b;font-weight:700;">Potwierdzone</div>
+      </div>
+      <div style="padding:10px 13px;font-size:11px;color:#8a9ab0;">📍 ul. Prosta 12, Bemowo · Wartość: 4 240 zł</div>
+    </div>
+
+    <!-- DOSTAWA 3 - DOSTARCZONA ze zdjęciem -->
+    <div class="card">
+      <div style="padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:13px;font-weight:700;">Rękawice x30, Kaski x5</div><div style="font-size:10px;color:#8a9ab0;">Glovex · dziś 09:15</div></div>
+        <div style="font-size:11px;color:#22c55e;font-weight:700;">✅ Dostarczone</div>
+      </div>
+      <div style="padding:12px 13px;">
+        <div style="background:#1e2f42;border-radius:9px;padding:12px;display:flex;align-items:center;gap:12px;">
+          <div style="width:56px;height:56px;background:#162130;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid rgba(255,255,255,.07);">📷</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#22c55e;margin-bottom:2px;">📷 Towar dostarczony</div>
+            <div style="font-size:11px;color:#8a9ab0;margin-bottom:2px;">Zdjęcie: paleta przy wejściu</div>
+            <div style="font-size:10px;color:#8a9ab0;">09:15 · Podpis: Jan K.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="nav">
+    <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
+<div class="screen" id="s-smart">
+  <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Inteligentna lista</span><div style="background:rgba(59,130,246,.15);color:#3b82f6;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;">AI ✨</div></div>
+  <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
+
+    <div style="font-size:13px;color:#8a9ab0;line-height:1.5;">Opisz budowę — platforma wygeneruje listę materiałów z ilościami i pomoże wysłać zapytanie ofertowe.</div>
+
+    <div class="card" style="padding:13px;">
+      <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;">🏗️ Opisz swoją budowę</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <div style="display:flex;gap:8px;">
+          <div onclick="setBuilding('Dom 140m²')" style="flex:1;padding:9px;background:#e8601c;border:none;border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;" id="b1">Dom 140m²</div>
+          <div onclick="setBuilding('Mieszkanie 60m²')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;text-align:center;font-size:12px;color:#8a9ab0;cursor:pointer;" id="b2">Mieszkanie 60m²</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div onclick="setBuilding('Biuro 200m²')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;text-align:center;font-size:12px;color:#8a9ab0;cursor:pointer;" id="b3">Biuro 200m²</div>
+          <div onclick="setBuilding('Własny opis')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;text-align:center;font-size:12px;color:#8a9ab0;cursor:pointer;" id="b4">Własny opis</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;">Zakres prac</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+        <div style="padding:6px 11px;background:#e8601c;border-radius:20px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Sucha zabudowa</div>
+        <div style="padding:6px 11px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">Wylewka</div>
+        <div style="padding:6px 11px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">Elewacja</div>
+        <div style="padding:6px 11px;background:#e8601c;border-radius:20px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Chemia</div>
+        <div style="padding:6px 11px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">Elektryka</div>
+        <div style="padding:6px 11px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">BHP</div>
+      </div>
+      <button onclick="showSmartList()" class="btn" style="font-size:13px;padding:11px;">✨ Generuj listę materiałów</button>
+    </div>
+
+    <div id="smart-result" style="display:none;flex-direction:column;gap:12px;">
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:11px 13px;font-size:12px;color:#22c55e;font-weight:700;">✅ Lista wygenerowana dla: Dom 140m² · Sucha zabudowa + Chemia</div>
+      <div class="card">
+        <div style="padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11px;font-weight:700;color:#8a9ab0;text-transform:uppercase;">📦 Sugerowane materiały</div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div><div style="font-size:10px;color:#8a9ab0;">Sucha zabudowa · 140m² × 2.2</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">308 szt.</div><div style="font-size:10px;color:#22c55e;">~6 800 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil CD60/3m</div><div style="font-size:10px;color:#8a9ab0;">Co 40cm → 140m² ÷ 0.4</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">350 szt.</div><div style="font-size:10px;color:#22c55e;">~3 500 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil UW75</div><div style="font-size:10px;color:#8a9ab0;">Obwód pomieszczeń</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">120 szt.</div><div style="font-size:10px;color:#22c55e;">~960 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Wkręty 3,5×35mm</div><div style="font-size:10px;color:#8a9ab0;">~25 szt. na płytę</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">8 000 szt.</div><div style="font-size:10px;color:#22c55e;">~320 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Gładź szpachlowa 20kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 140m² ÷ 35</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">40 worków</div><div style="font-size:10px;color:#22c55e;">~980 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Grunt głęboko penet. 5L</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 140m² ÷ 50</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">3 szt.</div><div style="font-size:10px;color:#22c55e;">~180 zł</div></div></div>
+        <div class="row" style="border:none;"><div><div style="font-size:13px;font-weight:700;">Wełna mineralna 10cm</div><div style="font-size:10px;color:#8a9ab0;">Izolacja · 140m²</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">140 m²</div><div style="font-size:10px;color:#22c55e;">~2 100 zł</div></div></div>
+        <div style="padding:10px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#8a9ab0;">Szacowana wartość łącznie</span>
+          <span style="font-size:16px;font-weight:800;color:#e8601c;">~14 840 zł</span>
+        </div>
+      </div>
+      <button class="btn" onclick="go('s-rfq')">📨 Wyślij jako zapytanie ofertowe</button>
+      <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
+
 <div class="screen" id="s-building">
   <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Osiedle Bemowo etap 2</span></div>
   <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
@@ -855,12 +973,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div class="card" style="padding:11px 13px;"><div style="font-size:20px;font-weight:800;color:#f59e0b;">42 300 zł</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zakupów łącznie</div></div>
       <div class="card" style="padding:11px 13px;"><div style="font-size:22px;font-weight:800;color:#22c55e;">37</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Ofert otrzymanych</div></div>
       <div class="card" style="padding:11px 13px;"><div style="font-size:22px;font-weight:800;color:#3b82f6;">3</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Aktywne dostawy</div></div>
-    </div>
-    <div style="font-size:15px;font-weight:800;">🚚 Aktywne dostawy</div>
-    <div class="card">
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">SMS30 x40, CT17 x20</div><div style="font-size:10px;color:#8a9ab0;">Baumit Partner · jutro 7:00–9:00</div></div><div style="font-size:11px;color:#f59e0b;font-weight:700;">W drodze</div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK x80, Profil CD60 x40</div><div style="font-size:10px;color:#8a9ab0;">Knauf · pojutrze rano</div></div><div style="font-size:11px;color:#8a9ab0;font-weight:700;">Potwierdzone</div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Rękawice x30, Kaski x5</div><div style="font-size:10px;color:#8a9ab0;">Glovex · dziś 16:00</div></div><div style="font-size:11px;color:#e8601c;font-weight:700;">Ekspres</div></div>
     </div>
     <div style="font-size:15px;font-weight:800;">📋 Historia — Powiel zamówienie</div>
     <div class="card">
@@ -875,18 +987,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
         <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#8a9ab0;">Profil CD60</span><span>× 120 mb</span></div>
       </div>
     </div>
-    <div class="card">
-      <div style="padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
-        <div><div style="font-size:13px;font-weight:700;">Styropian + klej elewacja</div><div style="font-size:10px;color:#8a9ab0;">18 cze · 3W Budowlana · 12 200 zł</div></div>
-        <button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">🔁 Powiel</button>
-      </div>
-      <div style="padding:9px 13px 12px;">
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span style="color:#8a9ab0;">Styropian grafit 20cm</span><span>× 300 m²</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span style="color:#8a9ab0;">Klej Baumit StarContact</span><span>× 40 worków</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#8a9ab0;">Siatka elewacyjna</span><span>× 200 m²</span></div>
-      </div>
-    </div>
-    <div style="text-align:center;font-size:12px;color:#8a9ab0;">Łącznie: <span style="color:#22c55e;font-weight:700;">42 300 zł</span> · Zaoszczędzono: <span style="color:#22c55e;font-weight:700;">6 840 zł</span></div>
     <button class="btn" onclick="go('s-rfq')">📨 Nowe zapytanie dla tej budowy</button>
     <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
   </div>
@@ -897,6 +997,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
   </div>
 </div>
+
 <!-- AI FAB -->
 <button onclick="toggleAI()" id="ai-fab" style="position:fixed;bottom:76px;right:14px;width:48px;height:48px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:200;box-shadow:0 4px 18px rgba(232,96,28,.5);">🤖</button>
 
@@ -964,7 +1065,21 @@ function showRfqSent(){
   setTimeout(function(){el.scrollIntoView({behavior:'smooth'});},100);
   var sec=0;
   if(timerInt) clearInterval(timerInt);
-  timerInt=setInterval(function(){
+  timerInt=function setBuilding(name){
+  ['b1','b2','b3','b4'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.style.background='#1e2f42';el.style.color='#8a9ab0';el.style.border='1px solid rgba(255,255,255,.1)';}
+  });
+  var map={'Dom 140m²':'b1','Mieszkanie 60m²':'b2','Biuro 200m²':'b3','Własny opis':'b4'};
+  var el=document.getElementById(map[name]);
+  if(el){el.style.background='#e8601c';el.style.color='#fff';el.style.border='none';}
+}
+function showSmartList(){
+  var r=document.getElementById('smart-result');
+  r.style.display='flex';r.style.flexDirection='column';r.style.gap='12px';
+  setTimeout(function(){r.scrollIntoView({behavior:'smooth'});},100);
+}
+setInterval(function(){
     sec++;var m=Math.floor(sec/60),s=sec%60;
     var t=document.getElementById('rfq-timer');
     if(t) t.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
@@ -1035,6 +1150,20 @@ function addMsg(role,txt){
   var bbl=document.createElement('div');
   bbl.style.cssText='padding:9px 12px;border-radius:13px;font-size:12px;line-height:1.5;background:'+(role==='u'?'#e8601c':'#162130')+';border:'+(role==='u'?'none':'1px solid rgba(255,255,255,.07)')+';border-bottom-'+(role==='u'?'right':'left')+'-radius:3px;';
   bbl.textContent=txt;d.appendChild(av);d.appendChild(bbl);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
+}
+function setBuilding(name){
+  ['b1','b2','b3','b4'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.style.background='#1e2f42';el.style.color='#8a9ab0';el.style.border='1px solid rgba(255,255,255,.1)';}
+  });
+  var map={'Dom 140m²':'b1','Mieszkanie 60m²':'b2','Biuro 200m²':'b3','Własny opis':'b4'};
+  var el=document.getElementById(map[name]);
+  if(el){el.style.background='#e8601c';el.style.color='#fff';el.style.border='none';}
+}
+function showSmartList(){
+  var r=document.getElementById('smart-result');
+  r.style.display='flex';r.style.flexDirection='column';r.style.gap='12px';
+  setTimeout(function(){r.scrollIntoView({behavior:'smooth'});},100);
 }
 setInterval(function(){
   var q=document.getElementById('stat-q'),s=document.getElementById('stat-s');
