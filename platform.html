@@ -147,6 +147,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div style="text-align:center;"><div style="font-size:28px;">📈</div><div style="font-size:10px;color:#22c55e;font-weight:700;margin-top:3px;">+23%</div></div>
     </div>
 
+    <!-- CENTRUM BUDOWY -->
+    <div onclick="go('s-building')" style="background:#162130;border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏗️</div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Centrum budowy</div><div style="font-size:11px;color:#8a9ab0;">Bemowo · 2 dostawy w drodze · 1 opóźniona ⚠️</div></div>
+      <div style="background:#e8601c;color:#fff;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;flex-shrink:0;">Otwórz →</div>
+    </div>
+
     <!-- CENTRUM DOSTAW -->
     <div onclick="go('s-delivery')" style="background:#162130;border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;">
       <div style="width:42px;height:42px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🚚</div>
@@ -458,17 +465,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div class="card" style="padding:11px;text-align:center;"><div style="font-size:24px;font-weight:800;">94%</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Terminowość</div></div>
     </div>
 
-    <!-- PANEL LEADÓW -->
-    <div style="background:linear-gradient(135deg,rgba(232,96,28,.1),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.4);border-radius:13px;padding:13px 14px;">
-      <div style="font-size:13px;font-weight:800;margin-bottom:3px;">📋 Nowe zapytania dzisiaj: <span style="color:#e8601c;">17</span></div>
-      <div style="font-size:11px;color:#8a9ab0;margin-bottom:10px;">Kliknij "Złóż ofertę" przy każdym</div>
-      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>📍 Warszawa</span><span style="font-weight:700;color:#e8601c;">6 zapytań</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>📍 Pruszków</span><span style="font-weight:700;">4 zapytania</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>📍 Piaseczno</span><span style="font-weight:700;">3 zapytania</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>📍 Marki</span><span style="font-weight:700;">2 zapytania</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>📍 Ożarów Maz.</span><span style="font-weight:700;">2 zapytania</span></div>
+    <!-- GORĄCE LEADY -->
+    <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.5);border-radius:13px;padding:13px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:14px;font-weight:800;">🔥 Gorące leady</div>
+        <div style="background:#e8601c;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;">5 dziś</div>
       </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:10px;color:#8a9ab0;">SMS30 + GK + Profile · pilne 14:00</div></div>
+          <div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:#22c55e;">18 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div>
+        </div>
+        <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:12px;font-weight:700;">Pruszków</div><div style="font-size:10px;color:#8a9ab0;">Styropian grafit 300m² · jutro rano</div></div>
+          <div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:#22c55e;">31 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div>
+        </div>
+        <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:12px;font-weight:700;">Warszawa Wola</div><div style="font-size:10px;color:#8a9ab0;">Chemia budowlana + BHP</div></div>
+          <div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:#22c55e;">12 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div>
+        </div>
+        <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:12px;font-weight:700;">Piaseczno</div><div style="font-size:10px;color:#8a9ab0;">Elektryka + hydraulika</div></div>
+          <div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:#22c55e;">8 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#8a9ab0;text-align:center;">Łączna wartość leadów dziś: <span style="color:#22c55e;font-weight:700;">69 000 zł</span></div>
     </div>
 
     <!-- PILNE ZAPYTANIE -->
@@ -917,7 +938,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;">🏗️ Opisz swoją budowę</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
         <div style="display:flex;gap:8px;">
-          <div onclick="setBuilding('Dom 140m²')" style="flex:1;padding:9px;background:#e8601c;border:none;border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;" id="b1">Dom 140m²</div>
+          <div onclick="setBuilding('Stan dew. 140m²')" style="flex:1;padding:9px;background:#e8601c;border:none;border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;" id="b1">Stan dew. 140m²</div>
           <div onclick="setBuilding('Mieszkanie 60m²')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;text-align:center;font-size:12px;color:#8a9ab0;cursor:pointer;" id="b2">Mieszkanie 60m²</div>
         </div>
         <div style="display:flex;gap:8px;">
@@ -938,7 +959,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     </div>
 
     <div id="smart-result" style="display:none;flex-direction:column;gap:12px;">
-      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:11px 13px;font-size:12px;color:#22c55e;font-weight:700;">✅ Lista wygenerowana dla: Dom 140m² · Sucha zabudowa + Chemia</div>
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:11px 13px;font-size:12px;color:#22c55e;font-weight:700;">✅ Lista wygenerowana dla: Stan deweloperski 140m²</div>
       <div class="card">
         <div style="padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11px;font-weight:700;color:#8a9ab0;text-transform:uppercase;">📦 Sugerowane materiały</div>
         <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div><div style="font-size:10px;color:#8a9ab0;">Sucha zabudowa · 140m² × 2.2</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">308 szt.</div><div style="font-size:10px;color:#22c55e;">~6 800 zł</div></div></div>
@@ -947,10 +968,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
         <div class="row"><div><div style="font-size:13px;font-weight:700;">Wkręty 3,5×35mm</div><div style="font-size:10px;color:#8a9ab0;">~25 szt. na płytę</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">8 000 szt.</div><div style="font-size:10px;color:#22c55e;">~320 zł</div></div></div>
         <div class="row"><div><div style="font-size:13px;font-weight:700;">Gładź szpachlowa 20kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 140m² ÷ 35</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">40 worków</div><div style="font-size:10px;color:#22c55e;">~980 zł</div></div></div>
         <div class="row"><div><div style="font-size:13px;font-weight:700;">Grunt głęboko penet. 5L</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 140m² ÷ 50</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">3 szt.</div><div style="font-size:10px;color:#22c55e;">~180 zł</div></div></div>
-        <div class="row" style="border:none;"><div><div style="font-size:13px;font-weight:700;">Wełna mineralna 10cm</div><div style="font-size:10px;color:#8a9ab0;">Izolacja · 140m²</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">140 m²</div><div style="font-size:10px;color:#22c55e;">~2 100 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Wełna mineralna 10cm</div><div style="font-size:10px;color:#8a9ab0;">Izolacja · 140m²</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">140 m²</div><div style="font-size:10px;color:#22c55e;">~2 100 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Pianka montażowa 750ml</div><div style="font-size:10px;color:#8a9ab0;">Den Braven · okna/drzwi</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">24 szt.</div><div style="font-size:10px;color:#22c55e;">~360 zł</div></div></div>
+        <div class="row"><div><div style="font-size:13px;font-weight:700;">Klej do płytek C1 25kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit · łazienki 35m²</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">14 worków</div><div style="font-size:10px;color:#22c55e;">~700 zł</div></div></div>
+        <div class="row" style="border:none;"><div><div style="font-size:13px;font-weight:700;">Masa uszczelniająca</div><div style="font-size:10px;color:#8a9ab0;">Sika · hydroizolacja</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">6 szt.</div><div style="font-size:10px;color:#22c55e;">~540 zł</div></div></div>
         <div style="padding:10px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:12px;color:#8a9ab0;">Szacowana wartość łącznie</span>
-          <span style="font-size:16px;font-weight:800;color:#e8601c;">~14 840 zł</span>
+          <span style="font-size:16px;font-weight:800;color:#e8601c;">~17 240 zł</span>
         </div>
       </div>
       <button class="btn" onclick="go('s-rfq')">📨 Wyślij jako zapytanie ofertowe</button>
@@ -966,14 +990,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 </div>
 
 <div class="screen" id="s-building">
-  <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Osiedle Bemowo etap 2</span></div>
+  <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Centrum budowy</span></div>
   <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div class="card" style="padding:11px 13px;"><div style="font-size:22px;font-weight:800;color:#e8601c;">12</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zamówień łącznie</div></div>
-      <div class="card" style="padding:11px 13px;"><div style="font-size:20px;font-weight:800;color:#f59e0b;">42 300 zł</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zakupów łącznie</div></div>
-      <div class="card" style="padding:11px 13px;"><div style="font-size:22px;font-weight:800;color:#22c55e;">37</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Ofert otrzymanych</div></div>
-      <div class="card" style="padding:11px 13px;"><div style="font-size:22px;font-weight:800;color:#3b82f6;">3</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Aktywne dostawy</div></div>
+
+    <!-- HEADER BUDOWY -->
+    <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:13px 14px;">
+      <div style="font-size:16px;font-weight:800;margin-bottom:3px;">📍 Osiedle Bemowo etap 2</div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:11px;">ul. Prosta 12 · Kierownik: Jan K. · od 1 cze 2026</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
+        <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:800;color:#e8601c;">14</div><div style="font-size:9px;color:#8a9ab0;">zamówień</div></div>
+        <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:800;color:#22c55e;">56</div><div style="font-size:9px;color:#8a9ab0;">ofert</div></div>
+        <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#f59e0b;">38 450 zł</div><div style="font-size:9px;color:#8a9ab0;">zakupów</div></div>
+      </div>
     </div>
+
+    <!-- DOSTAWY STATUS -->
+    <div style="display:flex;gap:8px;">
+      <div onclick="go('s-delivery')" style="flex:1;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:11px;padding:10px;text-align:center;cursor:pointer;">
+        <div style="font-size:18px;font-weight:800;color:#22c55e;">2</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🚚 W drodze</div>
+      </div>
+      <div onclick="go('s-delivery')" style="flex:1;background:#162130;border:1px solid rgba(245,158,11,.3);border-radius:11px;padding:10px;text-align:center;cursor:pointer;">
+        <div style="font-size:18px;font-weight:800;color:#f59e0b;">1</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">⚠️ Opóźniona</div>
+      </div>
+      <div style="flex:1;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#3b82f6;">11</div>
+        <div style="font-size:9px;color:#8a9ab0;margin-top:1px;">✅ Dostarczone</div>
+      </div>
+    </div>
+
+    <!-- OPÓŹNIONA DOSTAWA - alert -->
+    <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.4);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">⚠️</span>
+      <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#f59e0b;">Dostawa opóźniona</div><div style="font-size:11px;color:#8a9ab0;">Styropian 300m² · Adamex · planowano 8:00</div></div>
+      <button style="background:#f59e0b;color:#000;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;">Dzwoń</button>
+    </div>
+
+    <!-- ZAMÓW PONOWNIE -->
+    <div style="font-size:15px;font-weight:800;">🔄 Zamów ponownie</div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;">
+        <div><div style="font-size:13px;font-weight:700;">🟢 Płyta GK + Profile</div><div style="font-size:10px;color:#8a9ab0;">Ostatnio: 80 szt. GK + 40 szt. CD60 · 4 240 zł</div></div>
+        <button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;">
+        <div><div style="font-size:13px;font-weight:700;">🟢 Chemia budowlana</div><div style="font-size:10px;color:#8a9ab0;">Ostatnio: SMS30 × 40, CT17 × 20 · 5 520 zł</div></div>
+        <button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;">
+        <div><div style="font-size:13px;font-weight:700;">🟢 BHP i odzież</div><div style="font-size:10px;color:#8a9ab0;">Ostatnio: Rękawice × 30, Kaski × 5 · 840 zł</div></div>
+        <button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button>
+      </div>
+    </div>
+
     <div style="font-size:15px;font-weight:800;">📋 Historia — Powiel zamówienie</div>
     <div class="card">
       <div style="padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
