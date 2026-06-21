@@ -147,6 +147,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div style="text-align:center;"><div style="font-size:28px;">📈</div><div style="font-size:10px;color:#22c55e;font-weight:700;margin-top:3px;">+23%</div></div>
     </div>
 
+    <!-- CENTRUM ALARMÓW -->
+    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden;margin-bottom:10px;">
+      <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:13px;font-weight:800;">🔔 Centrum alarmów</div>
+        <div style="background:#e8601c;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;">3 nowe</div>
+      </div>
+      <div onclick="go('s-compare')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#e8601c;flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;">🔴 Oferta wygasa za <strong>2 godziny</strong> — Baumit Partner</div>
+        <span style="font-size:10px;color:#8a9ab0;">teraz</span>
+      </div>
+      <div onclick="go('s-delivery')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;">🟡 Dostawa opóźniona — Adamex · Styropian 300m²</div>
+        <span style="font-size:10px;color:#8a9ab0;">18 min</span>
+      </div>
+      <div onclick="go('s-compare')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;">🟢 Nowa oferta od <strong>Adamex</strong> — 11 200 zł</div>
+        <span style="font-size:10px;color:#8a9ab0;">34 min</span>
+      </div>
+    </div>
+
     <!-- CENTRUM BUDOWY -->
     <div onclick="go('s-building')" style="background:#162130;border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;">
       <div style="width:42px;height:42px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏗️</div>
@@ -463,6 +486,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div class="card" style="padding:11px;text-align:center;"><div style="font-size:24px;font-weight:800;color:#e8601c;">7</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Nowe zapytania</div></div>
       <div class="card" style="padding:11px;text-align:center;"><div style="font-size:24px;font-weight:800;color:#22c55e;">23</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Wygranych</div></div>
       <div class="card" style="padding:11px;text-align:center;"><div style="font-size:24px;font-weight:800;">94%</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Terminowość</div></div>
+    </div>
+
+    <!-- WIDOK MARŻY -->
+    <div style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px 14px;margin-bottom:0;">
+      <div style="font-size:13px;font-weight:800;margin-bottom:10px;">📊 Analiza szans — aktywne oferty</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div>
+            <div style="font-size:11px;color:#22c55e;font-weight:700;">Szansa: 82%</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span style="color:#8a9ab0;">Wartość leadu</span><span>14 500 zł</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#8a9ab0;">Twoja oferta</span><span style="color:#22c55e;font-weight:700;">13 980 zł</span></div>
+          <div style="background:rgba(34,197,94,.1);border-radius:6px;height:6px;overflow:hidden;"><div style="background:#22c55e;height:100%;width:82%;border-radius:6px;"></div></div>
+        </div>
+        <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:700;">Pruszków</div>
+            <div style="font-size:11px;color:#f59e0b;font-weight:700;">Szansa: 45%</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span style="color:#8a9ab0;">Wartość leadu</span><span>31 000 zł</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#8a9ab0;">Twoja oferta</span><span style="color:#f59e0b;font-weight:700;">29 500 zł</span></div>
+          <div style="background:rgba(245,158,11,.1);border-radius:6px;height:6px;overflow:hidden;"><div style="background:#f59e0b;height:100%;width:45%;border-radius:6px;"></div></div>
+        </div>
+        <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:700;">Warszawa Wola</div>
+            <div style="font-size:11px;color:#3b82f6;font-weight:700;">Szansa: 67%</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span style="color:#8a9ab0;">Wartość leadu</span><span>12 000 zł</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#8a9ab0;">Twoja oferta</span><span style="color:#3b82f6;font-weight:700;">11 400 zł</span></div>
+          <div style="background:rgba(59,130,246,.1);border-radius:6px;height:6px;overflow:hidden;"><div style="background:#3b82f6;height:100%;width:67%;border-radius:6px;"></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- GORĄCE LEADY -->
@@ -1020,6 +1077,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       </div>
     </div>
 
+    <!-- MÓJ OPIEKUN -->
+    <div style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.04));border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px 14px;display:flex;align-items:center;gap:12px;">
+      <div style="width:46px;height:46px;background:#e8601c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;flex-shrink:0;">O</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#3b82f6;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;">👤 Twój opiekun budowy</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">Oskar Hołyński</div>
+        <div style="font-size:11px;color:#8a9ab0;">OSG Logistics · odpowiada w 5 min</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="tel:+48887507056" style="background:#e8601c;color:#fff;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;text-decoration:none;text-align:center;">📞 Zadzwoń</a>
+        <a href="https://wa.me/48887507056" style="background:#22c55e;color:#fff;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;text-decoration:none;text-align:center;">💬 WhatsApp</a>
+      </div>
+    </div>
+
     <!-- OPÓŹNIONA DOSTAWA - alert -->
     <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.4);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;">
       <span style="font-size:20px;">⚠️</span>
@@ -1069,7 +1140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 </div>
 
 <!-- AI FAB -->
-<button onclick="toggleAI()" id="ai-fab" style="position:fixed;bottom:76px;right:14px;width:48px;height:48px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:200;box-shadow:0 4px 18px rgba(232,96,28,.5);">🤖</button>
+<button onclick="toggleAI()" id="ai-fab" style="position:fixed;bottom:76px;right:14px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:50px;border:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;z-index:200;box-shadow:0 4px 18px rgba(232,96,28,.5);white-space:nowrap;">🤖 Asystent AI</button>
 
 <!-- AI PANEL -->
 <div id="ai-panel" style="display:none;position:fixed;inset:0;z-index:300;background:#0f1923;flex-direction:column;">
@@ -1081,13 +1152,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div id="ai-msgs" style="flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:10px;">
     <div style="display:flex;gap:7px;align-self:flex-start;max-width:85%;">
       <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#e8601c,#ff8c42);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🤖</div>
-      <div style="padding:9px 13px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;border-bottom-left-radius:3px;font-size:12px;line-height:1.5;">Cześć! Powiedz czego potrzebujesz na budowę — pomogę dobrać materiały i znaleźć najlepszą ofertę. 🏗️</div>
+      <div style="padding:9px 13px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;border-bottom-left-radius:3px;font-size:12px;line-height:1.5;">Cześć! Jestem OSG AI — Twoim asystentem budowlanym. 🏗️
+
+Mogę:
+• Wyliczyć materiały do Twojej budowy
+• Oszacować ilości i koszty
+• Utworzyć zapytanie ofertowe
+
+Napisz np. "100m² ścian GK" lub "dom 140m² stan deweloperski"</div>
     </div>
   </div>
   <div style="padding:7px 13px;display:flex;gap:7px;overflow-x:auto;flex-shrink:0;">
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:5px 11px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Ile Baumitu na 200m²?</div>
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:5px 11px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Co do wylewki?</div>
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:5px 11px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Łazienka 8m²</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">100m² ścian GK</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Wylewka 50m²</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Elewacja 200m²</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Dom 140m² stan dew.</div>
   </div>
   <div style="padding:9px 13px;background:#162130;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:9px;align-items:center;flex-shrink:0;">
     <textarea id="ai-in" placeholder="Napisz czego potrzebujesz..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend();}" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 12px;color:#fff;font-size:12px;resize:none;outline:none;" rows="1"></textarea>
@@ -1190,7 +1269,7 @@ function doVoice(){
   r.start();
 }
 var aiOpen=false,aiLoading=false,aiHist=[];
-var SYS='Jesteś asystentem AI platformy OSG Platform — marketplace materiałów budowlanych w Warszawie i Mazowszu. Pomagasz kierownikom budów dobrać materiały, oszacować ilości i znaleźć najlepszą ofertę. Odpowiadaj po polsku, krótko i konkretnie jak ekspert budowlany.';
+var SYS='Jesteś OSG AI — inteligentnym asystentem budowlanym platformy OSG Platform. Pomagasz kierownikom budów i wykonawcom: dobierasz materiały, obliczasz ilości, szacujesz koszty. Gdy użytkownik opisze zakres prac (np. '100m² ścian GK', 'wylewka 50m²', 'elewacja 200m²'), zawsze odpowiedz listą potrzebnych materiałów z ilościami i orientacyjnymi cenami, a na końcu zaproponuj 'Czy mam utworzyć zapytanie ofertowe dla tych materiałów?'. Odpowiadaj po polsku, krótko i konkretnie.';
 function toggleAI(){
   aiOpen=!aiOpen;
   document.getElementById('ai-panel').style.display=aiOpen?'flex':'none';
@@ -1219,7 +1298,15 @@ function addMsg(role,txt){
   av.textContent=role==='u'?'👷':'🤖';
   var bbl=document.createElement('div');
   bbl.style.cssText='padding:9px 12px;border-radius:13px;font-size:12px;line-height:1.5;background:'+(role==='u'?'#e8601c':'#162130')+';border:'+(role==='u'?'none':'1px solid rgba(255,255,255,.07)')+';border-bottom-'+(role==='u'?'right':'left')+'-radius:3px;';
-  bbl.textContent=txt;d.appendChild(av);d.appendChild(bbl);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
+  bbl.textContent=txt;
+  if(role==='b' && txt.length > 100){
+    var rfqBtn=document.createElement('button');
+    rfqBtn.textContent='📋 Utwórz zapytanie ofertowe';
+    rfqBtn.style.cssText='display:block;margin-top:8px;width:100%;padding:8px;background:#e8601c;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;';
+    rfqBtn.onclick=function(){toggleAI();go('s-rfq');};
+    bbl.appendChild(rfqBtn);
+  }
+  d.appendChild(av);d.appendChild(bbl);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
 }
 function setBuilding(name){
   ['b1','b2','b3','b4'].forEach(function(id){
