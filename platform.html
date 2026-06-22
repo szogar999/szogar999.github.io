@@ -37,7 +37,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
     <div style="width:68px;height:68px;background:#e8601c;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;">🏗️</div>
     <div style="font-size:26px;font-weight:800;margin-bottom:4px;">OSG Platform</div>
-    <div style="font-size:13px;color:#8a9ab0;margin-bottom:32px;">Porównaj ceny wielu dostawców w 5 minut.</div>
+    <div style="font-size:13px;color:#8a9ab0;margin-bottom:32px;">Nie dzwonisz do 10 hurtowni.<br>Hurtownie walczą o Twoje zamówienie.</div>
     <div onclick="go('s-how')" style="font-size:13px;color:#3b82f6;font-weight:700;margin-bottom:20px;cursor:pointer;text-align:center;">ℹ️ Jak działa OSG Platform? →</div>
     <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Kim jesteś?</div>
     <div style="width:100%;display:flex;flex-direction:column;gap:9px;">
@@ -105,6 +105,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:#3b82f6;">126</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">📍 Budów</div></div>
     </div>
 
+
+    <!-- GLOBALNY LICZNIK -->
+    <div style="background:linear-gradient(135deg,#1a2a1a,#1a3a2a);border:1px solid rgba(34,197,94,.35);border-radius:14px;padding:16px;margin-bottom:10px;text-align:center;">
+      <div style="font-size:11px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">💰 Łącznie zaoszczędzono przez OSG Platform</div>
+      <div style="font-size:42px;font-weight:800;color:#22c55e;line-height:1;" id="global-saved">7 842 000 zł</div>
+      <div style="font-size:11px;color:#8a9ab0;margin-top:5px;">i rośnie z każdym zamówieniem 📈</div>
+    </div>
 
     <!-- LICZNIK + DLACZEGO -->
     <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px 14px;margin-bottom:10px;">
@@ -448,13 +455,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
       <div style="background:rgba(34,197,94,.07);padding:4px 13px;"><span style="font-size:10px;font-weight:700;color:#22c55e;">⚡ NAJSZYBCIEJ</span></div>
       <div style="padding:12px 13px;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-          <div><div style="font-size:14px;font-weight:700;">OSG Logistics</div><div style="font-size:19px;font-weight:800;margin-top:2px;">11 420 zł</div></div>
-          <div style="text-align:right;"><div style="font-size:12px;font-weight:700;color:#22c55e;">Dziś 14:00</div><div style="font-size:10px;color:#22c55e;margin-top:3px;">🟢 Na stanie</div></div>
+          <div><div style="font-size:14px;font-weight:700;">SIG Warszawa</div><div style="font-size:19px;font-weight:800;margin-top:2px;">11 420 zł</div></div>
+          <div style="text-align:right;"><div style="font-size:12px;font-weight:700;color:#22c55e;">Dziś 15:00</div><div style="font-size:10px;color:#22c55e;margin-top:3px;">🟢 Na stanie</div></div>
         </div>
         <div style="display:flex;gap:12px;font-size:11px;color:#8a9ab0;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;">
-          <span>⭐ <strong style="color:#fff;">4.9</strong></span>
-          <span>🚚 <strong style="color:#fff;">99%</strong> terminowości</span>
-          <span>📦 <strong style="color:#fff;">1 287</strong> dostaw</span>
+          <span>⭐ <strong style="color:#fff;">4.7</strong></span>
+          <span>🚚 <strong style="color:#fff;">94%</strong> terminowości</span>
+          <span>📦 <strong style="color:#fff;">621</strong> dostaw</span>
         </div>
       </div>
     </div>
@@ -899,14 +906,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div id="ai-msgs" style="flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:10px;">
     <div style="display:flex;gap:7px;align-self:flex-start;max-width:90%;">
       <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#e8601c,#ff8c42);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🤖</div>
-      <div style="padding:10px 13px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;border-bottom-left-radius:3px;font-size:12px;line-height:1.6;">Cześć! Jestem OSG AI. 🏗️<br><br>Opisz zakres prac — wyliczę materiały z ilościami i pomogę wysłać zapytanie ofertowe.<br><br>Np. <em>"100m² ścian GK"</em> lub <em>"wylewka 50m²"</em></div>
+      <div style="padding:10px 13px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;border-bottom-left-radius:3px;font-size:12px;line-height:1.6;">Cześć! Jestem OSG AI. 🏗️<br><br><strong>Powiedz jednym zdaniem co budujesz</strong> — wyliczę materiały, ilości i ceny. Potem od razu wyślemy zapytanie ofertowe.<br><br>Przykłady:<br>• <em>Dom 140m² stan deweloperski</em><br>• <em>100m² ścian GK</em><br>• <em>Elewacja 250m²</em><br>• <em>Wylewka 70m²</em></div>
     </div>
   </div>
   <div style="padding:7px 13px;display:flex;gap:7px;overflow-x:auto;flex-shrink:0;">
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Dom 140m² stan deweloperski</div>
     <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">100m² ścian GK</div>
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Wylewka 50m²</div>
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Dom 140m² stan dew.</div>
-    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Elewacja 200m²</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Elewacja 250m²</div>
+    <div onclick="aiSend(this.textContent)" style="flex-shrink:0;padding:6px 12px;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:18px;font-size:11px;color:#8a9ab0;cursor:pointer;white-space:nowrap;">Wylewka 70m²</div>
   </div>
   <div style="padding:9px 13px;background:#162130;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:9px;align-items:center;flex-shrink:0;">
     <textarea id="ai-in" placeholder="Opisz czego potrzebujesz..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend();}" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 12px;color:#fff;font-size:12px;resize:none;outline:none;" rows="1"></textarea>
@@ -915,6 +922,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 </div>
 
 <script>
+// Global savings counter animation
+(function(){
+  var el=document.getElementById('global-saved');
+  if(!el)return;
+  var target=7842000, current=7820000;
+  var iv=setInterval(function(){
+    current+=Math.floor(Math.random()*47+13);
+    if(current>=target){current=target;clearInterval(iv);}
+    el.textContent=current.toLocaleString('pl-PL')+' zł';
+  },80);
+})();
+
 var offerSec=6120;
 setInterval(function(){
   if(offerSec>0)offerSec--;
@@ -993,7 +1012,10 @@ function doVoice(){
   r.start();
 }
 var aiOpen=false,aiLoading=false,aiHist=[];
-var SYS='Jesteś OSG AI — asystentem budowlanym platformy OSG Platform. Gdy użytkownik opisze zakres prac (np. "100m² ścian GK", "wylewka 50m²", "dom 140m² stan deweloperski"), zawsze odpowiedz listą materiałów z ilościami i orientacyjnymi cenami w formacie: nazwa · ilość · ~cena. Na końcu napisz "📋 Mogę utworzyć zapytanie ofertowe dla tych materiałów." Odpowiadaj po polsku, krótko i konkretnie jak doświadczony majster.';
+var SYS='Jesteś OSG AI — inteligentnym asystentem budowlanym. Gdy użytkownik opisze budowę lub zakres prac (np. 'dom 140m² stan deweloperski', '100m² ścian GK', 'wylewka 70m²', 'elewacja 250m²'), odpowiedz TYLKO listą materiałów w formacie:
+• Nazwa produktu — ilość — ~cena orientacyjna
+
+Bądź konkretny jak majster z 20-letnim doświadczeniem. Na końcu ZAWSZE dodaj: '📋 Chcesz żebym utworzył zapytanie ofertowe dla tych materiałów?' Odpowiadaj po polsku, bez zbędnych wstępów.';
 function toggleAI(){
   aiOpen=!aiOpen;
   document.getElementById('ai-panel').style.display=aiOpen?'flex':'none';
