@@ -1171,18 +1171,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 </div>
 
 <script>
-// Global savings counter animation
-(function(){
-  var el=document.getElementById('global-saved');
-  if(!el)return;
-  var target=7842000, current=7820000;
-  var iv=setInterval(function(){
-    current+=Math.floor(Math.random()*47+13);
-    if(current>=target){current=target;clearInterval(iv);}
-    el.textContent=current.toLocaleString('pl-PL')+' zł';
-  },80);
-})();
-
 var offerSec=6120;
 setInterval(function(){
   if(offerSec>0)offerSec--;
@@ -1309,6 +1297,18 @@ setInterval(function(){
   if(q)q.textContent=45+Math.floor(Math.random()*8);
   if(s)s.textContent=15+Math.floor(Math.random()*5);
 },6000);
+
+// Global savings counter - run after page load
+setTimeout(function(){
+  var el=document.getElementById('global-saved');
+  if(!el)return;
+  var target=7842000, current=7820000;
+  var iv=setInterval(function(){
+    current+=Math.floor(Math.random()*47+13);
+    if(current>=target){current=target;clearInterval(iv);}
+    el.textContent=current.toLocaleString('pl-PL')+' zł';
+  },80);
+},500);
 </script>
 </body>
 </html>
