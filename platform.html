@@ -37,7 +37,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
     <div style="width:68px;height:68px;background:#e8601c;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;">🏗️</div>
     <div style="font-size:26px;font-weight:800;margin-bottom:4px;">OSG Platform</div>
-    <div style="font-size:13px;color:#8a9ab0;margin-bottom:32px;">Jedno zapytanie. Wiele ofert. Najlepsza cena.</div>
+    <div style="font-size:13px;color:#8a9ab0;margin-bottom:32px;">Porównaj ceny wielu dostawców w 5 minut.</div>
     <div onclick="go('s-how')" style="font-size:13px;color:#3b82f6;font-weight:700;margin-bottom:20px;cursor:pointer;text-align:center;">ℹ️ Jak działa OSG Platform? →</div>
     <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Kim jesteś?</div>
     <div style="width:100%;display:flex;flex-direction:column;gap:9px;">
@@ -213,6 +213,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 
 <!-- RFQ -->
 
+
+<div class="screen" id="s-savings">
+  <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Twoje oszczędności</span></div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+
+    <div style="background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(34,197,94,.05));border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:13px;color:#22c55e;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">W tym miesiącu zaoszczędziłeś</div>
+      <div style="font-size:52px;font-weight:800;color:#22c55e;line-height:1;">12 840 zł</div>
+      <div style="font-size:12px;color:#8a9ab0;margin-top:6px;">vs. średnie ceny rynkowe · 14 zamówień</div>
+    </div>
+
+    <div style="font-size:14px;font-weight:800;">Skąd wzięły się te oszczędności?</div>
+
+    <div class="card">
+      <div style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;">Oszczędności per dostawca</div>
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:700;">Baumit Partner</div><div style="font-size:10px;color:#8a9ab0;">4 zamówienia · Bemowo</div></div>
+        <div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#22c55e;">−3 200 zł</div><div style="font-size:10px;color:#8a9ab0;">vs. rynek</div></div>
+      </div>
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:700;">Adamex</div><div style="font-size:10px;color:#8a9ab0;">3 zamówienia · Grodzisk</div></div>
+        <div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#22c55e;">−5 800 zł</div><div style="font-size:10px;color:#8a9ab0;">vs. rynek</div></div>
+      </div>
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:700;">3W Budowlana</div><div style="font-size:10px;color:#8a9ab0;">4 zamówienia · Wola</div></div>
+        <div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#22c55e;">−2 200 zł</div><div style="font-size:10px;color:#8a9ab0;">vs. rynek</div></div>
+      </div>
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:700;">Onninen</div><div style="font-size:10px;color:#8a9ab0;">3 zamówienia · Elektryka</div></div>
+        <div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#22c55e;">−1 640 zł</div><div style="font-size:10px;color:#8a9ab0;">vs. rynek</div></div>
+      </div>
+      <div style="padding:12px 14px;background:rgba(34,197,94,.06);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;font-weight:700;">Razem w tym miesiącu</span>
+        <span style="font-size:20px;font-weight:800;color:#22c55e;">−12 840 zł</span>
+      </div>
+    </div>
+
+    <div style="font-size:14px;font-weight:800;">Trend miesięczny</div>
+    <div class="card">
+      <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;color:#8a9ab0;">Kwiecień</span><div style="flex:1;height:6px;background:#1e2f42;border-radius:3px;margin:0 10px;overflow:hidden;"><div style="background:#22c55e;height:100%;width:60%;border-radius:3px;"></div></div><span style="font-size:12px;font-weight:700;color:#22c55e;">7 800 zł</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;color:#8a9ab0;">Maj</span><div style="flex:1;height:6px;background:#1e2f42;border-radius:3px;margin:0 10px;overflow:hidden;"><div style="background:#22c55e;height:100%;width:80%;border-radius:3px;"></div></div><span style="font-size:12px;font-weight:700;color:#22c55e;">10 200 zł</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;">Czerwiec</span><div style="flex:1;height:6px;background:#1e2f42;border-radius:3px;margin:0 10px;overflow:hidden;"><div style="background:#22c55e;height:100%;width:100%;border-radius:3px;"></div></div><span style="font-size:13px;font-weight:800;color:#22c55e;">12 840 zł</span></div>
+      </div>
+    </div>
+
+    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px;text-align:center;">
+      <div style="font-size:12px;color:#8a9ab0;margin-bottom:4px;">Roczny potencjał przy obecnym tempie</div>
+      <div style="font-size:34px;font-weight:800;color:#22c55e;">~154 000 zł</div>
+      <div style="font-size:11px;color:#8a9ab0;margin-top:3px;">To pieniądze które zostają w Twojej firmie</div>
+    </div>
+
+    <button class="btn" onclick="go('s-rfq')">📨 Dodaj kolejne zapytanie</button>
+    <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+  </div>
+  <div class="nav">
+    <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
+    <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
+    <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
+    <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
+  </div>
+</div>
 <div class="screen" id="s-how">
   <div class="hdr"><button class="back" onclick="go('s-onboarding')">←</button><span style="font-size:19px;font-weight:800;flex:1;">Jak działa OSG?</span></div>
   <div style="padding:20px 16px;display:flex;flex-direction:column;gap:12px;">
