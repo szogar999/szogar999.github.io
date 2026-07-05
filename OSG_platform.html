@@ -1259,8 +1259,9 @@ async function loadTasks(){
   }
   var res=await q;
   if(res.error){console.warn('Błąd pobierania zadań:',res.error);return;}
+  var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎'};
   planTasks=(res.data||[]).map(function(r){
-    return {id:r.id,client:r.client,category:r.category,priority:r.priority,time:r.time,reason:r.reason,status:r.status};
+    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌'};
   });
   lastSyncTime=new Date();
   renderPlanDay();
