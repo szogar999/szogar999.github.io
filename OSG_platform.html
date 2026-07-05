@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button onclick="go('s-supplier')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
       <span style="font-size:29px;">🏪</span><div style="flex:1;"><div style="font-size:15px;font-weight:800;">Dostawca</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Gotowe leady · składaj oferty</div></div><span style="color:#8a9ab0;font-size:16px;">→</span>
     </button>
-    <button onclick="go('s-director')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
+    <button id="nav-zarzadzanie" onclick="go('s-director')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
       <span style="font-size:29px;">📊</span><div style="flex:1;"><div style="font-size:15px;font-weight:800;">Zarządzanie</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Wydatki · oszczędności · raporty</div></div><span style="color:#8a9ab0;font-size:16px;">→</span>
     </button>
   </div>
@@ -873,9 +873,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div>
       <div id="cmd-greeting" style="font-size:22px;font-weight:800;">Dzień dobry 👋</div>
       <div id="cmd-date" style="font-size:12px;color:#8a9ab0;margin-top:2px;"></div>
+      <div id="cmd-activities-today" style="font-size:11px;color:#8a9ab0;margin-top:2px;"></div>
     </div>
     <button onclick="doLogout()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8a9ab0;font-size:11px;padding:6px 10px;cursor:pointer;flex-shrink:0;">🚪 Wyloguj</button>
   </div>
+  <div onclick="renderSystemStatus();go('s-system-status')" style="font-size:11px;color:#8a9ab0;cursor:pointer;text-align:right;margin-top:-6px;">⚙️ System status →</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
     <div onclick="cmdTile('leads')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
@@ -888,7 +890,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-contacts" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Kontakty na dziś</div>
     </div>
-    <div onclick="go('s-compare')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="go('s-compare')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;position:relative;">
+      <span style="position:absolute;top:8px;right:8px;font-size:7px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.15);padding:1px 5px;border-radius:5px;">DEMO</span>
       <div style="font-size:20px;">📄</div>
       <div id="cmd-offers" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Oferty</div>
@@ -898,7 +901,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-deliveries" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Dostawy</div>
     </div>
-    <div onclick="go('s-money')" style="background:#162130;border:1px solid rgba(34,197,94,.25);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="go('s-money')" style="background:#162130;border:1px solid rgba(34,197,94,.25);border-radius:13px;padding:13px;cursor:pointer;position:relative;">
+      <span style="position:absolute;top:8px;right:8px;font-size:7px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.15);padding:1px 5px;border-radius:5px;">DEMO</span>
       <div style="font-size:20px;">💰</div>
       <div id="cmd-potential" style="font-size:24px;font-weight:800;margin-top:6px;color:#22c55e;">0 zł</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Potencjał sprzedaży</div>
@@ -906,14 +910,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div onclick="cmdTile('tasks')" style="background:#162130;border:1px solid rgba(245,158,11,.25);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">⚠️</div>
       <div id="cmd-tasks" style="font-size:24px;font-weight:800;margin-top:6px;color:#f59e0b;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zadania</div>
+      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zaległe zadania</div>
     </div>
   </div>
 
   <button onclick="cmdStartDay()" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(232,96,28,.4);">▶️ Rozpocznij dzień</button>
 
-  <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🛒 Centrum Zakupów</div>
+  <div id="cmd-purchasing-block">
+    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🛒 Centrum Zakupów <span style="font-size:9px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.15);padding:2px 6px;border-radius:6px;margin-left:4px;">DEMO DANE</span></div>
     <div class="card" onclick="renderPurchasing();go('s-purchasing')" style="padding:13px;cursor:pointer;display:flex;align-items:center;gap:12px;">
       <div style="width:42px;height:42px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛒</div>
       <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Produkty, marże, historia zakupów</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Katalog + karta produktu ze statystykami</div></div>
@@ -923,18 +927,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <div>
     <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🧠 Priorytety AI</div>
-    <div class="card">
-      <div class="row">
-        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">🔴</span><div><div style="font-size:13px;font-weight:700;">Zadzwoń do Karola</div><div style="font-size:10px;color:#8a9ab0;">Duża budowa Praga rusza w sierpniu</div></div></div>
-      </div>
-      <div class="row">
-        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">🟡</span><div><div style="font-size:13px;font-weight:700;">Follow-up Homebud</div><div style="font-size:10px;color:#8a9ab0;">Oferta GK czeka na decyzję klienta</div></div></div>
-      </div>
-      <div class="row">
-        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">🟢</span><div><div style="font-size:13px;font-weight:700;">Spotkanie z abud.pl</div><div style="font-size:10px;color:#8a9ab0;">Ustalić warunki cenowe</div></div></div>
-      </div>
+    <div class="card" id="cmd-ai-list">
+      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
     </div>
-    <div style="font-size:10px;color:#8a9ab0;margin-top:6px;">Przykładowe zadania — pełna lista i kolejność w Planie Dnia.</div>
+    <div id="cmd-ai-note" style="font-size:10px;color:#8a9ab0;margin-top:6px;"></div>
     <div onclick="renderPlanDay();go('s-planday')" style="font-size:12px;color:#e8601c;font-weight:700;margin-top:8px;cursor:pointer;text-align:center;">📋 Zobacz cały Plan Dnia →</div>
   </div>
 
@@ -964,6 +960,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div class="screen" id="s-system-status">
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">⚙️ System status</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Supabase connected</div><div id="ss-connected" style="font-size:13px;font-weight:800;">—</div></div>
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Current user</div><div id="ss-user" style="font-size:13px;font-weight:700;">—</div></div>
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Current role</div><div id="ss-role" style="font-size:13px;font-weight:700;">—</div></div>
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Tasks loaded</div><div id="ss-tasks" style="font-size:13px;font-weight:700;">—</div></div>
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Activities loaded (dziś)</div><div id="ss-activities" style="font-size:13px;font-weight:700;">—</div></div>
+    <div class="row"><div style="font-size:12px;color:#8a9ab0;">Last sync</div><div id="ss-sync" style="font-size:13px;font-weight:700;">—</div></div>
+  </div>
+  <div style="font-size:10px;color:#8a9ab0;">"Last sync" = moment ostatniego udanego pobrania danych z bazy przez tę przeglądarkę, nie ciągła synchronizacja w tle.</div>
+  <button onclick="renderSystemStatus()" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">🔄 Odśwież</button>
+  <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
+</div>
+</div>
+
 <div class="screen" id="s-planday">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📋 Plan Dnia</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
@@ -990,6 +1003,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="screen" id="s-purchasing">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🛒 Centrum Zakupów</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
+  <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:10px;padding:9px 12px;font-size:11px;color:#f59e0b;">⚠️ DANE PRZYKŁADOWE — katalog produktów nie jest jeszcze podpięty pod bazę (tabele <code>products</code>/<code>orders</code> puste). To co widzisz niżej to demo, nie realne dane firmy.</div>
   <input id="pz-search" oninput="renderPurchasing()" placeholder="🔎 Szukaj produktu, np. Baumit" style="width:100%;padding:11px 13px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
     <select id="pz-manufacturer" onchange="renderPurchasing()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:10px;padding:8px 4px;"><option value="">Producent</option></select>
@@ -1168,13 +1182,33 @@ function enterDemoMode(){
   afterAuthReady();
 }
 
+function renderSystemStatus(){
+  var setEl=function(id,val){var e=document.getElementById(id);if(e)e.textContent=val;};
+  setEl('ss-connected', sbEnabled?'✅ Tak':'❌ Nie (tryb demo)');
+  setEl('ss-user', currentUser?(currentUser.email||'—'):(sbEnabled?'— (niezalogowany)':'Oskar (demo)'));
+  setEl('ss-role', ROLE_LABEL[currentRole]||currentRole||'—');
+  setEl('ss-tasks', sbEnabled ? (planTasks.length+' (dziś, w zakresie roli)') : (planTasks.length+' (dane lokalne/demo)'));
+  var actEl=document.getElementById('cmd-activities-today');
+  setEl('ss-activities', actEl&&actEl.textContent ? actEl.textContent.replace(' aktywności dziś','') : (sbEnabled?'—':'niedostępne w trybie demo'));
+  setEl('ss-sync', lastSyncTime ? lastSyncTime.toLocaleDateString('pl-PL')+' '+lastSyncTime.toLocaleTimeString('pl-PL') : 'jeszcze nie synchronizowano');
+  var connEl=document.getElementById('ss-connected');
+  if(connEl)connEl.style.color=sbEnabled?'#22c55e':'#ef4444';
+}
 function afterAuthReady(){
   var g=document.getElementById('cmd-greeting');
   if(g)g.textContent='Dzień dobry, '+currentName.split(' ')[0]+' 👋';
   var b=document.getElementById('cmd-role-badge');
   if(b)b.textContent=ROLE_LABEL[currentRole]||currentRole;
+  applyRoleUI();
   go('s-onboarding');
   loadTasks();
+}
+function applyRoleUI(){
+  var isOwnerOrAdmin=(currentRole==='owner'||currentRole==='admin');
+  var nav=document.getElementById('nav-zarzadzanie');
+  if(nav)nav.style.display=isOwnerOrAdmin?'flex':'none';
+  var purch=document.getElementById('cmd-purchasing-block');
+  if(purch)purch.style.display=isOwnerOrAdmin?'block':'none';
 }
 
 async function handleAuthedUser(user){
@@ -1216,8 +1250,9 @@ if(sbEnabled){
    Realtime w Supabase to ~5 dodatkowych linijek (kanał postgres_changes) —
    dorzucimy, jeśli faktycznie okaże się potrzebny (np. gdy 2 osoby patrzą
    na ten sam plan dnia jednocześnie). Na razie niepotrzebna złożoność. */
+var lastSyncTime=null;
 async function loadTasks(){
-  if(!sbEnabled){renderPlanDay();return;} // brak Supabase → stare dane demo + localStorage jak wcześniej
+  if(!sbEnabled){renderPlanDay();renderCmdPriorities();return;} // brak Supabase → stare dane demo + localStorage jak wcześniej
   var q=sb.from('tasks').select('*').eq('date',todayStr());
   if(currentRole!=='owner'&&currentRole!=='admin'){
     q=q.eq('assigned_to',currentUid);
@@ -1227,7 +1262,60 @@ async function loadTasks(){
   planTasks=(res.data||[]).map(function(r){
     return {id:r.id,client:r.client,category:r.category,priority:r.priority,time:r.time,reason:r.reason,status:r.status};
   });
+  lastSyncTime=new Date();
   renderPlanDay();
+  renderCmdPriorities();
+  updateCmdTilesFromTasks();
+  loadOverdueAndActivityStats();
+}
+
+/* ====================== COMMAND — statystyki z realnych danych ====================== */
+function renderCmdPriorities(){
+  var el=document.getElementById('cmd-ai-list');
+  var note=document.getElementById('cmd-ai-note');
+  if(!el)return;
+  if(!sbEnabled){
+    note.textContent='⚠️ Tryb demo — Supabase niepodłączony, to nie są realne zadania.';
+    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Podłącz Supabase, żeby zobaczyć tu realne priorytety.</div></div>';
+    return;
+  }
+  var prioOrder={red:0,yellow:1,green:2};
+  var top=planTasks.filter(function(t){return t.status==='pending';})
+    .sort(function(a,b){return (prioOrder[a.priority]||9)-(prioOrder[b.priority]||9);})
+    .slice(0,3);
+  if(top.length===0){
+    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak oczekujących zadań na dziś. 🎉</div></div>';
+  }else{
+    var icons={red:'🔴',yellow:'🟡',green:'🟢'};
+    el.innerHTML=top.map(function(t){
+      return '<div class="row"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">'+(icons[t.priority]||'⚪')+'</span><div><div style="font-size:13px;font-weight:700;">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+(t.reason||'')+'</div></div></div></div>';
+    }).join('');
+  }
+  note.textContent='Realne dane z tabeli tasks (dzisiaj, '+planTasks.length+' zadań).';
+}
+function updateCmdTilesFromTasks(){
+  var leads=planTasks.filter(function(t){return t.category==='lead'&&t.status==='pending';}).length;
+  var contacts=planTasks.filter(function(t){return t.category==='call'&&t.status==='pending';}).length;
+  var deliveries=planTasks.filter(function(t){return t.category==='delivery'&&t.status==='pending';}).length;
+  var elL=document.getElementById('cmd-leads'); if(elL)elL.textContent=leads;
+  var elC=document.getElementById('cmd-contacts'); if(elC)elC.textContent=contacts;
+  var elD=document.getElementById('cmd-deliveries'); if(elD)elD.textContent=deliveries;
+}
+async function loadOverdueAndActivityStats(){
+  if(!sbEnabled)return;
+  // zaległe: pending, data wcześniejsza niż dziś, w zakresie widoczności roli
+  var qOverdue=sb.from('tasks').select('id',{count:'exact',head:true}).lt('date',todayStr()).eq('status','pending');
+  if(currentRole!=='owner'&&currentRole!=='admin'){qOverdue=qOverdue.eq('assigned_to',currentUid);}
+  var resOverdue=await qOverdue;
+  var elTasks=document.getElementById('cmd-tasks');
+  if(elTasks && !resOverdue.error) elTasks.textContent = resOverdue.count!=null ? resOverdue.count : '0';
+
+  // aktywności dzisiaj (wspólne dla firmy, RLS pozwala każdemu czytać wszystkie)
+  var startOfDay=new Date(); startOfDay.setHours(0,0,0,0);
+  var resAct=await sb.from('activities').select('id',{count:'exact',head:true}).gte('created_at',startOfDay.toISOString());
+  var elAct=document.getElementById('cmd-activities-today');
+  if(elAct && !resAct.error) elAct.textContent = (resAct.count!=null?resAct.count:'0')+' aktywności dziś';
+  lastSyncTime=new Date();
 }
 
 /* ====================== ACTIVITIES — log zdarzeń (Memory) ====================== */
@@ -1241,7 +1329,12 @@ async function logActivity(clientId,icon,type,desc){
 }
 
 
+var OWNER_ONLY_SCREENS=['s-director','s-purchasing','s-product','s-system-status-admin'];
 function go(id){
+  if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
+    alert('🔒 Brak dostępu — ten ekran jest dostępny tylko dla właściciela/admina.');
+    id='s-command';
+  }
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var el=document.getElementById(id);
   if(el){el.classList.add('active');window.scrollTo(0,0);}
@@ -1480,15 +1573,15 @@ function bldTab(tab){
   if(tab==='memory')loadMemory(DEMO_CLIENT_ID);
 }
 var memoryData=[
-  {date:'05.07.2026 08:12',icon:'📞',type:'Rozmowa',desc:'Rozmowa z Janem K. — potwierdzenie terminu dostawy płyt GK na przyszły tydzień.',author:'Oskar'},
-  {date:'04.07.2026 16:40',icon:'📄',type:'Oferta',desc:'Wysłana oferta: Baumit SMS30 × 40, CT17 × 20 — 5 520 zł.',author:'Oskar'},
-  {date:'03.07.2026 09:05',icon:'📦',type:'Zamówienie',desc:'Złożone zamówienie: Baumit SMS30, profile CD60, płyty GK × 80.',author:'System'},
-  {date:'02.07.2026 07:50',icon:'🚚',type:'Dostawa',desc:'Dostawa Baumit + BHP dotarła na Bemowo, odebrał Jan K.',author:'Kierowca'},
-  {date:'01.07.2026 12:30',icon:'💰',type:'Faktura',desc:'Wystawiona faktura #FV-2026-0047 na 11 380 zł.',author:'System'},
-  {date:'29.06.2026 18:02',icon:'📝',type:'Notatka',desc:'Klient pytał o rabat przy większych zamówieniach Baumit — sprawdzić próg u Marcina.',author:'Oskar'},
-  {date:'27.06.2026 10:15',icon:'🎤',type:'Notatka głosowa',desc:'"Trzeba domówić drugą turę płyt GK na przyszły tydzień, klient przyśpiesza harmonogram."',author:'Oskar'},
-  {date:'25.06.2026 14:00',icon:'📍',type:'Spotkanie',desc:'Spotkanie na budowie — przegląd postępu i potrzeb materiałowych na sierpień.',author:'Oskar'},
-  {date:'20.06.2026 09:30',icon:'📷',type:'Zdjęcie',desc:'Zdjęcie dostawy — paleta Baumit przy wejściu, podpisano bez uwag.',author:'Kierowca'}
+  {date:'05.07.2026 08:12',icon:'📞',type:'Rozmowa',desc:'Rozmowa z Janem K. — potwierdzenie terminu dostawy płyt GK na przyszły tydzień.',author:'Oskar',demo:true},
+  {date:'04.07.2026 16:40',icon:'📄',type:'Oferta',desc:'Wysłana oferta: Baumit SMS30 × 40, CT17 × 20 — 5 520 zł.',author:'Oskar',demo:true},
+  {date:'03.07.2026 09:05',icon:'📦',type:'Zamówienie',desc:'Złożone zamówienie: Baumit SMS30, profile CD60, płyty GK × 80.',author:'System',demo:true},
+  {date:'02.07.2026 07:50',icon:'🚚',type:'Dostawa',desc:'Dostawa Baumit + BHP dotarła na Bemowo, odebrał Jan K.',author:'Kierowca',demo:true},
+  {date:'01.07.2026 12:30',icon:'💰',type:'Faktura',desc:'Wystawiona faktura #FV-2026-0047 na 11 380 zł.',author:'System',demo:true},
+  {date:'29.06.2026 18:02',icon:'📝',type:'Notatka',desc:'Klient pytał o rabat przy większych zamówieniach Baumit — sprawdzić próg u Marcina.',author:'Oskar',demo:true},
+  {date:'27.06.2026 10:15',icon:'🎤',type:'Notatka głosowa',desc:'"Trzeba domówić drugą turę płyt GK na przyszły tydzień, klient przyśpiesza harmonogram."',author:'Oskar',demo:true},
+  {date:'25.06.2026 14:00',icon:'📍',type:'Spotkanie',desc:'Spotkanie na budowie — przegląd postępu i potrzeb materiałowych na sierpień.',author:'Oskar',demo:true},
+  {date:'20.06.2026 09:30',icon:'📷',type:'Zdjęcie',desc:'Zdjęcie dostawy — paleta Baumit przy wejściu, podpisano bez uwag.',author:'Kierowca',demo:true}
 ];
 var memoryDataDemoSeed=memoryData.slice(); // zachowujemy oryginalne demo osobno, żeby nie duplikować przy każdym wejściu w zakładkę
 function loadMemory(clientId){
@@ -1532,7 +1625,7 @@ function renderMemory(){
   if(list.length===0){el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 0;">Brak wyników dla tego wyszukiwania.</div>';return;}
   var html='<div class="tl-wrap">';
   list.forEach(function(e){
-    html+='<div class="tl-item"><div class="tl-dot">'+e.icon+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+e.icon+' '+e.type+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+e.date+'</span></div><div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+e.desc+'</div><div style="font-size:10px;color:#8a9ab0;">✍️ '+e.author+'</div></div></div>';
+    html+='<div class="tl-item"><div class="tl-dot">'+e.icon+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+e.icon+' '+e.type+(e.demo?' <span style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:8px;padding:1px 5px;border-radius:5px;margin-left:4px;">DEMO</span>':'')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+e.date+'</span></div><div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+e.desc+'</div><div style="font-size:10px;color:#8a9ab0;">✍️ '+e.author+'</div></div></div>';
   });
   html+='</div>';
   el.innerHTML=html;
