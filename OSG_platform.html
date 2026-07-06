@@ -1579,6 +1579,7 @@ async function loadClientActivities(clientId){
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
   if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak aktywności — dodaj pierwszą notatkę powyżej.</div>';return;}
+  var canEdit=(currentRole==='owner'||currentRole==='admin');
   el.innerHTML='<div class="tl-wrap">'+rows.map(function(a){
     var dt=a.created_at?new Date(a.created_at):null;
     var dateStr=dt?(dt.toLocaleDateString('pl-PL')+' '+dt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})):'';
@@ -1586,20 +1587,45 @@ async function loadClientActivities(clientId){
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+(a.icon||'📝')+' '+(a.type||'Notatka')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+dateStr+'</span></div>'
       +'<div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+(a.description||'')+'</div>'
       +'<div style="font-size:10px;color:#8a9ab0;">✍️ '+(a.author||'—')+'</div>'
+      +(canEdit?('<div style="display:flex;gap:6px;margin-top:8px;">'
+        +'<button onclick="editClientNote(\''+a.id+'\',\''+encodeURIComponent(a.description||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
+        +'<button onclick="archiveClientNote(\''+a.id+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:6px;color:#ef4444;font-size:10px;cursor:pointer;">🗄️ Archiwizuj</button>'
+        +'</div>'):'')
     +'</div></div>';
   }).join('')+'</div>';
+}
+var editingNoteId=null;
+async function editClientNote(id,descEnc){
+  editingNoteId=id;
+  var input=document.getElementById('cd-new-note');
+  input.value=decodeURIComponent(descEnc);
+  input.focus();
+  input.placeholder='Edycja notatki — zapisz albo wyczyść pole żeby anulować';
+}
+async function archiveClientNote(id){
+  if(!confirm('Zarchiwizować tę notatkę? Zniknie z historii (nie jest to logowane w activity_log — brak śladu kto/kiedy to zrobił).'))return;
+  var res=await sb.from('activities').update({deleted_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
+  loadClientActivities(currentClientId);
 }
 async function addClientNote(){
   var input=document.getElementById('cd-new-note');
   var txt=(input.value||'').trim();
   if(!txt||!currentClientId)return;
   if(!sbEnabled){alert('Supabase niepodłączony — notatka nie zostanie zapisana.');return;}
-  var res=await sb.from('activities').insert({
-    client_id:currentClientId,icon:'📝',type:'Notatka',description:txt,
-    author:currentName,author_id:currentUid||null
-  });
+  var res;
+  if(editingNoteId){
+    res=await sb.from('activities').update({description:txt}).eq('id',editingNoteId);
+  }else{
+    res=await sb.from('activities').insert({
+      client_id:currentClientId,icon:'📝',type:'Notatka',description:txt,
+      author:currentName,author_id:currentUid||null
+    });
+  }
   if(res.error){alert('Błąd zapisu: '+res.error.message);return;}
   input.value='';
+  input.placeholder='📝 Dodaj szybką notatkę…';
+  editingNoteId=null;
   loadClientActivities(currentClientId);
 }
 
