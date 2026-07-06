@@ -989,7 +989,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="screen" id="s-crm">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">👷 CRM — Klienci</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-  <button onclick="go('s-client-add')" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Dodaj klienta</button>
+  <button onclick="resetClientForm();go('s-client-add')" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Dodaj klienta</button>
   <div id="crm-status-line" style="font-size:11px;color:#8a9ab0;"></div>
   <div id="crm-list" style="display:flex;flex-direction:column;gap:8px;">
     <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>
@@ -1040,7 +1040,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <div style="font-size:14px;font-weight:800;">🏗️ Budowy</div>
-      <button onclick="toggleForm('cd-building-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
+      <button onclick="resetBuildingForm();toggleForm('cd-building-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
     </div>
     <div id="cd-building-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;display:none;flex-direction:column;gap:8px;">
       <input id="cb-name" placeholder="Nazwa budowy *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
@@ -1054,7 +1054,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <div style="font-size:14px;font-weight:800;">👤 Kontakty</div>
-      <button onclick="toggleForm('cd-contact-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
+      <button onclick="resetContactForm();toggleForm('cd-contact-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
     </div>
     <div id="cd-contact-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;flex-direction:column;gap:8px;">
       <input id="cc-name" placeholder="Imię i nazwisko *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
@@ -1331,9 +1331,10 @@ async function loadClients(){
     listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak klientów — dodaj pierwszego przyciskiem powyżej.</div>';
     return;
   }
+  var canEdit=(currentRole==='owner'||currentRole==='admin');
   listEl.innerHTML=clients.map(function(c){
-    return '<div class="card" onclick="openClient(\''+c.id+'\')" style="padding:12px 13px;cursor:pointer;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+    return '<div class="card" style="padding:12px 13px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openClient(\''+c.id+'\')">'
       +'<div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div>'
       +'<span style="color:#e8601c;font-size:14px;">→</span></div>'
       +(c.nip?'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">NIP: '+c.nip+'</div>':'')
@@ -1342,8 +1343,38 @@ async function loadClients(){
         +(c.email?'<span>✉️ '+c.email+'</span>':'')
       +'</div>'
       +(c.notes?'<div style="font-size:11px;color:#c7d0da;margin-top:6px;line-height:1.4;">'+c.notes+'</div>':'')
+      +(canEdit?('<div style="display:flex;gap:6px;margin-top:9px;">'
+        +'<button onclick="event.stopPropagation();editClient(\''+c.id+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px;color:#fff;font-size:11px;cursor:pointer;">✏️ Edytuj</button>'
+        +'<button onclick="event.stopPropagation();archiveClient(\''+c.id+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:7px;color:#ef4444;font-size:11px;cursor:pointer;">🗄️ Archiwizuj</button>'
+        +'</div>'):'')
     +'</div>';
   }).join('');
+}
+var editingClientId=null;
+function resetClientForm(){
+  editingClientId=null;
+  ['ca-name','ca-nip','ca-phone','ca-email','ca-notes'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('ca-save-btn').textContent='💾 Zapisz klienta';
+}
+async function editClient(id){
+  if(!sbEnabled)return;
+  var res=await sb.from('clients').select('*').eq('id',id).maybeSingle();
+  if(res.error||!res.data){alert('Błąd wczytywania klienta.');return;}
+  var c=res.data;
+  editingClientId=id;
+  document.getElementById('ca-name').value=c.name||'';
+  document.getElementById('ca-nip').value=c.nip||'';
+  document.getElementById('ca-phone').value=c.phone||'';
+  document.getElementById('ca-email').value=c.email||'';
+  document.getElementById('ca-notes').value=c.notes||'';
+  document.getElementById('ca-save-btn').textContent='💾 Zapisz zmiany';
+  go('s-client-add');
+}
+async function archiveClient(id){
+  if(!confirm('Zarchiwizować tego klienta? Zniknie z listy (dane zostają w bazie, można je odzyskać ręcznie w Supabase).'))return;
+  var res=await sb.from('clients').update({deleted_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
+  loadClients();
 }
 async function saveClient(){
   var name=document.getElementById('ca-name').value.trim();
@@ -1358,17 +1389,23 @@ async function saveClient(){
     nip:document.getElementById('ca-nip').value.trim()||null,
     phone:document.getElementById('ca-phone').value.trim()||null,
     email:document.getElementById('ca-email').value.trim()||null,
-    notes:document.getElementById('ca-notes').value.trim()||null,
-    created_by:currentUid||null
+    notes:document.getElementById('ca-notes').value.trim()||null
   };
-  var res=await sb.from('clients').insert(payload);
-  btn.disabled=false;btn.textContent='💾 Zapisz klienta';
+  var res;
+  if(editingClientId){
+    res=await sb.from('clients').update(payload).eq('id',editingClientId);
+  }else{
+    payload.created_by=currentUid||null;
+    res=await sb.from('clients').insert(payload);
+  }
+  btn.disabled=false;
   if(res.error){
     errEl.textContent='Błąd zapisu: '+res.error.message;
     errEl.style.display='block';
+    btn.textContent=editingClientId?'💾 Zapisz zmiany':'💾 Zapisz klienta';
     return;
   }
-  ['ca-name','ca-nip','ca-phone','ca-email','ca-notes'].forEach(function(id){document.getElementById(id).value='';});
+  resetClientForm();
   loadClients();
   go('s-crm');
 }
@@ -1405,6 +1442,12 @@ async function openClient(id){
   loadClientActivities(id);
 }
 
+var editingBuildingId=null;
+function resetBuildingForm(){
+  editingBuildingId=null;
+  document.getElementById('cb-name').value='';
+  document.getElementById('cb-address').value='';
+}
 async function loadBuildings(clientId){
   var el=document.getElementById('cd-buildings-list');
   if(!sbEnabled){el.innerHTML='';return;}
@@ -1412,13 +1455,30 @@ async function loadBuildings(clientId){
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
   if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak budów — dodaj pierwszą.</div>';return;}
+  var canEdit=(currentRole==='owner'||currentRole==='admin');
   el.innerHTML=rows.map(function(b){
     return '<div class="card" style="padding:10px 12px;">'
       +'<div style="font-size:13px;font-weight:700;">'+(b.name||'—')+'</div>'
       +(b.address?'<div style="font-size:11px;color:#8a9ab0;margin-top:2px;">📍 '+b.address+'</div>':'')
       +'<div style="font-size:10px;color:#8a9ab0;margin-top:3px;">Status: '+(b.status||'—')+'</div>'
+      +(canEdit?('<div style="display:flex;gap:6px;margin-top:8px;">'
+        +'<button onclick="editBuilding(\''+b.id+'\',\''+encodeURIComponent(b.name||'')+'\',\''+encodeURIComponent(b.address||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
+        +'<button onclick="archiveBuilding(\''+b.id+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:6px;color:#ef4444;font-size:10px;cursor:pointer;">🗄️ Archiwizuj</button>'
+        +'</div>'):'')
     +'</div>';
   }).join('');
+}
+function editBuilding(id,nameEnc,addressEnc){
+  editingBuildingId=id;
+  document.getElementById('cb-name').value=decodeURIComponent(nameEnc);
+  document.getElementById('cb-address').value=decodeURIComponent(addressEnc);
+  document.getElementById('cd-building-form').style.display='flex';
+}
+async function archiveBuilding(id){
+  if(!confirm('Zarchiwizować tę budowę?'))return;
+  var res=await sb.from('buildings').update({deleted_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
+  loadBuildings(currentClientId);
 }
 async function addBuilding(){
   var name=document.getElementById('cb-name').value.trim();
@@ -1426,18 +1486,29 @@ async function addBuilding(){
   errEl.style.display='none';
   if(!name){errEl.textContent='Nazwa budowy jest wymagana.';errEl.style.display='block';return;}
   if(!sbEnabled||!currentClientId)return;
-  var res=await sb.from('buildings').insert({
-    client_id:currentClientId,name:name,
-    address:document.getElementById('cb-address').value.trim()||null,
-    created_by:currentUid||null
-  });
+  var payload={
+    name:name,
+    address:document.getElementById('cb-address').value.trim()||null
+  };
+  var res;
+  if(editingBuildingId){
+    res=await sb.from('buildings').update(payload).eq('id',editingBuildingId);
+  }else{
+    payload.client_id=currentClientId;
+    payload.created_by=currentUid||null;
+    res=await sb.from('buildings').insert(payload);
+  }
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
-  document.getElementById('cb-name').value='';
-  document.getElementById('cb-address').value='';
+  resetBuildingForm();
   toggleForm('cd-building-form');
   loadBuildings(currentClientId);
 }
 
+var editingContactId=null;
+function resetContactForm(){
+  editingContactId=null;
+  ['cc-name','cc-role','cc-phone','cc-email'].forEach(function(id){document.getElementById(id).value='';});
+}
 async function loadContacts(clientId){
   var el=document.getElementById('cd-contacts-list');
   if(!sbEnabled){el.innerHTML='';return;}
@@ -1445,6 +1516,7 @@ async function loadContacts(clientId){
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
   if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak kontaktów — dodaj pierwszy.</div>';return;}
+  var canEdit=(currentRole==='owner'||currentRole==='admin');
   el.innerHTML=rows.map(function(c){
     return '<div class="card" style="padding:10px 12px;">'
       +'<div style="font-size:13px;font-weight:700;">'+(c.name||'—')+(c.role_title?' <span style="font-weight:400;color:#8a9ab0;font-size:11px;">— '+c.role_title+'</span>':'')+'</div>'
@@ -1452,8 +1524,26 @@ async function loadContacts(clientId){
         +(c.phone?'<span>📞 '+c.phone+'</span>':'')
         +(c.email?'<span>✉️ '+c.email+'</span>':'')
       +'</div>'
+      +(canEdit?('<div style="display:flex;gap:6px;margin-top:8px;">'
+        +'<button onclick="editContact(\''+c.id+'\',\''+encodeURIComponent(c.name||'')+'\',\''+encodeURIComponent(c.role_title||'')+'\',\''+encodeURIComponent(c.phone||'')+'\',\''+encodeURIComponent(c.email||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
+        +'<button onclick="archiveContact(\''+c.id+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:6px;color:#ef4444;font-size:10px;cursor:pointer;">🗄️ Archiwizuj</button>'
+        +'</div>'):'')
     +'</div>';
   }).join('');
+}
+function editContact(id,nameEnc,roleEnc,phoneEnc,emailEnc){
+  editingContactId=id;
+  document.getElementById('cc-name').value=decodeURIComponent(nameEnc);
+  document.getElementById('cc-role').value=decodeURIComponent(roleEnc);
+  document.getElementById('cc-phone').value=decodeURIComponent(phoneEnc);
+  document.getElementById('cc-email').value=decodeURIComponent(emailEnc);
+  document.getElementById('cd-contact-form').style.display='flex';
+}
+async function archiveContact(id){
+  if(!confirm('Zarchiwizować ten kontakt?'))return;
+  var res=await sb.from('contacts').update({deleted_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
+  loadContacts(currentClientId);
 }
 async function addContact(){
   var name=document.getElementById('cc-name').value.trim();
@@ -1461,15 +1551,22 @@ async function addContact(){
   errEl.style.display='none';
   if(!name){errEl.textContent='Imię i nazwisko jest wymagane.';errEl.style.display='block';return;}
   if(!sbEnabled||!currentClientId)return;
-  var res=await sb.from('contacts').insert({
-    client_id:currentClientId,name:name,
+  var payload={
+    name:name,
     role_title:document.getElementById('cc-role').value.trim()||null,
     phone:document.getElementById('cc-phone').value.trim()||null,
-    email:document.getElementById('cc-email').value.trim()||null,
-    created_by:currentUid||null
-  });
+    email:document.getElementById('cc-email').value.trim()||null
+  };
+  var res;
+  if(editingContactId){
+    res=await sb.from('contacts').update(payload).eq('id',editingContactId);
+  }else{
+    payload.client_id=currentClientId;
+    payload.created_by=currentUid||null;
+    res=await sb.from('contacts').insert(payload);
+  }
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
-  ['cc-name','cc-role','cc-phone','cc-email'].forEach(function(id){document.getElementById(id).value='';});
+  resetContactForm();
   toggleForm('cd-contact-form');
   loadContacts(currentClientId);
 }
