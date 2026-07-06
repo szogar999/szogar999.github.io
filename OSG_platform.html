@@ -1031,6 +1031,55 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div class="screen" id="s-client-detail">
+<div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span id="cd-title" style="font-size:18px;font-weight:800;flex:1;">Klient</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
+
+  <div class="card" id="cd-info" style="padding:13px;">Ładowanie…</div>
+
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:14px;font-weight:800;">🏗️ Budowy</div>
+      <button onclick="toggleForm('cd-building-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
+    </div>
+    <div id="cd-building-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;display:none;flex-direction:column;gap:8px;">
+      <input id="cb-name" placeholder="Nazwa budowy *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <input id="cb-address" placeholder="Adres" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <div id="cb-error" style="display:none;font-size:11px;color:#ef4444;"></div>
+      <button onclick="addBuilding()" style="background:#22c55e;border:none;border-radius:9px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Zapisz budowę</button>
+    </div>
+    <div id="cd-buildings-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:14px;font-weight:800;">👤 Kontakty</div>
+      <button onclick="toggleForm('cd-contact-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
+    </div>
+    <div id="cd-contact-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;flex-direction:column;gap:8px;">
+      <input id="cc-name" placeholder="Imię i nazwisko *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <input id="cc-role" placeholder="Stanowisko (np. kierownik budowy)" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <input id="cc-phone" placeholder="Telefon" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <input id="cc-email" placeholder="E-mail" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      <div id="cc-error" style="display:none;font-size:11px;color:#ef4444;"></div>
+      <button onclick="addContact()" style="background:#22c55e;border:none;border-radius:9px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Zapisz kontakt</button>
+    </div>
+    <div id="cd-contacts-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+
+  <div>
+    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🧠 Aktywności</div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <input id="cd-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
+      <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
+    </div>
+    <div id="cd-activities-list"></div>
+  </div>
+
+  <button class="btn ghost" onclick="go('s-crm')">← Wróć do listy klientów</button>
+</div>
+</div>
+
 <div class="screen" id="s-planday">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📋 Plan Dnia</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
@@ -1283,8 +1332,10 @@ async function loadClients(){
     return;
   }
   listEl.innerHTML=clients.map(function(c){
-    return '<div class="card" style="padding:12px 13px;">'
+    return '<div class="card" onclick="openClient(\''+c.id+'\')" style="padding:12px 13px;cursor:pointer;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
       +'<div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div>'
+      +'<span style="color:#e8601c;font-size:14px;">→</span></div>'
       +(c.nip?'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">NIP: '+c.nip+'</div>':'')
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:#8a9ab0;">'
         +(c.phone?'<span>📞 '+c.phone+'</span>':'')
@@ -1320,6 +1371,139 @@ async function saveClient(){
   ['ca-name','ca-nip','ca-phone','ca-email','ca-notes'].forEach(function(id){document.getElementById(id).value='';});
   loadClients();
   go('s-crm');
+}
+
+/* ====================== KARTA KLIENTA — budowy, kontakty, aktywności ====================== */
+var currentClientId=null;
+function toggleForm(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.style.display=(el.style.display==='flex')?'none':'flex';
+}
+async function openClient(id){
+  currentClientId=id;
+  document.getElementById('cd-title').textContent='Ładowanie…';
+  document.getElementById('cd-info').innerHTML='Ładowanie…';
+  go('s-client-detail');
+  if(!sbEnabled)return;
+  var res=await sb.from('clients').select('*').eq('id',id).maybeSingle();
+  if(res.error||!res.data){
+    document.getElementById('cd-info').innerHTML='<div style="color:#ef4444;font-size:12px;">Błąd wczytywania klienta.</div>';
+    return;
+  }
+  var c=res.data;
+  document.getElementById('cd-title').textContent=c.name||'Klient';
+  document.getElementById('cd-info').innerHTML=
+    (c.nip?'<div style="font-size:11px;color:#8a9ab0;">NIP: '+c.nip+'</div>':'')
+    +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:12px;color:#c7d0da;">'
+      +(c.phone?'<span>📞 '+c.phone+'</span>':'')
+      +(c.email?'<span>✉️ '+c.email+'</span>':'')
+    +'</div>'
+    +(c.notes?'<div style="font-size:12px;color:#8a9ab0;margin-top:8px;line-height:1.4;">'+c.notes+'</div>':'');
+  loadBuildings(id);
+  loadContacts(id);
+  loadClientActivities(id);
+}
+
+async function loadBuildings(clientId){
+  var el=document.getElementById('cd-buildings-list');
+  if(!sbEnabled){el.innerHTML='';return;}
+  var res=await sb.from('buildings').select('*').eq('client_id',clientId).order('created_at',{ascending:false});
+  if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
+  var rows=res.data||[];
+  if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak budów — dodaj pierwszą.</div>';return;}
+  el.innerHTML=rows.map(function(b){
+    return '<div class="card" style="padding:10px 12px;">'
+      +'<div style="font-size:13px;font-weight:700;">'+(b.name||'—')+'</div>'
+      +(b.address?'<div style="font-size:11px;color:#8a9ab0;margin-top:2px;">📍 '+b.address+'</div>':'')
+      +'<div style="font-size:10px;color:#8a9ab0;margin-top:3px;">Status: '+(b.status||'—')+'</div>'
+    +'</div>';
+  }).join('');
+}
+async function addBuilding(){
+  var name=document.getElementById('cb-name').value.trim();
+  var errEl=document.getElementById('cb-error');
+  errEl.style.display='none';
+  if(!name){errEl.textContent='Nazwa budowy jest wymagana.';errEl.style.display='block';return;}
+  if(!sbEnabled||!currentClientId)return;
+  var res=await sb.from('buildings').insert({
+    client_id:currentClientId,name:name,
+    address:document.getElementById('cb-address').value.trim()||null,
+    created_by:currentUid||null
+  });
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  document.getElementById('cb-name').value='';
+  document.getElementById('cb-address').value='';
+  toggleForm('cd-building-form');
+  loadBuildings(currentClientId);
+}
+
+async function loadContacts(clientId){
+  var el=document.getElementById('cd-contacts-list');
+  if(!sbEnabled){el.innerHTML='';return;}
+  var res=await sb.from('contacts').select('*').eq('client_id',clientId).order('created_at',{ascending:false});
+  if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
+  var rows=res.data||[];
+  if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak kontaktów — dodaj pierwszy.</div>';return;}
+  el.innerHTML=rows.map(function(c){
+    return '<div class="card" style="padding:10px 12px;">'
+      +'<div style="font-size:13px;font-weight:700;">'+(c.name||'—')+(c.role_title?' <span style="font-weight:400;color:#8a9ab0;font-size:11px;">— '+c.role_title+'</span>':'')+'</div>'
+      +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:3px;font-size:11px;color:#8a9ab0;">'
+        +(c.phone?'<span>📞 '+c.phone+'</span>':'')
+        +(c.email?'<span>✉️ '+c.email+'</span>':'')
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+async function addContact(){
+  var name=document.getElementById('cc-name').value.trim();
+  var errEl=document.getElementById('cc-error');
+  errEl.style.display='none';
+  if(!name){errEl.textContent='Imię i nazwisko jest wymagane.';errEl.style.display='block';return;}
+  if(!sbEnabled||!currentClientId)return;
+  var res=await sb.from('contacts').insert({
+    client_id:currentClientId,name:name,
+    role_title:document.getElementById('cc-role').value.trim()||null,
+    phone:document.getElementById('cc-phone').value.trim()||null,
+    email:document.getElementById('cc-email').value.trim()||null,
+    created_by:currentUid||null
+  });
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  ['cc-name','cc-role','cc-phone','cc-email'].forEach(function(id){document.getElementById(id).value='';});
+  toggleForm('cd-contact-form');
+  loadContacts(currentClientId);
+}
+
+async function loadClientActivities(clientId){
+  var el=document.getElementById('cd-activities-list');
+  if(!sbEnabled){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Supabase niepodłączony.</div>';return;}
+  el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:12px 0;">Ładowanie…</div>';
+  var res=await sb.from('activities').select('*').eq('client_id',clientId).order('created_at',{ascending:false}).limit(50);
+  if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
+  var rows=res.data||[];
+  if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak aktywności — dodaj pierwszą notatkę powyżej.</div>';return;}
+  el.innerHTML='<div class="tl-wrap">'+rows.map(function(a){
+    var dt=a.created_at?new Date(a.created_at):null;
+    var dateStr=dt?(dt.toLocaleDateString('pl-PL')+' '+dt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})):'';
+    return '<div class="tl-item"><div class="tl-dot">'+(a.icon||'📝')+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+(a.icon||'📝')+' '+(a.type||'Notatka')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+dateStr+'</span></div>'
+      +'<div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+(a.description||'')+'</div>'
+      +'<div style="font-size:10px;color:#8a9ab0;">✍️ '+(a.author||'—')+'</div>'
+    +'</div></div>';
+  }).join('')+'</div>';
+}
+async function addClientNote(){
+  var input=document.getElementById('cd-new-note');
+  var txt=(input.value||'').trim();
+  if(!txt||!currentClientId)return;
+  if(!sbEnabled){alert('Supabase niepodłączony — notatka nie zostanie zapisana.');return;}
+  var res=await sb.from('activities').insert({
+    client_id:currentClientId,icon:'📝',type:'Notatka',description:txt,
+    author:currentName,author_id:currentUid||null
+  });
+  if(res.error){alert('Błąd zapisu: '+res.error.message);return;}
+  input.value='';
+  loadClientActivities(currentClientId);
 }
 
 /* ====================== DRIVER — moje dostawy (realne dane, Supabase) ====================== */
