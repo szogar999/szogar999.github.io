@@ -898,12 +898,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div onclick="renderSystemStatus();go('s-system-status')" style="font-size:11px;color:#8a9ab0;cursor:pointer;text-align:right;margin-top:-6px;">⚙️ System status →</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-    <div onclick="cmdTile('leads')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="planFilter('lead');go('s-planday')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">🔥</div>
       <div id="cmd-leads" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Nowe leady</div>
     </div>
-    <div onclick="cmdTile('contacts')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="planFilter('call');go('s-planday')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">📞</div>
       <div id="cmd-contacts" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Kontakty na dziś</div>
@@ -913,7 +913,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-offers" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Oferty</div>
     </div>
-    <div onclick="cmdTile('deliveries')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="planFilter('delivery');go('s-planday')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">🚚</div>
       <div id="cmd-deliveries" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Dostawy</div>
@@ -923,7 +923,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-clients" style="font-size:24px;font-weight:800;margin-top:6px;color:#22c55e;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Klienci</div>
     </div>
-    <div onclick="cmdTile('tasks')" style="background:#162130;border:1px solid rgba(245,158,11,.25);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="planFilter('overdue');go('s-planday')" style="background:#162130;border:1px solid rgba(245,158,11,.25);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">⚠️</div>
       <div id="cmd-tasks" style="font-size:24px;font-weight:800;margin-top:6px;color:#f59e0b;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zaległe zadania</div>
@@ -1014,6 +1014,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">👷 CRM — Klienci</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <button onclick="resetClientForm();go('s-client-add')" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Dodaj klienta</button>
+  <input id="crm-search" oninput="renderClients()" placeholder="🔍 Szukaj po nazwie, NIP lub telefonie…" style="width:100%;padding:11px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
   <div id="crm-status-line" style="font-size:11px;color:#8a9ab0;"></div>
   <div id="crm-list" style="display:flex;flex-direction:column;gap:8px;">
     <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>
@@ -1207,6 +1208,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div id="plan-summary" style="font-size:11px;color:#8a9ab0;"></div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;">
     <div onclick="planFilter('')" id="pf-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
+    <div onclick="planFilter('overdue')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">⏰ Zaległe</div>
     <div onclick="planFilter('call')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
     <div onclick="planFilter('offer')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
     <div onclick="planFilter('delivery')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🚚 Dostawy</div>
@@ -1353,7 +1355,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.14.0';
+var APP_VERSION = 'v0.15.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1436,6 +1438,7 @@ function renderSystemStatus(){
   if(connEl)connEl.style.color=sbEnabled?'#22c55e':'#ef4444';
 }
 /* ====================== CRM — klienci (realne dane, Supabase) ====================== */
+var crmClientsCache=[];
 async function loadClients(){
   var listEl=document.getElementById('crm-list');
   var statusEl=document.getElementById('crm-status-line');
@@ -1451,17 +1454,37 @@ async function loadClients(){
     if(listEl)listEl.innerHTML='';
     return;
   }
-  var clients=res.data||[];
+  crmClientsCache=res.data||[];
   lastSyncTime=new Date();
   var tileCount=document.getElementById('crm-tile-count');
-  if(tileCount)tileCount.textContent=clients.length+' '+(clients.length===1?'klient':'klientów')+' w bazie';
-  if(statusEl)statusEl.textContent=clients.length+' '+(clients.length===1?'klient':'klientów')+' w bazie.';
+  if(tileCount)tileCount.textContent=crmClientsCache.length+' '+(crmClientsCache.length===1?'klient':'klientów')+' w bazie';
+  renderClients();
+}
+function renderClients(){
+  var listEl=document.getElementById('crm-list');
+  var statusEl=document.getElementById('crm-status-line');
+  if(!listEl)return;
+  var clients=crmClientsCache;
   if(clients.length===0){
+    if(statusEl)statusEl.textContent='0 klientów w bazie.';
     listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak klientów — dodaj pierwszego przyciskiem powyżej.</div>';
     return;
   }
+  var q=(document.getElementById('crm-search')||{value:''}).value.trim().toLowerCase();
+  var filtered=q?clients.filter(function(c){
+    return (c.name||'').toLowerCase().indexOf(q)>-1
+      || (c.nip||'').toLowerCase().indexOf(q)>-1
+      || (c.phone||'').toLowerCase().indexOf(q)>-1;
+  }):clients;
+  if(statusEl)statusEl.textContent=q
+    ? (filtered.length+' z '+clients.length+' klientów pasuje do „'+q+'”.')
+    : (clients.length+' '+(clients.length===1?'klient':'klientów')+' w bazie.');
+  if(filtered.length===0){
+    listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Nic nie pasuje do wyszukiwania.</div>';
+    return;
+  }
   var canEdit=(currentRole==='owner'||currentRole==='admin');
-  listEl.innerHTML=clients.map(function(c){
+  listEl.innerHTML=filtered.map(function(c){
     return '<div class="card" style="padding:12px 13px;">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openClient(\''+c.id+'\')">'
       +'<div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div>'
@@ -2518,7 +2541,10 @@ if(sbEnabled){
 var lastSyncTime=null;
 async function loadTasks(){
   if(!sbEnabled){renderPlanDay();renderCmdPriorities();return;} // brak Supabase → stare dane demo + localStorage jak wcześniej
-  var q=sb.from('tasks').select('*').eq('date',todayStr());
+  // Dziś ORAZ zaległe (data wcześniejsza, wciąż pending) — inaczej zaległe zadania są liczone
+  // na kafelku Command, ale nigdzie nie widać ich na liście. To był realny martwy punkt.
+  var today=todayStr();
+  var q=sb.from('tasks').select('*').or('date.eq.'+today+',and(date.lt.'+today+',status.eq.pending)');
   if(currentRole!=='owner'&&currentRole!=='admin'){
     q=q.eq('assigned_to',currentUid);
   }
@@ -2526,7 +2552,7 @@ async function loadTasks(){
   if(res.error){console.warn('Błąd pobierania zadań:',res.error);return;}
   var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎'};
   planTasks=(res.data||[]).map(function(r){
-    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌'};
+    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today)};
   });
   lastSyncTime=new Date();
   renderPlanDay();
@@ -2901,10 +2927,6 @@ function renderMemory(){
   html+='</div>';
   el.innerHTML=html;
 }
-function cmdTile(name){
-  var labels={leads:'Nowe leady',contacts:'Kontakty na dziś',deliveries:'Dostawy',tasks:'Zadania'};
-  alert((labels[name]||name)+' — moduł w budowie. Podłączymy realne dane w kolejnym kroku.');
-}
 function cmdStartDay(){
   renderPlanDay();
   go('s-planday');
@@ -2966,19 +2988,25 @@ function planAction(id,action){
   }
 }
 function renderPlanDay(){
-  var list=planTasks.filter(function(t){return planActiveFilter===''||t.category===planActiveFilter;});
+  var list=planTasks.filter(function(t){
+    if(planActiveFilter==='')return true;
+    if(planActiveFilter==='overdue')return !!t.overdue;
+    return t.category===planActiveFilter;
+  });
   list.sort(function(a,b){
     if(a.status!==b.status){if(a.status==='pending')return -1;if(b.status==='pending')return 1;}
+    if(!!a.overdue!==!!b.overdue)return a.overdue?-1:1;
     if(planPrioOrder[a.priority]!==planPrioOrder[b.priority])return planPrioOrder[a.priority]-planPrioOrder[b.priority];
     return a.time.localeCompare(b.time);
   });
   var pending=planTasks.filter(function(t){return t.status==='pending';});
   var urgent=pending.filter(function(t){return t.priority==='red';}).length;
-  document.getElementById('plan-summary').textContent=pending.length+' zadań do zrobienia · '+urgent+' pilnych';
+  var overdueCount=pending.filter(function(t){return t.overdue;}).length;
+  document.getElementById('plan-summary').textContent=pending.length+' zadań do zrobienia · '+urgent+' pilnych'+(overdueCount?' · '+overdueCount+' zaległych':'');
   var html=list.map(function(t){
     var done=t.status==='done',postponed=t.status==='postponed';
     var opacity=done||postponed?'.5':'1';
-    var statusTag=done?'<span style="font-size:9px;color:#22c55e;font-weight:700;">✅ WYKONANE</span>':postponed?'<span style="font-size:9px;color:#f59e0b;font-weight:700;">⏭️ PRZEŁOŻONE</span>':'';
+    var statusTag=done?'<span style="font-size:9px;color:#22c55e;font-weight:700;">✅ WYKONANE</span>':postponed?'<span style="font-size:9px;color:#f59e0b;font-weight:700;">⏭️ PRZEŁOŻONE</span>':(t.overdue?'<span style="font-size:9px;color:#ef4444;font-weight:700;background:rgba(239,68,68,.12);padding:2px 6px;border-radius:6px;">⏰ ZALEGŁE</span>':'');
     return '<div class="card" style="padding:12px 13px;opacity:'+opacity+';border-left:3px solid '+planPrioColor[t.priority]+';">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
         +'<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:15px;">'+t.icon+'</span><div><div style="font-size:13px;font-weight:800;">'+t.client+'</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">'+planPrioLabel[t.priority]+' · 🕐 '+t.time+'</div></div></div>'
