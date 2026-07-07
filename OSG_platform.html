@@ -1353,7 +1353,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.13.1';
+var APP_VERSION = 'v0.14.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1928,6 +1928,35 @@ function slugifyForFilename(str){
    Świadomie NIE pokazujemy: ceny zakupu, marży, ostrzeżeń, statusu wewnętrznego.
    Dane zawsze pobierane świeżo z Supabase (nie z niezapisanego formularza) —
    PDF ma pokazywać to co faktycznie jest w bazie, nie to co ktoś akurat wpisuje. */
+/* ====================== PDF OFERTY — styl "Wycena" (ciemny granat + pomarańcz), zgodny z marką OSG ====================== */
+var PDF_C_BG=[15,25,35];        // #0f1923 tło strony
+var PDF_C_PANEL=[22,33,48];     // #162130 panele/karty
+var PDF_C_PANEL2=[26,39,56];    // pasy naprzemienne w tabeli
+var PDF_C_ORANGE=[232,96,28];   // #e8601c akcent marki
+var PDF_C_WHITE=[255,255,255];
+var PDF_C_MUTED=[138,155,176];  // #8a9bb0
+var PDF_C_HEAD=[9,16,23];       // nagłówek tabeli, prawie czarny granat
+
+function pdfFillPageBg(doc){
+  doc.setFillColor(PDF_C_BG[0],PDF_C_BG[1],PDF_C_BG[2]);
+  doc.rect(0,0,210,297,'F');
+}
+function pdfPanel(doc,x,y,w,h){
+  doc.setFillColor(PDF_C_PANEL[0],PDF_C_PANEL[1],PDF_C_PANEL[2]);
+  doc.roundedRect(x,y,w,h,2,2,'F');
+}
+function pdfLabelValue(doc,label,value,x,y,valueSize){
+  doc.setFont('DejaVuSans','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+  doc.text(label.toUpperCase(),x,y);
+  doc.setFont('DejaVuSans','bold');
+  doc.setFontSize(valueSize||10);
+  doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+  doc.text(String(value),x,y+5.5);
+  doc.setFont('DejaVuSans','normal');
+}
+
 async function generateOfferPdf(){
   if(!editingOfferId){alert('Najpierw zapisz ofertę — PDF generujemy z zapisanych danych w bazie, nie z niezapisanego formularza.');return;}
   if(!sbEnabled){alert('Supabase niepodłączony — nie można wygenerować PDF.');return;}
@@ -1963,69 +1992,186 @@ async function generateOfferPdf(){
     doc.addFont('DejaVuSans-Bold.ttf', 'DejaVuSans', 'bold');
     doc.setFont('DejaVuSans','normal');
 
-    try{ doc.addImage(LOGO_LOCKUP_SRC,'PNG',15,12,45,15.5); }catch(e){ console.warn('Logo nie zostało dodane do PDF:',e); }
+    pdfFillPageBg(doc);
+    // Wypełniamy tło na każdej kolejnej stronie, gdyby tabela się nie zmieściła na jednej
+    doc.internal.events.subscribe('addPage', function(){ pdfFillPageBg(doc); });
 
-    doc.setFontSize(16);
-    doc.setTextColor(20,20,20);
-    doc.text('OFERTA HANDLOWA', 195, 20, {align:'right'});
+    // --- Nagłówek: logo + kontakt ---
+    try{ doc.addImage(LOGO_LOCKUP_SRC,'PNG',15,12,42,14.5); }catch(e){ console.warn('Logo nie zostało dodane do PDF:',e); }
 
-    doc.setFontSize(10);
-    doc.setTextColor(70,70,70);
-    doc.text('Numer: '+numDisplay, 195, 27, {align:'right'});
-    doc.text('Data wystawienia: '+createdDate.toLocaleDateString('pl-PL'), 195, 33, {align:'right'});
-
-    doc.setDrawColor(210,210,210);
-    doc.line(15, 38, 195, 38);
-
+    doc.setFont('DejaVuSans','bold');
     doc.setFontSize(11);
-    doc.setTextColor(20,20,20);
-    doc.text('Klient: '+clientName, 15, 47);
-    if(buildingName){
-      doc.setFontSize(10);
-      doc.setTextColor(90,90,90);
-      doc.text('Budowa: '+buildingName+(buildingAddr?(' — '+buildingAddr):''), 15, 53);
-    }
+    doc.setTextColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.text('+48 887 507 056', 195, 16, {align:'right'});
+    doc.setFont('DejaVuSans','normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.text('biuro@osglogistics.pl', 195, 21, {align:'right'});
+    doc.text('www.osglogistics.pl', 195, 26, {align:'right'});
 
-    var tableBody=items.map(function(it){
+    doc.setDrawColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.setLineWidth(0.8);
+    doc.line(15, 32, 195, 32);
+
+    // --- Tytuł + badge poufności ---
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(21);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('OFERTA / ', 15, 46);
+    var wOferta=doc.getTextWidth('OFERTA / ');
+    doc.setTextColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.text('WYCENA', 15+wOferta, 46);
+
+    doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.roundedRect(158,39,37,7.5,1.5,1.5,'F');
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('DOKUMENT POUFNY', 176.5, 44, {align:'center'});
+
+    // --- Pasek informacyjny: numer / data / ważność / obszar ---
+    pdfPanel(doc,15,53,180,20);
+    pdfLabelValue(doc,'Nr oferty', numDisplay, 19, 61);
+    pdfLabelValue(doc,'Data wystawienia', createdDate.toLocaleDateString('pl-PL'), 64, 61);
+    pdfLabelValue(doc,'Ważność oferty', validDays+' dni', 109, 61);
+    pdfLabelValue(doc,'Obszar dostawy', 'Warszawa / Mazowsze', 154, 61);
+
+    // --- Klient / budowa ---
+    pdfPanel(doc,15,77,180,18);
+    pdfLabelValue(doc,'Klient / firma', clientName, 19, 85, 10);
+    var buildingLine=buildingName?(buildingName+(buildingAddr?(' — '+buildingAddr):'')):'—';
+    pdfLabelValue(doc,'Budowa', buildingLine, 109, 85, 10);
+
+    // --- Sekcja pozycji ---
+    doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.rect(15,101,1.6,6,'F');
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('ZESTAWIENIE POZYCJI', 19, 106);
+
+    var tableBody=items.map(function(it,idx){
       var lineNet=Number(it.qty||0)*Number(it.sell_price||0);
       var nameCell=it.name+(it.description?('\n'+it.description):'');
-      return [nameCell, String(it.qty), it.unit||'', Number(it.sell_price||0).toFixed(2)+' zł', lineNet.toFixed(2)+' zł'];
+      return [String(idx+1), nameCell, it.unit||'', String(it.qty), Number(it.sell_price||0).toFixed(2)+' zł', lineNet.toFixed(2)+' zł'];
     });
 
     doc.autoTable({
-      startY:(buildingName?60:56),
-      head:[['Produkt / opis','Ilość','J.m.','Cena netto','Wartość netto']],
+      startY:111,
+      margin:{left:15,right:15},
+      head:[['Lp','Opis produktu / usługi','J.m.','Ilość','Cena jedn. netto','Wartość netto']],
       body:tableBody,
-      styles:{font:'DejaVuSans',fontSize:9,cellPadding:3},
-      headStyles:{fillColor:[15,25,35],textColor:255},
-      columnStyles:{1:{halign:'right',cellWidth:18},2:{halign:'right',cellWidth:16},3:{halign:'right',cellWidth:28},4:{halign:'right',cellWidth:30}}
+      styles:{font:'DejaVuSans',fontSize:8.5,cellPadding:3,textColor:PDF_C_WHITE,fillColor:PDF_C_PANEL,lineColor:PDF_C_BG,lineWidth:0.3},
+      headStyles:{fillColor:PDF_C_HEAD,textColor:PDF_C_WHITE,font:'DejaVuSans',fontStyle:'bold'},
+      alternateRowStyles:{fillColor:PDF_C_PANEL2},
+      columnStyles:{
+        0:{halign:'center',cellWidth:9,textColor:PDF_C_MUTED},
+        2:{halign:'center',cellWidth:14},
+        3:{halign:'center',cellWidth:14},
+        4:{halign:'right',cellWidth:28,textColor:PDF_C_ORANGE},
+        5:{halign:'right',cellWidth:30,textColor:PDF_C_ORANGE,fontStyle:'bold'}
+      },
+      didDrawPage:function(){ /* tło już wypełnione przez subskrypcję addPage; nic dodatkowego */ }
     });
 
-    var finalY=doc.lastAutoTable.finalY+8;
-    doc.setFontSize(10);
-    doc.setTextColor(70,70,70);
-    doc.text('Suma netto: '+netTotal.toFixed(2)+' zł', 195, finalY, {align:'right'});
-    doc.text('VAT ('+vatRate+'%): '+vatAmount.toFixed(2)+' zł', 195, finalY+6, {align:'right'});
-    doc.setFontSize(12);
-    doc.setTextColor(20,20,20);
-    doc.setFont('DejaVuSans','bold');
-    doc.text('Suma brutto: '+grossTotal.toFixed(2)+' zł', 195, finalY+14, {align:'right'});
+    var y=doc.lastAutoTable.finalY+8;
+    function ensureSpace(needed){
+      if(y+needed>293){ doc.addPage(); y=20; }
+    }
+
+    // --- Podsumowanie ---
+    ensureSpace(35);
     doc.setFont('DejaVuSans','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.text('Razem netto', 150, y);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text(netTotal.toFixed(2)+' zł', 195, y, {align:'right'});
+    y+=6;
+    doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.text('VAT ('+vatRate+'%)', 150, y);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text(vatAmount.toFixed(2)+' zł', 195, y, {align:'right'});
+    y+=8;
 
-    var infoY=finalY+28;
-    doc.setFontSize(10);
-    doc.setTextColor(20,20,20);
-    doc.text('Termin dostawy: '+(o.delivery_terms||'do uzgodnienia'), 15, infoY);
-    doc.text('Oferta ważna do: '+validUntil.toLocaleDateString('pl-PL')+' ('+validDays+' dni od wystawienia)', 15, infoY+6);
+    doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.rect(15,y-6,180,12,'F');
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(12);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('RAZEM BRUTTO', 19, y+1.5);
+    doc.text(grossTotal.toFixed(2)+' zł', 191, y+1.5, {align:'right'});
+    y+=14;
 
-    var contactY=infoY+20;
-    doc.setDrawColor(210,210,210);
-    doc.line(15, contactY-6, 195, contactY-6);
-    doc.setFontSize(9);
-    doc.setTextColor(110,110,110);
-    doc.text('OSG Logistics (NWI sp. z o.o.)  ·  NIP 118-209-53-59', 15, contactY);
-    doc.text('ul. Władysława Pytlasińskiego 16/13, 00-777 Warszawa', 15, contactY+5);
-    doc.text('tel. +48 887 507 056  ·  biuro@osglogistics.pl  ·  www.osglogistics.pl', 15, contactY+10);
+    // --- Warunki dostawy i płatności ---
+    ensureSpace(55);
+    doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.rect(15,y-5,1.6,6,'F');
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('WARUNKI DOSTAWY I PŁATNOŚCI', 19, y);
+    y+=7;
+
+    var boxW=86, boxH=17, gapX=8;
+    function condBox(x,yy,label,main,sub){
+      pdfPanel(doc,x,yy,boxW,boxH);
+      doc.setFont('DejaVuSans','normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+      doc.text(label.toUpperCase(), x+4, yy+5.5);
+      doc.setFont('DejaVuSans','bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+      doc.text(main, x+4, yy+10.5);
+      doc.setFont('DejaVuSans','normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+      doc.text(sub, x+4, yy+14.5, {maxWidth:boxW-8});
+    }
+    condBox(15, y, 'Termin dostawy', (o.delivery_terms||'Następny dzień roboczy'), 'Zamówienie do godz. 16:00');
+    condBox(15+boxW+gapX, y, 'Dostawa ekspresowa', 'W ciągu 1–3 godzin', 'Cały dzień do 18:00 — Warszawa i Mazowsze');
+    y+=boxH+4;
+    condBox(15, y, 'Forma płatności', 'Przy dostawie', 'Gotówka lub przelew — faktura VAT do każdego zamówienia');
+    condBox(15+boxW+gapX, y, 'Dostawa', 'Liczona indywidualnie', 'Zależnie od lokalizacji i wielkości zamówienia');
+    y+=boxH+8;
+
+    // --- Uwagi / notatki (pusty box, zgodnie z wzorcem) ---
+    ensureSpace(28);
+    doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
+    doc.rect(15,y-5,1.6,6,'F');
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('UWAGI / NOTATKI', 19, y);
+    y+=6;
+    pdfPanel(doc,15,y,180,16);
+    y+=18;
+
+    // --- Nota prawna ---
+    ensureSpace(16);
+    doc.setFont('DejaVuSans','normal');
+    doc.setFontSize(7.2);
+    doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.text('Oferta przygotowana indywidualnie. Ceny obowiązują przez '+validDays+' dni od daty wystawienia (do '+validUntil.toLocaleDateString('pl-PL')+'). '+
+      'OSG Logistics zastrzega sobie prawo do weryfikacji wyceny po potwierdzeniu zamówienia.', 15, y, {maxWidth:180});
+    y+=7;
+
+    // --- Stopka ---
+    ensureSpace(14);
+    doc.setDrawColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.setLineWidth(0.2);
+    doc.line(15,y,195,y);
+    y+=6;
+    doc.setFont('DejaVuSans','bold');
+    doc.setFontSize(8);
+    doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
+    doc.text('OSG Logistics', 15, y);
+    doc.setFont('DejaVuSans','normal');
+    doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
+    doc.setFontSize(7.5);
+    doc.text('KOMPLEKSOWA OBSŁUGA BUDÓW', 105, y, {align:'center'});
+    doc.text('© '+createdDate.getFullYear()+' OSG Logistics', 195, y, {align:'right'});
 
     var fileNumSlug=numDisplay.replace(/\//g,'-');
     var fileName='OSG_Oferta_'+fileNumSlug+'_'+slugifyForFilename(clientName)+'.pdf';
