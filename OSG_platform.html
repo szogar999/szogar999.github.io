@@ -1355,7 +1355,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.15.0';
+var APP_VERSION = 'v0.16.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1811,9 +1811,10 @@ function offerItemRowHtml(item){
   var catOptions=CATEGORY_LIST.map(function(c){return '<option value="'+c+'"'+(c===item.category?' selected':'')+'>'+c+'</option>';}).join('');
   return '<div class="card oe-item-row" data-rid="'+item._rid+'" style="padding:11px;display:flex;flex-direction:column;gap:7px;">'
     +'<div style="display:flex;gap:6px;">'
-    +'<input class="oe-i-name" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Produkt *" oninput="recalcOfferTotals()" style="flex:1;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'<input class="oe-i-name" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Produkt *" oninput="recalcOfferTotals();handleProductNameInput(this)" onblur="hideProductSuggestSoon(this)" autocomplete="off" style="flex:1;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
     +'<button onclick="removeOfferItemRow(\''+item._rid+'\')" style="background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#ef4444;font-size:12px;padding:0 11px;cursor:pointer;">🗑️</button>'
     +'</div>'
+    +'<div class="oe-i-suggest-box" style="display:none;background:#0a1520;border:1px solid rgba(232,96,28,.3);border-radius:8px;overflow:hidden;"></div>'
     +'<input class="oe-i-desc" value="'+(item.description||'').replace(/"/g,'&quot;')+'" placeholder="Opis (opcjonalnie)" style="width:100%;padding:8px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#c7d0da;font-size:11px;outline:none;">'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:6px;">'
     +'<input class="oe-i-qty" type="number" step="any" value="'+(item.qty!=null?item.qty:1)+'" placeholder="Ilość" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
@@ -1828,6 +1829,63 @@ function offerItemRowHtml(item){
     +'</div>'
     +'<div class="oe-i-margin" style="font-size:11px;color:#8a9ab0;"></div>'
     +'</div>';
+}
+/* Podpowiedzi produktu z historii TEGO klienta — świadomie nie globalnie, bo różni klienci
+   mają różne ceny (ustalone przez Oskara). Brak dopasowania = appka milczy, nie zgaduje. */
+var productSuggestTimer=null;
+function handleProductNameInput(inputEl){
+  var row=inputEl.closest('.oe-item-row');
+  var box=row?row.querySelector('.oe-i-suggest-box'):null;
+  if(!box)return;
+  var term=inputEl.value.trim();
+  clearTimeout(productSuggestTimer);
+  var clientId=(document.getElementById('oe-client')||{value:''}).value;
+  if(!clientId||term.length<2){ box.style.display='none'; box.innerHTML=''; return; }
+  productSuggestTimer=setTimeout(function(){ fetchProductSuggestions(clientId,term,row,box); },280);
+}
+async function fetchProductSuggestions(clientId,term,row,box){
+  if(!sbEnabled)return;
+  var res=await sb.from('offer_items')
+    .select('name,description,unit,category,buy_price,sell_price,created_at,offers!inner(client_id)')
+    .eq('offers.client_id',clientId)
+    .ilike('name','%'+term+'%')
+    .order('created_at',{ascending:false})
+    .limit(20);
+  if(res.error||!res.data||res.data.length===0){ box.style.display='none'; box.innerHTML=''; return; }
+  var seen={},items=[];
+  res.data.forEach(function(r){
+    var key=(r.name||'').toLowerCase();
+    if(!seen[key]){ seen[key]=true; items.push(r); }
+  });
+  items=items.slice(0,5);
+  box.innerHTML=items.map(function(r,idx){
+    return '<div class="oe-i-suggest-item" data-idx="'+idx+'" style="padding:8px 10px;'+(idx<items.length-1?'border-bottom:1px solid rgba(255,255,255,.06);':'')+'cursor:pointer;">'
+      +'<div style="font-size:12px;font-weight:700;color:#fff;">'+r.name+'</div>'
+      +'<div style="font-size:10px;color:#8a9ab0;">'+(r.unit||'')+' · '+(r.category||'')+' · u tego klienta: '+Number(r.sell_price||0).toFixed(2)+' zł</div>'
+      +'</div>';
+  }).join('');
+  box.style.display='block';
+  Array.prototype.forEach.call(box.querySelectorAll('.oe-i-suggest-item'),function(el){
+    el.onclick=function(){
+      applyProductSuggestion(row,items[parseInt(el.getAttribute('data-idx'),10)]);
+      box.style.display='none'; box.innerHTML='';
+    };
+  });
+}
+function applyProductSuggestion(row,it){
+  row.querySelector('.oe-i-name').value=it.name||'';
+  row.querySelector('.oe-i-desc').value=it.description||'';
+  row.querySelector('.oe-i-unit').value=it.unit||'szt';
+  row.querySelector('.oe-i-cat').value=it.category||CATEGORY_LIST[0];
+  row.querySelector('.oe-i-buy').value=it.buy_price!=null?it.buy_price:0;
+  row.querySelector('.oe-i-sell').value=it.sell_price!=null?it.sell_price:0;
+  recalcOfferTotals();
+}
+function hideProductSuggestSoon(inputEl){
+  var row=inputEl.closest('.oe-item-row');
+  var box=row?row.querySelector('.oe-i-suggest-box'):null;
+  if(!box)return;
+  setTimeout(function(){ box.style.display='none'; },180);
 }
 function addOfferItemRow(item){
   document.getElementById('oe-items').insertAdjacentHTML('beforeend',offerItemRowHtml(item));
