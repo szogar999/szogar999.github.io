@@ -1443,7 +1443,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.21.0';
+var APP_VERSION = 'v0.22.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2553,6 +2553,7 @@ function openNotificationCenter(){
   go('s-notifications');
   markAllNotificationsRead();
 }
+var NOTIF_CHANNEL_LABEL={in_app:'📱 In-app',email:'✉️ Email',sms:'💬 SMS (wkrótce)'};
 function renderNotificationList(){
   var el=document.getElementById('notif-list');
   if(!el)return;
@@ -2561,9 +2562,18 @@ function renderNotificationList(){
     return;
   }
   el.innerHTML=notificationCache.map(function(n){
+    var channelLabel=NOTIF_CHANNEL_LABEL[n.channel]||n.channel||'📱 In-app';
+    var sentLabel=n.sent_at
+      ? ('✅ Wysłane '+new Date(n.sent_at).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))
+      : '⏳ Oczekuje';
+    var sentColor=n.sent_at?'#22c55e':'#f59e0b';
     return '<div class="card" style="padding:12px 13px;'+(n.read_at?'opacity:.55;':'')+'">'
       +'<div style="font-size:13px;font-weight:700;">'+n.title+'</div>'
       +'<div style="font-size:11px;color:#8a9ab0;margin-top:3px;">'+(n.body||'')+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:7px;">'
+        +'<span style="font-size:9px;font-weight:700;color:#8a9ab0;background:rgba(255,255,255,.06);padding:3px 8px;border-radius:8px;">'+channelLabel+'</span>'
+        +'<span style="font-size:9px;font-weight:700;color:'+sentColor+';background:rgba(255,255,255,.06);padding:3px 8px;border-radius:8px;">'+sentLabel+'</span>'
+      +'</div>'
       +'</div>';
   }).join('');
 }
