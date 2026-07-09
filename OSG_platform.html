@@ -967,21 +967,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 
   <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🗺️ Mapa budów</div>
-    <div class="card" style="height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#8a9ab0;">
-      <span style="font-size:26px;">🗺️</span>
-      <span style="font-size:12px;">Placeholder — integracja z Google My Maps</span>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">📋 Aktywność</div>
+    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">📋 Aktywność (wszyscy klienci)</div>
     <div class="card" id="cmd-activity">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak aktywności — moduł czeka na podłączenie danych.</div></div>
+      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
     </div>
   </div>
-
-  <button class="btn ghost" onclick="go('s-onboarding')">🎭 Zobacz wersję Showcase (DEMO)</button>
 </div>
 <div class="nav">
   <button class="nb on" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
@@ -1006,6 +996,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <div style="font-size:10px;color:#8a9ab0;">"Last sync" = moment ostatniego udanego pobrania danych z bazy przez tę przeglądarkę, nie ciągła synchronizacja w tle.</div>
   <button onclick="renderSystemStatus()" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">🔄 Odśwież</button>
+  <button class="btn ghost" onclick="go('s-onboarding')">🎭 Zobacz wersję Showcase (DEMO)</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
 </div>
@@ -1355,7 +1346,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.16.0';
+var APP_VERSION = 'v0.17.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1491,8 +1482,8 @@ function renderClients(){
       +'<span style="color:#e8601c;font-size:14px;">→</span></div>'
       +(c.nip?'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">NIP: '+c.nip+'</div>':'')
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:#8a9ab0;">'
-        +(c.phone?'<span>📞 '+c.phone+'</span>':'')
-        +(c.email?'<span>✉️ '+c.email+'</span>':'')
+        +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">📞 '+c.phone+'</a>':'')
+        +(c.email?'<a href="mailto:'+c.email+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">✉️ '+c.email+'</a>':'')
       +'</div>'
       +(c.notes?'<div style="font-size:11px;color:#c7d0da;margin-top:6px;line-height:1.4;">'+c.notes+'</div>':'')
       +(canEdit?('<div style="display:flex;gap:6px;margin-top:9px;">'
@@ -1544,11 +1535,12 @@ async function saveClient(){
     notes:document.getElementById('ca-notes').value.trim()||null
   };
   var res;
+  var wasEditing=editingClientId;
   if(editingClientId){
     res=await sb.from('clients').update(payload).eq('id',editingClientId);
   }else{
     payload.created_by=currentUid||null;
-    res=await sb.from('clients').insert(payload);
+    res=await sb.from('clients').insert(payload).select().maybeSingle();
   }
   btn.disabled=false;
   if(res.error){
@@ -1559,7 +1551,15 @@ async function saveClient(){
   }
   resetClientForm();
   loadClients();
-  go('s-crm');
+  // Wracamy tam, gdzie realnie chcesz być dalej pracować — nie do listy,
+  // którą i tak trzeba by przescrollować żeby sprawdzić czy zapis się udał.
+  if(wasEditing){
+    openClient(wasEditing);
+  }else if(res.data&&res.data.id){
+    openClient(res.data.id);
+  }else{
+    go('s-crm');
+  }
 }
 
 /* ====================== KARTA KLIENTA — budowy, kontakty, aktywności ====================== */
@@ -1585,8 +1585,8 @@ async function openClient(id){
   document.getElementById('cd-info').innerHTML=
     (c.nip?'<div style="font-size:11px;color:#8a9ab0;">NIP: '+c.nip+'</div>':'')
     +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:12px;color:#c7d0da;">'
-      +(c.phone?'<span>📞 '+c.phone+'</span>':'')
-      +(c.email?'<span>✉️ '+c.email+'</span>':'')
+      +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">📞 '+c.phone+'</a>':'')
+      +(c.email?'<a href="mailto:'+c.email+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">✉️ '+c.email+'</a>':'')
     +'</div>'
     +(c.notes?'<div style="font-size:12px;color:#8a9ab0;margin-top:8px;line-height:1.4;">'+c.notes+'</div>':'');
   loadBuildings(id);
@@ -1674,8 +1674,8 @@ async function loadContacts(clientId){
     return '<div class="card" style="padding:10px 12px;">'
       +'<div style="font-size:13px;font-weight:700;">'+(c.name||'—')+(c.role_title?' <span style="font-weight:400;color:#8a9ab0;font-size:11px;">— '+c.role_title+'</span>':'')+'</div>'
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:3px;font-size:11px;color:#8a9ab0;">'
-        +(c.phone?'<span>📞 '+c.phone+'</span>':'')
-        +(c.email?'<span>✉️ '+c.email+'</span>':'')
+        +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">📞 '+c.phone+'</a>':'')
+        +(c.email?'<a href="mailto:'+c.email+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">✉️ '+c.email+'</a>':'')
       +'</div>'
       +(canEdit?('<div style="display:flex;gap:6px;margin-top:8px;">'
         +'<button onclick="editContact(\''+c.id+'\',\''+encodeURIComponent(c.name||'')+'\',\''+encodeURIComponent(c.role_title||'')+'\',\''+encodeURIComponent(c.phone||'')+'\',\''+encodeURIComponent(c.email||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
@@ -1825,7 +1825,7 @@ function offerItemRowHtml(item){
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
     +'<input class="oe-i-buy" type="number" step="any" value="'+(item.buy_price!=null?item.buy_price:0)+'" placeholder="Cena zakupu" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
-    +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null?item.sell_price:0)+'" placeholder="Cena sprzedaży" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null?item.sell_price:0)+'" placeholder="Cena sprzedaży" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
     +'</div>'
     +'<div class="oe-i-margin" style="font-size:11px;color:#8a9ab0;"></div>'
     +'</div>';
@@ -1886,6 +1886,16 @@ function hideProductSuggestSoon(inputEl){
   var box=row?row.querySelector('.oe-i-suggest-box'):null;
   if(!box)return;
   setTimeout(function(){ box.style.display='none'; },180);
+}
+function addOfferItemRowFromEnter(sellInputEl){
+  addOfferItemRow();
+  var itemsEl=document.getElementById('oe-items');
+  var rows=itemsEl.querySelectorAll('.oe-item-row');
+  var lastRow=rows[rows.length-1];
+  if(lastRow){
+    var nameInput=lastRow.querySelector('.oe-i-name');
+    if(nameInput)nameInput.focus();
+  }
 }
 function addOfferItemRow(item){
   document.getElementById('oe-items').insertAdjacentHTML('beforeend',offerItemRowHtml(item));
@@ -2038,6 +2048,21 @@ function pdfLabelValue(doc,label,value,x,y,valueSize){
   doc.setFont('DejaVuSans','normal');
 }
 
+async function loadCmdActivity(){
+  var el=document.getElementById('cmd-activity');
+  if(!el)return;
+  if(!sbEnabled){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Supabase niepodłączony.</div></div>';return;}
+  var res=await sb.from('activities').select('*, clients(name)').order('created_at',{ascending:false}).limit(8);
+  if(res.error){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd: '+res.error.message+'</div></div>';return;}
+  var rows=res.data||[];
+  if(rows.length===0){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak aktywności — zacznij dodawać notatki i oferty w CRM.</div></div>';return;}
+  el.innerHTML=rows.map(function(r){
+    var when=r.created_at?new Date(r.created_at):null;
+    var whenStr=when?(when.toLocaleDateString('pl-PL')+' '+when.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})):'';
+    var clientName=(r.clients&&r.clients.name)||'—';
+    return '<div class="row"><div style="display:flex;align-items:flex-start;gap:9px;"><span style="font-size:15px;">'+(r.icon||'📌')+'</span><div><div style="font-size:12px;font-weight:700;">'+clientName+' · '+(r.type||'')+'</div><div style="font-size:11px;color:#c7d0da;margin-top:1px;">'+(r.description||'')+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+whenStr+'</div></div></div></div>';
+  }).join('');
+}
 async function generateOfferPdf(){
   if(!editingOfferId){alert('Najpierw zapisz ofertę — PDF generujemy z zapisanych danych w bazie, nie z niezapisanego formularza.');return;}
   if(!sbEnabled){alert('Supabase niepodłączony — nie można wygenerować PDF.');return;}
@@ -2045,10 +2070,13 @@ async function generateOfferPdf(){
   var origTxt=btn.textContent;
   btn.disabled=true; btn.textContent='Generowanie…';
   try{
-    var res=await sb.from('offers').select('*, clients(name), buildings(name,address)').eq('id',editingOfferId).maybeSingle();
+    var both=await Promise.all([
+      sb.from('offers').select('*, clients(name), buildings(name,address)').eq('id',editingOfferId).maybeSingle(),
+      sb.from('offer_items').select('*').eq('offer_id',editingOfferId).order('created_at',{ascending:true})
+    ]);
+    var res=both[0], itemsRes=both[1];
     if(res.error||!res.data) throw new Error(res.error?res.error.message:'Nie znaleziono oferty w bazie.');
     var o=res.data;
-    var itemsRes=await sb.from('offer_items').select('*').eq('offer_id',editingOfferId).order('created_at',{ascending:true});
     if(itemsRes.error) throw new Error(itemsRes.error.message);
     var items=itemsRes.data||[];
     if(items.length===0) throw new Error('Ta oferta nie ma żadnych zapisanych pozycji.');
@@ -2305,8 +2333,9 @@ async function openOffer(id){
   document.getElementById('oe-delivery').value=o.delivery_terms||'';
   document.getElementById('oe-valid-days').value=(o.valid_days!=null?String(o.valid_days):'7');
   document.getElementById('oe-title').textContent='Edycja oferty — '+offerNumber(o);
+  var itemsPromise=sb.from('offer_items').select('*').eq('offer_id',id).order('created_at',{ascending:true});
   await loadClientsForOfferForm(o.client_id,o.building_id);
-  var itemsRes=await sb.from('offer_items').select('*').eq('offer_id',id).order('created_at',{ascending:true});
+  var itemsRes=await itemsPromise;
   document.getElementById('oe-items').innerHTML='';
   var rows=(itemsRes.data||[]);
   if(rows.length===0) addOfferItemRow();
@@ -2374,11 +2403,16 @@ async function saveOffer(){
       'Status oferty: '+(OFFER_STATUS_LABEL[previousOfferStatus]||previousOfferStatus)+' → '+(OFFER_STATUS_LABEL[status]||status)+'.');
   }
 
-  editingOfferId=null;
-  previousOfferStatus=null;
-  go('s-offers');
+  var newOfferId=offerId;
+  previousOfferStatus=status;
+  editingOfferId=newOfferId;
+  // Zostajemy na tym ekranie — najczęstszy następny krok to "Generuj PDF",
+  // więc po co odsyłać do listy i każe wracać drugi raz.
+  document.getElementById('oe-title').textContent='Edycja oferty — zapisano ✓';
+  var pdfBtn=document.getElementById('oe-pdf-btn'); if(pdfBtn)pdfBtn.style.display='block';
   loadOffers();
   loadCommandStats();
+  loadClientOffers(clientId);
 }
 function offersFilter(status){
   offersActiveFilter=status;
@@ -2453,17 +2487,24 @@ async function loadClientOffers(clientId){
 /* ====================== COMMAND — statystyki realne: klienci, oferty, follow-up ====================== */
 async function loadCommandStats(){
   if(!sbEnabled)return;
-  await loadCategoryTargets();
-  var qClients=await sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null);
+  // Cztery zapytania poniżej są od siebie niezależne — nie ma powodu czekać na jedno,
+  // żeby zacząć następne. Promise.all realnie skraca czas ładowania Command.
+  var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
+  var results=await Promise.all([
+    loadCategoryTargets(),
+    sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null),
+    sb.from('offers').select('id',{count:'exact',head:true}).is('deleted_at',null),
+    sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true}),
+    loadCmdActivity()
+  ]);
+  var qClients=results[1], qOffers=results[2], qFollow=results[3];
+
   var elClients=document.getElementById('cmd-clients');
   if(elClients&&!qClients.error) elClients.textContent=qClients.count!=null?qClients.count:'0';
 
-  var qOffers=await sb.from('offers').select('id',{count:'exact',head:true}).is('deleted_at',null);
   var elOffers=document.getElementById('cmd-offers');
   if(elOffers&&!qOffers.error) elOffers.textContent=qOffers.count!=null?qOffers.count:'0';
 
-  var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
-  var qFollow=await sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true});
   var fEl=document.getElementById('cmd-followup-list');
   if(fEl){
     if(qFollow.error){
