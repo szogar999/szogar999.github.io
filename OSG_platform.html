@@ -936,6 +936,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button onclick="cmdStartDay()" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(232,96,28,.4);">▶️ Rozpocznij dzień</button>
 
   <div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧠 Dzisiaj AI uważa, że powinieneś zrobić przede wszystkim</div>
+    <div class="card" id="cmd-ai-top5" style="padding:0;overflow:hidden;border:1px solid rgba(168,85,247,.3);">
+      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Analizuję dane…</div></div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">⚠️ AI wykryło</div>
+    <div class="card" id="cmd-ai-alerts" style="padding:0;overflow:hidden;">
+      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Analizuję dane…</div></div>
+    </div>
+  </div>
+
+  <div>
     <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🎯 Dzisiaj musisz zrobić</div>
     <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:12px;">
 
@@ -1083,6 +1097,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <input id="cd-next-action" placeholder="np. Zadzwonić jutro, Wysłać ofertę, Czekam na decyzję…"
       onblur="saveNextAction(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}"
       style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(232,96,28,.3);color:#fff;font-size:14px;font-weight:700;padding:4px 0;outline:none;">
+  </div>
+
+  <div class="card" style="padding:13px;border:1px solid rgba(168,85,247,.35);background:rgba(168,85,247,.06);display:flex;justify-content:space-between;align-items:center;gap:10px;">
+    <div style="flex:1;">
+      <div style="font-size:9px;color:#a855f7;text-transform:uppercase;font-weight:700;margin-bottom:4px;">🧠 AI rekomenduje</div>
+      <div id="cd-ai-recommendation" style="font-size:13px;font-weight:700;">Analizuję…</div>
+    </div>
+    <div id="cd-ai-score" style="text-align:center;flex-shrink:0;">
+      <div id="cd-ai-score-icon" style="font-size:20px;">⏳</div>
+      <div id="cd-ai-score-num" style="font-size:10px;color:#8a9ab0;">—</div>
+    </div>
   </div>
 
   <div id="cd-assign-box" style="display:none;">
@@ -1443,7 +1468,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.22.0';
+var APP_VERSION = 'v0.23.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1744,6 +1769,36 @@ async function updateClientAssignment(userId){
   logActivity(currentClientId,'👤','Przypisanie','Przypisano do: '+(userName||'nikt (nieprzypisany)')+'.');
 }
 var currentClientRecord=null;
+var currentClientOffers=[];
+var currentClientDaysSinceContact=null;
+var currentClientTasks=[];
+function renderClientAiInsights(){
+  if(!currentClientRecord)return;
+  var recEl=document.getElementById('cd-ai-recommendation');
+  var scoreIconEl=document.getElementById('cd-ai-score-icon');
+  var scoreNumEl=document.getElementById('cd-ai-score-num');
+  if(!recEl)return;
+  var data={
+    pipelineStage:currentClientRecord.pipeline_stage||'Lead',
+    daysSinceContact:currentClientDaysSinceContact,
+    lastOffer:currentClientOffers.length?currentClientOffers[0]:null,
+    tasks:currentClientTasks
+  };
+  var rec=AiEngine.recommendForClient(data);
+  var score=AiEngine.scoreClient(data);
+  recEl.textContent=rec.icon+' '+rec.text;
+  if(scoreIconEl)scoreIconEl.textContent=score.icon;
+  if(scoreNumEl){scoreNumEl.textContent=score.score+'/100 · '+score.label;scoreNumEl.style.color=score.color;}
+}
+async function loadClientTasksForAi(clientName){
+  currentClientTasks=[];
+  if(!sbEnabled||!clientName)return;
+  var q=sb.from('tasks').select('status,priority,date,category,time').eq('client',clientName).eq('status','pending');
+  if(!isOwnerOrAdmin()) q=q.eq('assigned_to',currentUid);
+  var res=await q;
+  if(!res.error) currentClientTasks=res.data||[];
+  renderClientAiInsights();
+}
 function renderPipelinePills(activeStage){
   var box=document.getElementById('cd-pipeline-pills');
   if(!box)return;
@@ -1905,6 +1960,7 @@ async function openClient(id){
   loadContacts(id);
   loadClientOffers(id);
   loadClientActivities(id);
+  loadClientTasksForAi(c.name);
 }
 
 var editingBuildingId=null;
@@ -2048,12 +2104,15 @@ async function loadClientActivities(clientId){
   if(rows.length>0){
     var lastDate=new Date(rows[0].created_at);
     var days=Math.floor((new Date()-lastDate)/86400000);
+    currentClientDaysSinceContact=days;
     if(elLastContact)elLastContact.textContent=lastDate.toLocaleDateString('pl-PL');
     if(elDaysSince){elDaysSince.textContent=days+' dni';elDaysSince.style.color=contactColor(days);}
   }else{
+    currentClientDaysSinceContact=null;
     if(elLastContact)elLastContact.textContent='brak';
     if(elDaysSince)elDaysSince.textContent='—';
   }
+  renderClientAiInsights();
   if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak aktywności — dodaj pierwszą notatkę powyżej.</div>';return;}
   var canEdit=(currentRole==='owner'||currentRole==='admin');
   el.innerHTML='<div class="tl-wrap">'+rows.map(function(a){
@@ -2435,6 +2494,70 @@ async function checkAndCreateFollowupTasks(){
 }
 
 /* ====================== AUTOMATYZACJA — klienci bez kontaktu od dawna ====================== */
+/* ============================================================================
+   AI ENGINE (Sprint 0.23) — silnik oparty na regułach biznesowych, NIE na LLM.
+   Świadomie wydzielony jako osobny moduł z jasnym kontraktem wejście→wyjście:
+   każda funkcja bierze zwykły obiekt z danymi i zwraca prosty wynik.
+   Dzięki temu podmiana na prawdziwe AI (np. wywołanie modelu) w przyszłości
+   oznacza podmianę WNĘTRZA tych funkcji, bez ruszania miejsc, które je wołają.
+   ============================================================================ */
+var AI_STALE_ALERT_DAYS=21;   // próg dla "AI wykryło" — wyżej niż zwykłe 14 dni w widżecie CRM
+var AI_STUCK_STAGE_DAYS=7;    // ile dni w tym samym etapie lejka uznajemy za "utknął"
+var AI_OFFER_WAIT_ALERT=5;    // dni oczekiwania na ofertę, od których alarmujemy
+
+var AiEngine={
+  /* Jedna rekomendacja dla konkretnego klienta. Kolejność reguł = kolejność ważności,
+     pierwsza pasująca reguła wygrywa — nigdy nie zwracamy więcej niż jedną. */
+  recommendForClient:function(d){
+    var today=todayStr();
+    var tasks=d.tasks||[];
+    var hasUrgentOverdueTask=tasks.some(function(t){return t.status==='pending'&&t.priority==='red'&&t.date&&t.date<today;});
+    var hasMeetingToday=tasks.some(function(t){return t.category==='meeting'&&t.date===today&&t.status==='pending';});
+    var lastOffer=d.lastOffer||null;
+    var daysSinceOfferSent=(lastOffer&&lastOffer.sent_at)?Math.floor((new Date()-new Date(lastOffer.sent_at))/86400000):null;
+
+    if(hasUrgentOverdueTask)
+      return {icon:'⚠️',text:'Klient wymaga pilnego kontaktu — masz zaległe pilne zadanie.'};
+    if(hasMeetingToday)
+      return {icon:'📍',text:'Masz dziś spotkanie z tym klientem.'};
+    if(lastOffer&&lastOffer.status==='wysłana'&&daysSinceOfferSent!=null&&daysSinceOfferSent>=AI_OFFER_WAIT_ALERT)
+      return {icon:'📞',text:'Zadzwoń — oferta czeka na odpowiedź już '+daysSinceOfferSent+' dni.'};
+    if(d.pipelineStage==='Wycena'&&(!lastOffer||lastOffer.status==='draft'))
+      return {icon:'📄',text:'Przygotuj i wyślij ofertę — klient jest na etapie Wycena.'};
+    if(d.daysSinceContact!=null&&d.daysSinceContact>=14)
+      return {icon:'📞',text:'Zadzwoń do klienta — brak kontaktu od '+d.daysSinceContact+' dni.'};
+    if(lastOffer&&lastOffer.status==='wysłana')
+      return {icon:'⏳',text:'Czekaj na odpowiedź — oferta wysłana niedawno.'};
+    if(d.pipelineStage==='Wygrana')
+      return {icon:'🚚',text:'Sprawdź dostawę / realizację zamówienia.'};
+    if(d.pipelineStage==='Negocjacje')
+      return {icon:'📞',text:'Kontynuuj negocjacje — dopilnuj następnego kroku.'};
+    return {icon:'✅',text:'Brak pilnych działań — klient wygląda stabilnie.'};
+  },
+
+  /* Prosty scoring 0-100. Punkty odejmowane za sygnały zaniedbania. */
+  scoreClient:function(d){
+    var score=100;
+    if(d.daysSinceContact==null) score-=10;
+    else if(d.daysSinceContact>30) score-=40;
+    else if(d.daysSinceContact>14) score-=25;
+    else if(d.daysSinceContact>7) score-=10;
+
+    var lastOffer=d.lastOffer;
+    if(lastOffer&&lastOffer.status==='wysłana'&&lastOffer.sent_at){
+      var daysWaiting=Math.floor((new Date()-new Date(lastOffer.sent_at))/86400000);
+      if(daysWaiting>=AI_OFFER_WAIT_ALERT) score-=20;
+    }
+    var overdueCount=(d.tasks||[]).filter(function(t){return t.status==='pending'&&t.date&&t.date<todayStr();}).length;
+    score-=Math.min(overdueCount*15,30);
+    score=Math.max(0,Math.min(100,score));
+
+    var band= score>=70?{label:'Zdrowy klient',icon:'🟢',color:'#22c55e'}
+            : score>=40?{label:'Wymaga uwagi',icon:'🟡',color:'#f59e0b'}
+            : {label:'Zagrożony',icon:'🔴',color:'#ef4444'};
+    return {score:score,label:band.label,icon:band.icon,color:band.color};
+  }
+};
 function contactColor(days){
   if(days<=6)return '#22c55e';
   if(days<=13)return '#f59e0b';
@@ -2479,6 +2602,100 @@ function pipelineFilterCrm(stage){
   crmStageFilter=stage;
   loadClients();
   go('s-crm');
+}
+/* ====================== AI SYGNAŁY GLOBALNE (Command) ======================
+   Jedno obliczenie, dwa widoki: pełna lista "AI wykryło" i top 5 "AI uważa".
+   Wciąż silnik reguł, nie LLM — patrz komentarz przy AiEngine wyżej. */
+var aiSignalsCache=[];
+async function computeAiSignalsGlobal(){
+  if(!sbEnabled)return [];
+  var myIds=await getMyClientIds();
+  var dummyId='00000000-0000-0000-0000-000000000000';
+  var today=todayStr();
+  var offerCutoff=new Date(); offerCutoff.setDate(offerCutoff.getDate()-AI_OFFER_WAIT_ALERT);
+
+  var clientsQ=sb.from('clients').select('id,name,pipeline_stage,created_at').is('deleted_at',null);
+  if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
+
+  var offersQ=sb.from('offers').select('id,client_id,net_total,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',offerCutoff.toISOString()).is('deleted_at',null);
+  if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:[dummyId]);
+
+  var stageActQ=sb.from('activities').select('client_id,description,created_at').eq('type','Etap lejka').order('created_at',{ascending:false}).limit(500);
+
+  var meetingsQ=sb.from('tasks').select('client,time,date,category').eq('category','meeting').eq('date',today).eq('status','pending');
+  if(myIds!==null) meetingsQ=meetingsQ.eq('assigned_to',currentUid);
+
+  var touchQ=sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000);
+
+  var results=await Promise.all([clientsQ,offersQ,stageActQ,meetingsQ,touchQ]);
+  var clientsRes=results[0],offersRes=results[1],stageActRes=results[2],meetingsRes=results[3],touchRes=results[4];
+  var clients=clientsRes.data||[];
+  var now=new Date();
+  var signals=[];
+
+  var lastTouch={};
+  (touchRes.data||[]).forEach(function(a){ if(a.client_id&&!lastTouch[a.client_id])lastTouch[a.client_id]=a.created_at; });
+  clients.forEach(function(c){
+    var last=lastTouch[c.id]||c.created_at;
+    var days=Math.floor((now-new Date(last))/86400000);
+    if(days>=AI_STALE_ALERT_DAYS){
+      signals.push({severity:days,icon:'🔕',text:'Klient '+c.name+' bez kontaktu od '+days+' dni.',clientId:c.id});
+    }
+  });
+
+  (offersRes.data||[]).forEach(function(o){
+    var days=Math.floor((now-new Date(o.sent_at))/86400000);
+    var clientName=(o.clients&&o.clients.name)||'—';
+    signals.push({severity:Number(o.net_total||0)/1000+days,icon:'📤',text:'Oferta dla '+clientName+' za '+Number(o.net_total||0).toFixed(0)+' zł czeka '+days+' dni.',clientId:o.client_id});
+  });
+
+  var stageChangeMap={};
+  (stageActRes.data||[]).forEach(function(a){
+    if(a.client_id&&!stageChangeMap[a.client_id]&&(a.description||'').indexOf('→ Wycena')>-1) stageChangeMap[a.client_id]=a.created_at;
+  });
+  clients.forEach(function(c){
+    if(c.pipeline_stage==='Wycena'){
+      var since=stageChangeMap[c.id]||c.created_at;
+      var days=Math.floor((now-new Date(since))/86400000);
+      if(days>=AI_STUCK_STAGE_DAYS){
+        signals.push({severity:days*2,icon:'⏸️',text:'Lead '+c.name+' utknął w etapie "Wycena" od '+days+' dni.',clientId:c.id});
+      }
+    }
+  });
+
+  var nowMin=now.getHours()*60+now.getMinutes();
+  (meetingsRes.data||[]).forEach(function(t){
+    if(!t.time)return;
+    var parts=t.time.split(':');
+    var tMin=parseInt(parts[0],10)*60+parseInt(parts[1]||'0',10);
+    var diff=tMin-nowMin;
+    if(diff>=0&&diff<=60){
+      signals.push({severity:200-diff,icon:'📍',text:'Spotkanie z '+t.client+' za '+diff+' min.'});
+    }
+  });
+
+  signals.sort(function(a,b){return b.severity-a.severity;});
+  return signals;
+}
+async function loadAiSignals(){
+  var signals=await computeAiSignalsGlobal();
+  aiSignalsCache=signals;
+  var alertsEl=document.getElementById('cmd-ai-alerts');
+  if(alertsEl){
+    alertsEl.innerHTML=signals.length===0
+      ? '<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak alarmów — wszystko wygląda spokojnie. 🎉</div></div>'
+      : signals.slice(0,8).map(function(s){
+          return '<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div>';
+        }).join('');
+  }
+  var top5El=document.getElementById('cmd-ai-top5');
+  if(top5El){
+    top5El.innerHTML=signals.length===0
+      ? '<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak pilnych priorytetów — dobra robota. 🎉</div></div>'
+      : signals.slice(0,5).map(function(s,idx){
+          return '<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:11px;font-weight:800;color:#a855f7;">'+(idx+1)+'.</span><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div></div>';
+        }).join('');
+  }
 }
 async function loadPipelineSummary(){
   var el=document.getElementById('cmd-pipeline-summary');
@@ -3063,6 +3280,7 @@ async function loadClientOffers(clientId){
   var res=await sb.from('offers').select('*').eq('client_id',clientId).is('deleted_at',null).order('created_at',{ascending:false});
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
+  currentClientOffers=rows;
   // CRM Intelligence — liczone z danych które i tak już tu ściągnęliśmy, zero dodatkowych zapytań
   var elLastOffer=document.getElementById('cd-intel-lastoffer');
   var elValue=document.getElementById('cd-intel-value');
@@ -3070,6 +3288,7 @@ async function loadClientOffers(clientId){
   if(elLastOffer)elLastOffer.textContent=rows.length?new Date(rows[0].created_at).toLocaleDateString('pl-PL'):'brak';
   if(elValue)elValue.textContent=rows.reduce(function(sum,o){return sum+Number(o.net_total||0);},0).toFixed(0)+' zł netto';
   if(elOrders)elOrders.textContent=rows.filter(function(o){return o.status==='zaakceptowana';}).length+' / '+rows.length+' ofert';
+  renderClientAiInsights();
   if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak ofert dla tego klienta.</div>';return;}
   el.innerHTML=rows.map(function(o){
     var dt=o.created_at?new Date(o.created_at).toLocaleDateString('pl-PL'):'';
@@ -3107,7 +3326,8 @@ async function loadCommandStats(){
     checkAndCreateFollowupTasks(),
     loadStaleClients(),
     loadPipelineSummary(),
-    loadDaySummary()
+    loadDaySummary(),
+    loadAiSignals()
   ]);
   var qClients=results[1], qOffers=results[2], qFollow=results[3];
   // checkAndCreateFollowupTasks() mogło właśnie dopisać nowe zadania do bazy —
