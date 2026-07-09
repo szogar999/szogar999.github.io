@@ -953,6 +953,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 
   <div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">📅 Mój dzień</div>
+    <div class="card" id="cmd-my-day" style="padding:0;overflow:hidden;">
+      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">📊 Wynik dnia</div>
+    <div class="card" id="cmd-day-summary" style="padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+      <div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div>
+    </div>
+  </div>
+
+  <div>
     <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧭 Lejek sprzedaży</div>
     <div class="card" id="cmd-pipeline-summary" style="padding:0;overflow:hidden;">
       <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
@@ -1049,6 +1063,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
 
   <div class="card" id="cd-info" style="padding:13px;">Ładowanie…</div>
+
+  <div class="card" style="padding:13px;border:1px solid rgba(232,96,28,.35);background:rgba(232,96,28,.06);">
+    <div style="font-size:9px;color:#e8601c;text-transform:uppercase;font-weight:700;margin-bottom:6px;">👉 Następny krok</div>
+    <input id="cd-next-action" placeholder="np. Zadzwonić jutro, Wysłać ofertę, Czekam na decyzję…"
+      onblur="saveNextAction(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}"
+      style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(232,96,28,.3);color:#fff;font-size:14px;font-weight:700;padding:4px 0;outline:none;">
+  </div>
 
   <div>
     <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Etap w lejku sprzedaży</div>
@@ -1354,6 +1375,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div id="followup-prompt" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#162130;border-top:2px solid #e8601c;padding:16px;z-index:500;box-shadow:0 -8px 30px rgba(0,0,0,.5);">
+  <div style="font-size:13px;font-weight:800;margin-bottom:4px;">🔔 Czy ustawić przypomnienie?</div>
+  <div id="followup-prompt-context" style="font-size:11px;color:#8a9ab0;margin-bottom:10px;"></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+    <button onclick="setFollowupReminder(1)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Jutro</button>
+    <button onclick="setFollowupReminder(3)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 3 dni</button>
+    <button onclick="setFollowupReminder(7)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za tydzień</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px;">
+    <input type="date" id="followup-custom-date" style="flex:1;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+    <button onclick="setFollowupReminderCustom()" style="background:#e8601c;border:none;border-radius:8px;padding:9px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Ustaw</button>
+  </div>
+  <button onclick="dismissFollowupPrompt()" style="width:100%;background:transparent;border:none;color:#8a9ab0;font-size:11px;padding:6px;cursor:pointer;">Nie teraz</button>
+</div>
 <button onclick="toggleAI()" id="ai-fab" style="position:fixed;bottom:76px;right:14px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:50px;border:none;display:flex;align-items:center;gap:6px;padding:10px 16px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;z-index:200;box-shadow:0 4px 18px rgba(232,96,28,.5);white-space:nowrap;">🤖 OSG AI</button>
 
 <div id="ai-panel" style="display:none;position:fixed;inset:0;z-index:300;background:#0f1923;flex-direction:column;">
@@ -1381,7 +1416,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.19.0';
+var APP_VERSION = 'v0.20.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1474,13 +1509,26 @@ async function loadClients(){
     return;
   }
   if(listEl)listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
-  var res=await sb.from('clients').select('*').order('created_at',{ascending:false});
+  var both=await Promise.all([
+    sb.from('clients').select('*').order('created_at',{ascending:false}),
+    sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000)
+  ]);
+  var res=both[0], activitiesRes=both[1];
   if(res.error){
     if(statusEl)statusEl.textContent='Błąd wczytywania: '+res.error.message;
     if(listEl)listEl.innerHTML='';
     return;
   }
-  crmClientsCache=res.data||[];
+  var lastTouch={};
+  (activitiesRes.data||[]).forEach(function(a){
+    if(a.client_id&&!lastTouch[a.client_id]) lastTouch[a.client_id]=a.created_at;
+  });
+  var now=new Date();
+  crmClientsCache=(res.data||[]).map(function(c){
+    var last=lastTouch[c.id]||c.created_at;
+    c._daysSinceContact=Math.floor((now-new Date(last))/86400000);
+    return c;
+  });
   lastSyncTime=new Date();
   renderClients();
 }
@@ -1522,10 +1570,13 @@ function renderClients(){
   listEl.innerHTML=filtered.map(function(c){
     var stage=c.pipeline_stage||'Lead';
     var stageColor=PIPELINE_COLORS[stage]||'#8a9ab0';
+    var contactC=contactColor(c._daysSinceContact!=null?c._daysSinceContact:0);
     return '<div class="card" style="padding:12px 13px;">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openClient(\''+c.id+'\')">'
       +'<div style="display:flex;align-items:center;gap:7px;"><div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div><span style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:8px;background:'+stageColor+'22;color:'+stageColor+';">'+stage+'</span></div>'
       +'<span style="color:#e8601c;font-size:14px;">→</span></div>'
+      +'<div style="display:flex;align-items:center;gap:5px;margin-top:4px;"><span style="width:7px;height:7px;border-radius:50%;background:'+contactC+';display:inline-block;"></span><span style="font-size:10px;color:#8a9ab0;">Kontakt '+(c._daysSinceContact!=null?c._daysSinceContact+' dni temu':'brak danych')+'</span></div>'
+      +(c.next_action?'<div style="font-size:11px;color:#e8601c;margin-top:4px;font-weight:700;">👉 '+c.next_action+'</div>':'')
       +(c.nip?'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">NIP: '+c.nip+'</div>':'')
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:#8a9ab0;">'
         +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">📞 '+c.phone+'</a>':'')
@@ -1628,6 +1679,52 @@ function renderPipelinePills(activeStage){
     return '<div onclick="updateClientStage(\''+s+'\')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;cursor:pointer;background:'+(active?color:'#162130')+';color:'+(active?'#fff':'#8a9ab0')+';border:1px solid '+(active?color:'rgba(255,255,255,.1)')+';">'+s+'</div>';
   }).join('');
 }
+var followupPromptClientId=null,followupPromptClientName='',followupPromptReason='';
+function askFollowupReminder(clientId,clientName,reason){
+  if(!clientId)return;
+  followupPromptClientId=clientId;
+  followupPromptClientName=clientName||'—';
+  followupPromptReason=reason||'Kontakt z klientem';
+  document.getElementById('followup-prompt-context').textContent=clientName+' — '+reason;
+  document.getElementById('followup-custom-date').value='';
+  document.getElementById('followup-prompt').style.display='block';
+}
+function dismissFollowupPrompt(){
+  document.getElementById('followup-prompt').style.display='none';
+}
+function setFollowupReminder(daysAhead){
+  var d=new Date(); d.setDate(d.getDate()+daysAhead);
+  createFollowupTask(dateToYMD(d));
+}
+function setFollowupReminderCustom(){
+  var v=document.getElementById('followup-custom-date').value;
+  if(!v){alert('Wybierz datę.');return;}
+  createFollowupTask(v);
+}
+function dateToYMD(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+async function createFollowupTask(dateStr){
+  if(!sbEnabled||!followupPromptClientId){dismissFollowupPrompt();return;}
+  var res=await sb.from('tasks').insert({
+    client:followupPromptClientName,category:'call',priority:'yellow',date:dateStr,time:'09:00',
+    reason:'Przypomnienie: '+followupPromptReason,status:'pending',assigned_to:currentUid||null
+  });
+  if(res.error){alert('Błąd tworzenia przypomnienia: '+res.error.message);dismissFollowupPrompt();return;}
+  logActivity(followupPromptClientId,'🔔','Przypomnienie','Ustawiono przypomnienie na '+dateStr+' — '+followupPromptReason+'.');
+  dismissFollowupPrompt();
+  if(currentClientId===followupPromptClientId)loadClientActivities(currentClientId);
+}
+async function saveNextAction(value){
+  if(!currentClientId||!sbEnabled)return;
+  value=(value||'').trim();
+  var oldValue=(currentClientRecord&&currentClientRecord.next_action)||'';
+  if(value===oldValue)return; // nic się nie zmieniło, nie zaśmiecamy historii
+  var res=await sb.from('clients').update({next_action:value||null}).eq('id',currentClientId);
+  if(res.error){alert('Błąd zapisu: '+res.error.message);return;}
+  if(currentClientRecord)currentClientRecord.next_action=value;
+  logActivity(currentClientId,'👉','Następny krok',value?('Ustawiono: '+value):'Wyczyszczono następny krok.');
+}
 async function updateClientStage(newStage){
   if(!currentClientId||!sbEnabled)return;
   var oldStage=(currentClientRecord&&currentClientRecord.pipeline_stage)||'Lead';
@@ -1646,6 +1743,7 @@ function quickActionCall(){
   if(!currentClientRecord||!currentClientRecord.phone){alert('Ten klient nie ma zapisanego numeru telefonu — dodaj go przez Edytuj.');return;}
   logActivity(currentClientId,'📞','Telefon','Zadzwoniono: '+currentClientRecord.phone+'.');
   window.location.href='tel:'+currentClientRecord.phone.replace(/[^0-9+]/g,'');
+  askFollowupReminder(currentClientId,currentClientRecord.name,'Telefon do klienta');
 }
 function quickActionEmail(){
   if(!currentClientRecord||!currentClientRecord.email){alert('Ten klient nie ma zapisanego adresu e-mail — dodaj go przez Edytuj.');return;}
@@ -1698,6 +1796,7 @@ async function openClient(id){
     +'</div>'
     +(c.notes?'<div style="font-size:12px;color:#8a9ab0;margin-top:8px;line-height:1.4;">'+c.notes+'</div>':'');
   renderPipelinePills(c.pipeline_stage||'Lead');
+  var naEl=document.getElementById('cd-next-action'); if(naEl)naEl.value=c.next_action||'';
   var ctDate=document.getElementById('ct-date'); if(ctDate)ctDate.value=todayStr();
   loadBuildings(id);
   loadContacts(id);
@@ -1847,7 +1946,7 @@ async function loadClientActivities(clientId){
     var lastDate=new Date(rows[0].created_at);
     var days=Math.floor((new Date()-lastDate)/86400000);
     if(elLastContact)elLastContact.textContent=lastDate.toLocaleDateString('pl-PL');
-    if(elDaysSince){elDaysSince.textContent=days+' dni';elDaysSince.style.color=days>=STALE_CLIENT_DAYS?'#ef4444':'#fff';}
+    if(elDaysSince){elDaysSince.textContent=days+' dni';elDaysSince.style.color=contactColor(days);}
   }else{
     if(elLastContact)elLastContact.textContent='brak';
     if(elDaysSince)elDaysSince.textContent='—';
@@ -1887,6 +1986,7 @@ async function addClientNote(){
   var txt=(input.value||'').trim();
   if(!txt||!currentClientId)return;
   if(!sbEnabled){alert('Supabase niepodłączony — notatka nie zostanie zapisana.');return;}
+  var wasNewNote=!editingNoteId;
   var res;
   if(editingNoteId){
     res=await sb.from('activities').update({description:txt}).eq('id',editingNoteId);
@@ -1901,6 +2001,7 @@ async function addClientNote(){
   input.placeholder='📝 Dodaj szybką notatkę…';
   editingNoteId=null;
   loadClientActivities(currentClientId);
+  if(wasNewNote&&currentClientRecord)askFollowupReminder(currentClientId,currentClientRecord.name,'Dodano notatkę');
 }
 
 /* ====================== OFERTY — realny moduł (Supabase) ======================
@@ -2225,6 +2326,11 @@ async function checkAndCreateFollowupTasks(){
 }
 
 /* ====================== AUTOMATYZACJA — klienci bez kontaktu od dawna ====================== */
+function contactColor(days){
+  if(days<=6)return '#22c55e';
+  if(days<=13)return '#f59e0b';
+  return '#ef4444';
+}
 var STALE_CLIENT_DAYS=14;
 async function loadStaleClients(){
   var el=document.getElementById('cmd-todo-stale');
@@ -2290,6 +2396,52 @@ async function loadPipelineSummary(){
       +'<div style="text-align:right;"><div style="font-size:12px;font-weight:800;">'+counts[s]+' '+(counts[s]===1?'klient':'klientów')+'</div><div style="font-size:10px;color:#8a9ab0;">'+values[s].toFixed(0)+' zł ofert</div></div>'
       +'</div>';
   }).join('');
+}
+function loadMyDay(){
+  var el=document.getElementById('cmd-my-day');
+  if(!el)return;
+  if(!sbEnabled){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Supabase niepodłączony.</div></div>';return;}
+  var todayTasks=planTasks.filter(function(t){return !t.overdue&&t.status==='pending';})
+    .sort(function(a,b){return (a.time||'').localeCompare(b.time||'');});
+  if(todayTasks.length===0){
+    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak zaplanowanych zadań na dziś. 🎉</div></div>';
+    return;
+  }
+  el.innerHTML=todayTasks.map(function(t){
+    return '<div class="row"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">'+(t.icon||'📌')+'</span><div><div style="font-size:12px;font-weight:700;">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">🕐 '+(t.time||'')+' · '+(t.reason||'')+'</div></div></div></div>';
+  }).join('');
+}
+async function loadDaySummary(){
+  var el=document.getElementById('cmd-day-summary');
+  if(!el||!sbEnabled)return;
+  var todayStart=todayStr()+'T00:00:00.000Z';
+  var tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  var tomorrowStart=dateToYMD(tomorrow)+'T00:00:00.000Z';
+  var results=await Promise.all([
+    sb.from('activities').select('type,description,created_at').gte('created_at',todayStart).lt('created_at',tomorrowStart).limit(500),
+    sb.from('offers').select('id',{count:'exact',head:true}).gte('sent_at',todayStart).lt('sent_at',tomorrowStart),
+    sb.from('clients').select('id',{count:'exact',head:true}).gte('created_at',todayStart).lt('created_at',tomorrowStart).is('deleted_at',null),
+    sb.from('tasks').select('id',{count:'exact',head:true}).eq('status','done').gte('updated_at',todayStart).lt('updated_at',tomorrowStart)
+  ]);
+  var actRes=results[0], offersSentRes=results[1], newClientsRes=results[2], tasksDoneRes=results[3];
+  var acts=(actRes.data||[]);
+  var calls=acts.filter(function(a){return a.type==='Telefon';}).length;
+  var notes=acts.filter(function(a){return a.type==='Notatka';}).length;
+  var won=acts.filter(function(a){return a.type==='Etap lejka'&&(a.description||'').indexOf('→ Wygrana')>-1;}).length;
+  var lost=acts.filter(function(a){return a.type==='Etap lejka'&&(a.description||'').indexOf('→ Przegrana')>-1;}).length;
+  var offersSent=offersSentRes.count!=null?offersSentRes.count:0;
+  var newClients=newClientsRes.count!=null?newClientsRes.count:0;
+  var tasksDone=tasksDoneRes.count!=null?tasksDoneRes.count:0;
+  function stat(label,value,color){
+    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:18px;font-weight:800;margin-top:2px;color:'+(color||'#fff')+';">'+value+'</div></div>';
+  }
+  el.innerHTML=stat('📞 Telefony',calls)
+    +stat('📄 Oferty wysłane',offersSent)
+    +stat('📝 Notatki',notes)
+    +stat('🆕 Nowi klienci',newClients)
+    +stat('✅ Wygrane',won,'#22c55e')
+    +stat('❌ Przegrane',lost,'#ef4444')
+    +stat('☑️ Zadania',tasksDone);
 }
 async function generateOfferPdf(){
   if(!editingOfferId){alert('Najpierw zapisz ofertę — PDF generujemy z zapisanych danych w bazie, nie z niezapisanego formularza.');return;}
@@ -2635,6 +2787,7 @@ async function saveOffer(){
         .then(function(r){ if(r.error) console.warn('Nie udało się auto-zamknąć zadania follow-up:',r.error); });
     }
   }
+  var justSent=(status==='wysłana')&&(isNewOffer||statusChanged);
 
   var newOfferId=offerId;
   previousOfferStatus=status;
@@ -2646,6 +2799,10 @@ async function saveOffer(){
   loadOffers();
   loadCommandStats();
   loadClientOffers(clientId);
+  if(justSent){
+    var offClient=allClientsCache.find(function(x){return x.id===clientId;});
+    askFollowupReminder(clientId,(offClient&&offClient.name)||'—','Wysłana oferta');
+  }
 }
 function offersFilter(status){
   offersActiveFilter=status;
@@ -2738,12 +2895,14 @@ async function loadCommandStats(){
     loadCmdActivity(),
     checkAndCreateFollowupTasks(),
     loadStaleClients(),
-    loadPipelineSummary()
+    loadPipelineSummary(),
+    loadDaySummary()
   ]);
   var qClients=results[1], qOffers=results[2], qFollow=results[3];
   // checkAndCreateFollowupTasks() mogło właśnie dopisać nowe zadania do bazy —
-  // odświeżamy Priorytety AI, żeby były widoczne od razu, bez czekania na kolejny refresh.
-  loadTasks();
+  // odświeżamy Priorytety AI i Mój dzień, żeby były widoczne od razu.
+  await loadTasks();
+  loadMyDay();
 
   var elClients=document.getElementById('cmd-clients');
   if(elClients&&!qClients.error) elClients.textContent=qClients.count!=null?qClients.count:'0';
