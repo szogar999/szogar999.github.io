@@ -933,26 +933,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button onclick="cmdStartDay()" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(232,96,28,.4);">▶️ Rozpocznij dzień</button>
 
   <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">📌 Oferty do follow-up</div>
-    <div class="card" id="cmd-followup-list">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🎯 Dzisiaj musisz zrobić</div>
+    <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:12px;">
+
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#ef4444;margin-bottom:5px;">⚠️ ZALEGŁE ZADANIA</div>
+        <div id="cmd-todo-overdue" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#f59e0b;margin-bottom:5px;">📤 OFERTY CZEKAJĄCE NA ODPOWIEDŹ</div>
+        <div id="cmd-todo-offers" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#a855f7;margin-bottom:5px;">🔕 KLIENCI BEZ KONTAKTU</div>
+        <div id="cmd-todo-stale" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+      </div>
+      <div onclick="renderPlanDay();go('s-planday')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:2px;">📋 Zobacz cały Plan Dnia →</div>
     </div>
   </div>
 
   <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🔕 Klienci bez kontaktu</div>
-    <div class="card" id="cmd-stale-list">
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧭 Lejek sprzedaży</div>
+    <div class="card" id="cmd-pipeline-summary" style="padding:0;overflow:hidden;">
       <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
     </div>
-  </div>
-
-  <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🧠 Priorytety AI</div>
-    <div class="card" id="cmd-ai-list">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
-    <div id="cmd-ai-note" style="font-size:10px;color:#8a9ab0;margin-top:6px;"></div>
-    <div onclick="renderPlanDay();go('s-planday')" style="font-size:12px;color:#e8601c;font-weight:700;margin-top:8px;cursor:pointer;text-align:center;">📋 Zobacz cały Plan Dnia →</div>
   </div>
 
   <div>
@@ -995,6 +999,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <button onclick="resetClientForm();go('s-client-add')" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Dodaj klienta</button>
   <input id="crm-search" oninput="renderClients()" placeholder="🔍 Szukaj po nazwie, NIP lub telefonie…" style="width:100%;padding:11px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
+  <div id="crm-stage-chip" style="display:none;align-items:center;gap:8px;background:rgba(232,96,28,.15);border:1px solid rgba(232,96,28,.3);border-radius:9px;padding:7px 11px;">
+    <span style="font-size:11px;font-weight:700;color:#e8601c;flex:1;">Etap: —</span>
+    <span onclick="crmStageFilter=null;renderClients();" style="font-size:11px;color:#8a9ab0;cursor:pointer;font-weight:700;">✕ Wyczyść</span>
+  </div>
   <div id="crm-status-line" style="font-size:11px;color:#8a9ab0;"></div>
   <div id="crm-list" style="display:flex;flex-direction:column;gap:8px;">
     <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>
@@ -1041,6 +1049,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
 
   <div class="card" id="cd-info" style="padding:13px;">Ładowanie…</div>
+
+  <div>
+    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Etap w lejku sprzedaży</div>
+    <div id="cd-pipeline-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">
+    <button id="cd-qa-call" onclick="quickActionCall()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📞<br>Zadzwoń</button>
+    <button id="cd-qa-email" onclick="quickActionEmail()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">✉️<br>Email</button>
+    <button onclick="newOfferForClient(currentClientId)" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📄<br>Oferta</button>
+    <button onclick="quickActionFocusNote()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📝<br>Notatka</button>
+    <button onclick="toggleForm('cd-task-form')" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📅<br>Zadanie</button>
+  </div>
+
+  <div id="cd-task-form" style="display:none;flex-direction:column;gap:8px;">
+    <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:12px;font-weight:800;">Nowe zadanie dla tego klienta</div>
+      <input id="ct-reason" placeholder="Co trzeba zrobić? (np. zadzwonić ws. dostawy)" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+      <div style="display:flex;gap:8px;">
+        <input id="ct-date" type="date" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+        <select id="ct-priority" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+          <option value="yellow">🟡 Normalne</option>
+          <option value="red">🔴 Pilne</option>
+          <option value="green">🟢 Niski priorytet</option>
+        </select>
+      </div>
+      <div id="ct-error" style="display:none;font-size:11px;color:#ef4444;"></div>
+      <button onclick="saveQuickTask()" style="background:#e8601c;border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">💾 Zapisz zadanie</button>
+    </div>
+  </div>
 
   <div class="card" style="padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:11px;">
     <div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">Ostatni kontakt</div><div id="cd-intel-lastcontact" style="font-size:13px;font-weight:800;margin-top:2px;">—</div></div>
@@ -1343,7 +1381,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.18.0';
+var APP_VERSION = 'v0.19.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1457,23 +1495,36 @@ function renderClients(){
     return;
   }
   var q=(document.getElementById('crm-search')||{value:''}).value.trim().toLowerCase();
-  var filtered=q?clients.filter(function(c){
+  var filtered=clients;
+  if(crmStageFilter) filtered=filtered.filter(function(c){return (c.pipeline_stage||'Lead')===crmStageFilter;});
+  if(q) filtered=filtered.filter(function(c){
     return (c.name||'').toLowerCase().indexOf(q)>-1
       || (c.nip||'').toLowerCase().indexOf(q)>-1
       || (c.phone||'').toLowerCase().indexOf(q)>-1;
-  }):clients;
-  if(statusEl)statusEl.textContent=q
-    ? (filtered.length+' z '+clients.length+' klientów pasuje do „'+q+'”.')
+  });
+  var chipEl=document.getElementById('crm-stage-chip');
+  if(chipEl){
+    if(crmStageFilter){
+      chipEl.style.display='flex';
+      chipEl.querySelector('span').textContent='Etap: '+crmStageFilter;
+    }else{
+      chipEl.style.display='none';
+    }
+  }
+  if(statusEl)statusEl.textContent=(q||crmStageFilter)
+    ? (filtered.length+' z '+clients.length+' klientów pasuje.')
     : (clients.length+' '+(clients.length===1?'klient':'klientów')+' w bazie.');
   if(filtered.length===0){
-    listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Nic nie pasuje do wyszukiwania.</div>';
+    listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Nic nie pasuje do filtra.</div>';
     return;
   }
   var canEdit=(currentRole==='owner'||currentRole==='admin');
   listEl.innerHTML=filtered.map(function(c){
+    var stage=c.pipeline_stage||'Lead';
+    var stageColor=PIPELINE_COLORS[stage]||'#8a9ab0';
     return '<div class="card" style="padding:12px 13px;">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openClient(\''+c.id+'\')">'
-      +'<div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:7px;"><div style="font-size:14px;font-weight:800;">'+(c.name||'(bez nazwy)')+'</div><span style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:8px;background:'+stageColor+'22;color:'+stageColor+';">'+stage+'</span></div>'
       +'<span style="color:#e8601c;font-size:14px;">→</span></div>'
       +(c.nip?'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">NIP: '+c.nip+'</div>':'')
       +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:#8a9ab0;">'
@@ -1546,6 +1597,9 @@ async function saveClient(){
   }
   resetClientForm();
   loadClients();
+  if(!wasEditing&&res.data&&res.data.id){
+    logActivity(res.data.id,'🆕','Klient','Dodano klienta do CRM.');
+  }
   // Wracamy tam, gdzie realnie chcesz być dalej pracować — nie do listy,
   // którą i tak trzeba by przescrollować żeby sprawdzić czy zapis się udał.
   if(wasEditing){
@@ -1564,6 +1618,64 @@ function toggleForm(id){
   if(!el)return;
   el.style.display=(el.style.display==='flex')?'none':'flex';
 }
+var currentClientRecord=null;
+function renderPipelinePills(activeStage){
+  var box=document.getElementById('cd-pipeline-pills');
+  if(!box)return;
+  box.innerHTML=PIPELINE_STAGES.map(function(s){
+    var active=(s===activeStage);
+    var color=PIPELINE_COLORS[s]||'#8a9ab0';
+    return '<div onclick="updateClientStage(\''+s+'\')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;cursor:pointer;background:'+(active?color:'#162130')+';color:'+(active?'#fff':'#8a9ab0')+';border:1px solid '+(active?color:'rgba(255,255,255,.1)')+';">'+s+'</div>';
+  }).join('');
+}
+async function updateClientStage(newStage){
+  if(!currentClientId||!sbEnabled)return;
+  var oldStage=(currentClientRecord&&currentClientRecord.pipeline_stage)||'Lead';
+  if(oldStage===newStage)return;
+  renderPipelinePills(newStage); // optymistycznie, zanim baza odpowie — appka ma czuć się szybka
+  var res=await sb.from('clients').update({pipeline_stage:newStage}).eq('id',currentClientId);
+  if(res.error){
+    alert('Błąd zapisu etapu: '+res.error.message);
+    renderPipelinePills(oldStage);
+    return;
+  }
+  if(currentClientRecord)currentClientRecord.pipeline_stage=newStage;
+  logActivity(currentClientId,'🔀','Etap lejka','Zmiana etapu: '+oldStage+' → '+newStage+'.');
+}
+function quickActionCall(){
+  if(!currentClientRecord||!currentClientRecord.phone){alert('Ten klient nie ma zapisanego numeru telefonu — dodaj go przez Edytuj.');return;}
+  logActivity(currentClientId,'📞','Telefon','Zadzwoniono: '+currentClientRecord.phone+'.');
+  window.location.href='tel:'+currentClientRecord.phone.replace(/[^0-9+]/g,'');
+}
+function quickActionEmail(){
+  if(!currentClientRecord||!currentClientRecord.email){alert('Ten klient nie ma zapisanego adresu e-mail — dodaj go przez Edytuj.');return;}
+  window.location.href='mailto:'+currentClientRecord.email;
+}
+function quickActionFocusNote(){
+  var input=document.getElementById('cd-new-note');
+  if(!input)return;
+  input.scrollIntoView({behavior:'smooth',block:'center'});
+  input.focus();
+}
+async function saveQuickTask(){
+  var reason=document.getElementById('ct-reason').value.trim();
+  var errEl=document.getElementById('ct-error');
+  errEl.style.display='none';
+  if(!reason){errEl.textContent='Opisz czego dotyczy zadanie.';errEl.style.display='block';return;}
+  if(!sbEnabled||!currentClientId)return;
+  var date=document.getElementById('ct-date').value||todayStr();
+  var priority=document.getElementById('ct-priority').value;
+  var clientName=(currentClientRecord&&currentClientRecord.name)||'—';
+  var res=await sb.from('tasks').insert({
+    client:clientName,category:'call',priority:priority,date:date,time:'09:00',
+    reason:reason,status:'pending',assigned_to:currentUid||null
+  });
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  logActivity(currentClientId,'📅','Zadanie','Utworzono zadanie na '+date+': '+reason);
+  document.getElementById('ct-reason').value='';
+  toggleForm('cd-task-form');
+  loadClientActivities(currentClientId);
+}
 async function openClient(id){
   currentClientId=id;
   document.getElementById('cd-title').textContent='Ładowanie…';
@@ -1576,6 +1688,7 @@ async function openClient(id){
     return;
   }
   var c=res.data;
+  currentClientRecord=c;
   document.getElementById('cd-title').textContent=c.name||'Klient';
   document.getElementById('cd-info').innerHTML=
     (c.nip?'<div style="font-size:11px;color:#8a9ab0;">NIP: '+c.nip+'</div>':'')
@@ -1584,6 +1697,8 @@ async function openClient(id){
       +(c.email?'<a href="mailto:'+c.email+'" onclick="event.stopPropagation()" style="color:#c7d0da;text-decoration:none;">✉️ '+c.email+'</a>':'')
     +'</div>'
     +(c.notes?'<div style="font-size:12px;color:#8a9ab0;margin-top:8px;line-height:1.4;">'+c.notes+'</div>':'');
+  renderPipelinePills(c.pipeline_stage||'Lead');
+  var ctDate=document.getElementById('ct-date'); if(ctDate)ctDate.value=todayStr();
   loadBuildings(id);
   loadContacts(id);
   loadClientOffers(id);
@@ -1793,6 +1908,8 @@ async function addClientNote(){
    Marża liczona jako marża na cenie sprzedaży: (sell-buy)/sell*100.
    Progi z tabeli 'categories' jeśli istnieje, inaczej z CATEGORY_TARGETS_DEFAULT — 
    ostrzeżenie jest informacyjne, NIE blokuje zapisu (zgodnie z ustaleniami). */
+var PIPELINE_STAGES=['Lead','Pierwszy kontakt','Wycena','Oferta wysłana','Negocjacje','Wygrana','Przegrana'];
+var PIPELINE_COLORS={'Lead':'#8a9ab0','Pierwszy kontakt':'#3b82f6','Wycena':'#e8601c','Oferta wysłana':'#f59e0b','Negocjacje':'#a855f7','Wygrana':'#22c55e','Przegrana':'#ef4444'};
 var CATEGORY_LIST=['Materiały budowlane','Chemia budowlana','BHP','Elektryka','Hydraulika','Narzędzia','Wynajem sprzętu','Inne'];
 var CATEGORY_TARGETS_DEFAULT={'Materiały budowlane':15,'Chemia budowlana':22,'BHP':35,'Elektryka':20,'Hydraulika':20,'Narzędzia':25,'Wynajem sprzętu':20,'Inne':15};
 var CATEGORY_TARGETS=Object.assign({},CATEGORY_TARGETS_DEFAULT);
@@ -2101,20 +2218,23 @@ async function checkAndCreateFollowupTasks(){
     };
   });
   var insertRes=await sb.from('tasks').insert(payload);
-  if(insertRes.error)console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);
+  if(insertRes.error){console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);return;}
+  toCreate.forEach(function(o){
+    logActivity(o.client_id,'📅','Zadanie (auto)','System utworzył zadanie follow-up — brak odpowiedzi na wysłaną ofertę.');
+  });
 }
 
 /* ====================== AUTOMATYZACJA — klienci bez kontaktu od dawna ====================== */
 var STALE_CLIENT_DAYS=14;
 async function loadStaleClients(){
-  var el=document.getElementById('cmd-stale-list');
+  var el=document.getElementById('cmd-todo-stale');
   if(!el||!sbEnabled)return;
   var both=await Promise.all([
     sb.from('clients').select('id,name,created_at').is('deleted_at',null),
     sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000)
   ]);
   var clientsRes=both[0], activitiesRes=both[1];
-  if(clientsRes.error||!clientsRes.data){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd wczytywania.</div></div>';return;}
+  if(clientsRes.error||!clientsRes.data){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Błąd wczytywania.</div>';return;}
   var lastTouch={};
   (activitiesRes.data||[]).forEach(function(a){
     if(a.client_id&&!lastTouch[a.client_id]) lastTouch[a.client_id]=a.created_at;
@@ -2128,14 +2248,49 @@ async function loadStaleClients(){
     .sort(function(a,b){return b.days-a.days;})
     .slice(0,5);
   if(stale.length===0){
-    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Wszyscy klienci mieli kontakt w ostatnich '+STALE_CLIENT_DAYS+' dniach. 🎉</div></div>';
+    el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Wszyscy klienci mieli kontakt w ostatnich '+STALE_CLIENT_DAYS+' dniach. 🎉</div>';
     return;
   }
   el.innerHTML=stale.map(function(c){
-    return '<div class="row" style="cursor:pointer;" onclick="openClient(\''+c.id+'\')"><div><div style="font-size:12px;font-weight:700;">'+c.name+'</div><div style="font-size:10px;color:#8a9ab0;">Brak kontaktu od '+c.days+' dni</div></div><div style="color:#ef4444;font-size:11px;font-weight:700;">🔕</div></div>';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openClient(\''+c.id+'\')"><div><div style="font-size:12px;font-weight:700;">'+c.name+'</div><div style="font-size:10px;color:#8a9ab0;">Brak kontaktu od '+c.days+' dni</div></div><div style="color:#ef4444;font-size:11px;">🔕</div></div>';
   }).join('');
 }
 
+var crmStageFilter=null;
+function pipelineFilterCrm(stage){
+  crmStageFilter=stage;
+  loadClients();
+  go('s-crm');
+}
+async function loadPipelineSummary(){
+  var el=document.getElementById('cmd-pipeline-summary');
+  if(!el||!sbEnabled)return;
+  var both=await Promise.all([
+    sb.from('clients').select('id,pipeline_stage').is('deleted_at',null),
+    sb.from('offers').select('client_id,net_total').is('deleted_at',null)
+  ]);
+  var clientsRes=both[0], offersRes=both[1];
+  if(clientsRes.error||!clientsRes.data){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd wczytywania.</div></div>';return;}
+  var stageOfClient={};
+  var counts={}; PIPELINE_STAGES.forEach(function(s){counts[s]=0;});
+  clientsRes.data.forEach(function(c){
+    var stage=c.pipeline_stage; if(!stage||PIPELINE_STAGES.indexOf(stage)===-1)stage='Lead';
+    counts[stage]++;
+    stageOfClient[c.id]=stage;
+  });
+  var values={}; PIPELINE_STAGES.forEach(function(s){values[s]=0;});
+  (offersRes.data||[]).forEach(function(o){
+    var stage=stageOfClient[o.client_id];
+    if(stage) values[stage]+=Number(o.net_total||0);
+  });
+  el.innerHTML=PIPELINE_STAGES.map(function(s){
+    var color=PIPELINE_COLORS[s]||'#8a9ab0';
+    return '<div class="row" onclick="pipelineFilterCrm(\''+s+'\')" style="cursor:pointer;">'
+      +'<div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:'+color+';display:inline-block;flex-shrink:0;"></span><span style="font-size:12px;font-weight:700;">'+s+'</span></div>'
+      +'<div style="text-align:right;"><div style="font-size:12px;font-weight:800;">'+counts[s]+' '+(counts[s]===1?'klient':'klientów')+'</div><div style="font-size:10px;color:#8a9ab0;">'+values[s].toFixed(0)+' zł ofert</div></div>'
+      +'</div>';
+  }).join('');
+}
 async function generateOfferPdf(){
   if(!editingOfferId){alert('Najpierw zapisz ofertę — PDF generujemy z zapisanych danych w bazie, nie z niezapisanego formularza.');return;}
   if(!sbEnabled){alert('Supabase niepodłączony — nie można wygenerować PDF.');return;}
@@ -2582,7 +2737,8 @@ async function loadCommandStats(){
     sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true}),
     loadCmdActivity(),
     checkAndCreateFollowupTasks(),
-    loadStaleClients()
+    loadStaleClients(),
+    loadPipelineSummary()
   ]);
   var qClients=results[1], qOffers=results[2], qFollow=results[3];
   // checkAndCreateFollowupTasks() mogło właśnie dopisać nowe zadania do bazy —
@@ -2595,18 +2751,18 @@ async function loadCommandStats(){
   var elOffers=document.getElementById('cmd-offers');
   if(elOffers&&!qOffers.error) elOffers.textContent=qOffers.count!=null?qOffers.count:'0';
 
-  var fEl=document.getElementById('cmd-followup-list');
+  var fEl=document.getElementById('cmd-todo-offers');
   if(fEl){
     if(qFollow.error){
-      fEl.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd: '+qFollow.error.message+'</div></div>';
+      fEl.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Błąd: '+qFollow.error.message+'</div>';
     }else{
       var rows=qFollow.data||[];
       if(rows.length===0){
-        fEl.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak ofert czekających na follow-up. 🎉</div></div>';
+        fEl.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Brak ofert czekających na follow-up. 🎉</div>';
       }else{
         fEl.innerHTML=rows.map(function(o){
           var days=Math.floor((new Date()-new Date(o.sent_at))/86400000);
-          return '<div class="row" style="cursor:pointer;" onclick="openOffer(\''+o.id+'\')"><div><div style="font-size:12px;font-weight:700;">'+((o.clients&&o.clients.name)||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">Wysłana '+days+' dni temu, brak reakcji</div></div><div style="color:#f59e0b;font-size:11px;font-weight:700;">📤</div></div>';
+          return '<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openOffer(\''+o.id+'\')"><div><div style="font-size:12px;font-weight:700;">'+((o.clients&&o.clients.name)||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">Wysłana '+days+' dni temu, brak reakcji</div></div><div style="color:#f59e0b;font-size:11px;">📤</div></div>';
         }).join('');
       }
     }
@@ -2750,27 +2906,23 @@ async function loadTasks(){
 
 /* ====================== COMMAND — statystyki z realnych danych ====================== */
 function renderCmdPriorities(){
-  var el=document.getElementById('cmd-ai-list');
-  var note=document.getElementById('cmd-ai-note');
+  var el=document.getElementById('cmd-todo-overdue');
   if(!el)return;
   if(!sbEnabled){
-    note.textContent='⚠️ Tryb demo — Supabase niepodłączony, to nie są realne zadania.';
-    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Podłącz Supabase, żeby zobaczyć tu realne priorytety.</div></div>';
+    el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Podłącz Supabase, żeby zobaczyć tu realne zadania.</div>';
     return;
   }
   var prioOrder={red:0,yellow:1,green:2};
-  var top=planTasks.filter(function(t){return t.status==='pending';})
-    .sort(function(a,b){return (prioOrder[a.priority]||9)-(prioOrder[b.priority]||9);})
-    .slice(0,3);
-  if(top.length===0){
-    el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak oczekujących zadań na dziś. 🎉</div></div>';
+  var overdue=planTasks.filter(function(t){return t.status==='pending'&&t.overdue;})
+    .sort(function(a,b){return (prioOrder[a.priority]||9)-(prioOrder[b.priority]||9);});
+  if(overdue.length===0){
+    el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Brak zaległych zadań. 🎉</div>';
   }else{
     var icons={red:'🔴',yellow:'🟡',green:'🟢'};
-    el.innerHTML=top.map(function(t){
-      return '<div class="row"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">'+(icons[t.priority]||'⚪')+'</span><div><div style="font-size:13px;font-weight:700;">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+(t.reason||'')+'</div></div></div></div>';
+    el.innerHTML=overdue.map(function(t){
+      return '<div style="display:flex;align-items:center;gap:9px;cursor:pointer;" onclick="planFilter(\'overdue\');go(\'s-planday\')"><span style="font-size:13px;">'+(icons[t.priority]||'⚪')+'</span><div><div style="font-size:12px;font-weight:700;">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+(t.reason||'')+'</div></div></div>';
     }).join('');
   }
-  note.textContent='Realne dane z tabeli tasks (dzisiaj, '+planTasks.length+' zadań).';
 }
 function updateCmdTilesFromTasks(){
   var leads=planTasks.filter(function(t){return t.category==='lead'&&t.status==='pending';}).length;
