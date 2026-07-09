@@ -893,7 +893,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-date" style="font-size:12px;color:#8a9ab0;margin-top:2px;"></div>
       <div id="cmd-activities-today" style="font-size:11px;color:#8a9ab0;margin-top:2px;"></div>
     </div>
-    <button onclick="doLogout()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8a9ab0;font-size:11px;padding:6px 10px;cursor:pointer;flex-shrink:0;">🚪 Wyloguj</button>
+    <div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;">
+      <button onclick="openNotificationCenter()" style="position:relative;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:14px;padding:6px 10px;cursor:pointer;">🔔<span id="cmd-notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;border-radius:9px;min-width:16px;height:16px;align-items:center;justify-content:center;padding:0 3px;">0</span></button>
+      <button onclick="doLogout()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8a9ab0;font-size:11px;padding:6px 10px;cursor:pointer;">🚪 Wyloguj</button>
+    </div>
   </div>
   <div onclick="renderSystemStatus();go('s-system-status')" style="font-size:11px;color:#8a9ab0;cursor:pointer;text-align:right;margin-top:-6px;">⚙️ System status →</div>
 
@@ -1008,6 +1011,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div class="screen" id="s-notifications">
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🔔 Centrum powiadomień</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+  <div style="font-size:11px;color:#8a9ab0;">Przypomnienia zaplanowane na dziś. Otwarcie tego ekranu oznacza je jako przeczytane.</div>
+  <div id="notif-list" style="display:flex;flex-direction:column;gap:8px;">
+    <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>
+  </div>
+  <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
+</div>
+</div>
+
 <div class="screen" id="s-crm">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">👷 CRM — Klienci</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
@@ -1071,6 +1085,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(232,96,28,.3);color:#fff;font-size:14px;font-weight:700;padding:4px 0;outline:none;">
   </div>
 
+  <div id="cd-assign-box" style="display:none;">
+    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Przypisany handlowiec</div>
+    <select id="cd-assigned-to" onchange="updateClientAssignment(this.value)" style="width:100%;padding:9px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;">
+      <option value="">— nieprzypisany —</option>
+    </select>
+  </div>
+
   <div>
     <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Etap w lejku sprzedaży</div>
     <div id="cd-pipeline-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
@@ -1087,15 +1108,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div id="cd-task-form" style="display:none;flex-direction:column;gap:8px;">
     <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:8px;">
       <div style="font-size:12px;font-weight:800;">Nowe zadanie dla tego klienta</div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" id="ct-type-call" onclick="setQuickTaskType('call')" style="flex:1;background:#e8601c;border:none;border-radius:8px;padding:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📞 Telefon</button>
+        <button type="button" id="ct-type-meeting" onclick="setQuickTaskType('meeting')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📍 Spotkanie</button>
+      </div>
       <input id="ct-reason" placeholder="Co trzeba zrobić? (np. zadzwonić ws. dostawy)" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+      <input id="ct-address" placeholder="📍 Adres spotkania" style="display:none;width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
       <div style="display:flex;gap:8px;">
         <input id="ct-date" type="date" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-        <select id="ct-priority" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-          <option value="yellow">🟡 Normalne</option>
-          <option value="red">🔴 Pilne</option>
-          <option value="green">🟢 Niski priorytet</option>
-        </select>
+        <input id="ct-time" type="time" value="09:00" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
       </div>
+      <select id="ct-priority" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+        <option value="yellow">🟡 Normalne</option>
+        <option value="red">🔴 Pilne</option>
+        <option value="green">🟢 Niski priorytet</option>
+      </select>
       <div id="ct-error" style="display:none;font-size:11px;color:#ef4444;"></div>
       <button onclick="saveQuickTask()" style="background:#e8601c;border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">💾 Zapisz zadanie</button>
     </div>
@@ -1416,7 +1443,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.20.0';
+var APP_VERSION = 'v0.21.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1453,6 +1480,25 @@ var currentName='Oskar';
 var currentRole='owner'; // 'owner' | 'admin' | 'sales' | 'driver'
 
 var ROLE_LABEL={owner:'👑 Właściciel',admin:'🛠️ Admin',sales:'📞 Handlowiec',driver:'🚚 Kierowca'};
+
+/* ====================== IZOLACJA DANYCH (Sprint 0.17) ======================
+   owner/admin widzą wszystko. sales widzi tylko klientów przypisanych do siebie
+   (clients.assigned_to = currentUid). To jest filtrowanie po stronie appki
+   (ten sam wzorzec co już istniał dla zadań), NIE RLS — czyli chroni przed
+   przypadkowym pokazaniem cudzych danych w interfejsie, ale nie jest twardą
+   barierą bezpieczeństwa na poziomie bazy. Uczciwie to zaznaczam, nie udaję
+   że to pełna izolacja na poziomie Postgresa. */
+function isOwnerOrAdmin(){ return currentRole==='owner'||currentRole==='admin'; }
+var myClientIdsCache=null;
+async function getMyClientIds(){
+  if(isOwnerOrAdmin())return null; // null = "bez filtra, pokaż wszystko"
+  if(myClientIdsCache)return myClientIdsCache;
+  if(!sbEnabled)return [];
+  var res=await sb.from('clients').select('id').eq('assigned_to',currentUid).is('deleted_at',null);
+  myClientIdsCache=(res.data||[]).map(function(c){return c.id;});
+  return myClientIdsCache;
+}
+function invalidateMyClientIdsCache(){ myClientIdsCache=null; }
 
 function todayStr(){
   var d=new Date();
@@ -1509,8 +1555,10 @@ async function loadClients(){
     return;
   }
   if(listEl)listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
+  var clientsQuery=sb.from('clients').select('*').order('created_at',{ascending:false});
+  if(!isOwnerOrAdmin()) clientsQuery=clientsQuery.eq('assigned_to',currentUid);
   var both=await Promise.all([
-    sb.from('clients').select('*').order('created_at',{ascending:false}),
+    clientsQuery,
     sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000)
   ]);
   var res=both[0], activitiesRes=both[1];
@@ -1637,7 +1685,9 @@ async function saveClient(){
     res=await sb.from('clients').update(payload).eq('id',editingClientId);
   }else{
     payload.created_by=currentUid||null;
+    if(!isOwnerOrAdmin()) payload.assigned_to=currentUid; // handlowiec: to od razu jego lead
     res=await sb.from('clients').insert(payload).select().maybeSingle();
+    invalidateMyClientIdsCache();
   }
   btn.disabled=false;
   if(res.error){
@@ -1668,6 +1718,30 @@ function toggleForm(id){
   var el=document.getElementById(id);
   if(!el)return;
   el.style.display=(el.style.display==='flex')?'none':'flex';
+}
+var allUsersCache=null;
+async function renderAssignBox(currentAssignedTo){
+  var box=document.getElementById('cd-assign-box');
+  if(!box)return;
+  if(!isOwnerOrAdmin()){box.style.display='none';return;}
+  box.style.display='block';
+  if(!allUsersCache){
+    var res=await sb.from('users').select('id,name,role').order('name');
+    allUsersCache=res.data||[];
+  }
+  var sel=document.getElementById('cd-assigned-to');
+  sel.innerHTML='<option value="">— nieprzypisany —</option>'+allUsersCache.map(function(u){
+    return '<option value="'+u.id+'"'+(u.id===currentAssignedTo?' selected':'')+'>'+u.name+' ('+(ROLE_LABEL[u.role]||u.role)+')</option>';
+  }).join('');
+}
+async function updateClientAssignment(userId){
+  if(!currentClientId||!sbEnabled)return;
+  var res=await sb.from('clients').update({assigned_to:userId||null}).eq('id',currentClientId);
+  if(res.error){alert('Błąd zapisu: '+res.error.message);return;}
+  if(currentClientRecord)currentClientRecord.assigned_to=userId||null;
+  invalidateMyClientIdsCache();
+  var userName=userId?(allUsersCache.find(function(u){return u.id===userId;})||{}).name:null;
+  logActivity(currentClientId,'👤','Przypisanie','Przypisano do: '+(userName||'nikt (nieprzypisany)')+'.');
 }
 var currentClientRecord=null;
 function renderPipelinePills(activeStage){
@@ -1755,22 +1829,44 @@ function quickActionFocusNote(){
   input.scrollIntoView({behavior:'smooth',block:'center'});
   input.focus();
 }
+var quickTaskType='call';
+function setQuickTaskType(type){
+  quickTaskType=type;
+  var callBtn=document.getElementById('ct-type-call'), meetBtn=document.getElementById('ct-type-meeting');
+  var addrInput=document.getElementById('ct-address');
+  if(type==='meeting'){
+    meetBtn.style.background='#e8601c'; meetBtn.style.border='none';
+    callBtn.style.background='#1e2f42'; callBtn.style.border='1px solid rgba(255,255,255,.1)';
+    addrInput.style.display='block';
+  }else{
+    callBtn.style.background='#e8601c'; callBtn.style.border='none';
+    meetBtn.style.background='#1e2f42'; meetBtn.style.border='1px solid rgba(255,255,255,.1)';
+    addrInput.style.display='none';
+  }
+}
 async function saveQuickTask(){
   var reason=document.getElementById('ct-reason').value.trim();
   var errEl=document.getElementById('ct-error');
   errEl.style.display='none';
   if(!reason){errEl.textContent='Opisz czego dotyczy zadanie.';errEl.style.display='block';return;}
+  if(quickTaskType==='meeting'&&!document.getElementById('ct-address').value.trim()){
+    errEl.textContent='Podaj adres spotkania.';errEl.style.display='block';return;
+  }
   if(!sbEnabled||!currentClientId)return;
   var date=document.getElementById('ct-date').value||todayStr();
+  var time=document.getElementById('ct-time').value||'09:00';
   var priority=document.getElementById('ct-priority').value;
+  var address=document.getElementById('ct-address').value.trim()||null;
   var clientName=(currentClientRecord&&currentClientRecord.name)||'—';
   var res=await sb.from('tasks').insert({
-    client:clientName,category:'call',priority:priority,date:date,time:'09:00',
+    client:clientName,category:quickTaskType,priority:priority,date:date,time:time,address:address,
     reason:reason,status:'pending',assigned_to:currentUid||null
   });
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
-  logActivity(currentClientId,'📅','Zadanie','Utworzono zadanie na '+date+': '+reason);
+  logActivity(currentClientId,(quickTaskType==='meeting'?'📍':'📅'),(quickTaskType==='meeting'?'Spotkanie':'Zadanie'),
+    (quickTaskType==='meeting'?'Zaplanowano spotkanie ':'Utworzono zadanie ')+'na '+date+' '+time+': '+reason+(address?(' ('+address+')'):''));
   document.getElementById('ct-reason').value='';
+  document.getElementById('ct-address').value='';
   toggleForm('cd-task-form');
   loadClientActivities(currentClientId);
 }
@@ -1786,6 +1882,11 @@ async function openClient(id){
     return;
   }
   var c=res.data;
+  if(!isOwnerOrAdmin()&&c.assigned_to&&c.assigned_to!==currentUid){
+    document.getElementById('cd-info').innerHTML='<div style="color:#ef4444;font-size:12px;">Ten klient jest przypisany do innego handlowca — brak dostępu.</div>';
+    document.getElementById('cd-title').textContent='Brak dostępu';
+    return;
+  }
   currentClientRecord=c;
   document.getElementById('cd-title').textContent=c.name||'Klient';
   document.getElementById('cd-info').innerHTML=
@@ -1796,8 +1897,10 @@ async function openClient(id){
     +'</div>'
     +(c.notes?'<div style="font-size:12px;color:#8a9ab0;margin-top:8px;line-height:1.4;">'+c.notes+'</div>':'');
   renderPipelinePills(c.pipeline_stage||'Lead');
+  renderAssignBox(c.assigned_to||null);
   var naEl=document.getElementById('cd-next-action'); if(naEl)naEl.value=c.next_action||'';
   var ctDate=document.getElementById('ct-date'); if(ctDate)ctDate.value=todayStr();
+  setQuickTaskType('call');
   loadBuildings(id);
   loadContacts(id);
   loadClientOffers(id);
@@ -2276,7 +2379,10 @@ async function loadCmdActivity(){
   var el=document.getElementById('cmd-activity');
   if(!el)return;
   if(!sbEnabled){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Supabase niepodłączony.</div></div>';return;}
-  var res=await sb.from('activities').select('*, clients(name)').order('created_at',{ascending:false}).limit(8);
+  var myIds=await getMyClientIds();
+  var q=sb.from('activities').select('*, clients(name)').order('created_at',{ascending:false}).limit(8);
+  if(myIds!==null) q=q.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
+  var res=await q;
   if(res.error){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd: '+res.error.message+'</div></div>';return;}
   var rows=res.data||[];
   if(rows.length===0){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak aktywności — zacznij dodawać notatki i oferty w CRM.</div></div>';return;}
@@ -2293,8 +2399,11 @@ async function loadCmdActivity(){
    nie udawanie że coś chodzi 24/7 gdy appka jest zamknięta. */
 async function checkAndCreateFollowupTasks(){
   if(!sbEnabled)return;
+  var myIds=await getMyClientIds();
   var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
-  var res=await sb.from('offers').select('id,client_id,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null);
+  var offersQ=sb.from('offers').select('id,client_id,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null);
+  if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
+  var res=await offersQ;
   if(res.error||!res.data||res.data.length===0)return;
   var stale=res.data;
   var existingRes=await sb.from('tasks').select('offer_id').eq('status','pending').not('offer_id','is',null);
@@ -2335,8 +2444,11 @@ var STALE_CLIENT_DAYS=14;
 async function loadStaleClients(){
   var el=document.getElementById('cmd-todo-stale');
   if(!el||!sbEnabled)return;
+  var myIds=await getMyClientIds();
+  var clientsQ=sb.from('clients').select('id,name,created_at').is('deleted_at',null);
+  if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
   var both=await Promise.all([
-    sb.from('clients').select('id,name,created_at').is('deleted_at',null),
+    clientsQ,
     sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000)
   ]);
   var clientsRes=both[0], activitiesRes=both[1];
@@ -2371,8 +2483,11 @@ function pipelineFilterCrm(stage){
 async function loadPipelineSummary(){
   var el=document.getElementById('cmd-pipeline-summary');
   if(!el||!sbEnabled)return;
+  var myIds=await getMyClientIds();
+  var clientsQ=sb.from('clients').select('id,pipeline_stage').is('deleted_at',null);
+  if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
   var both=await Promise.all([
-    sb.from('clients').select('id,pipeline_stage').is('deleted_at',null),
+    clientsQ,
     sb.from('offers').select('client_id,net_total').is('deleted_at',null)
   ]);
   var clientsRes=both[0], offersRes=both[1];
@@ -2397,32 +2512,109 @@ async function loadPipelineSummary(){
       +'</div>';
   }).join('');
 }
+/* ====================== CENTRUM POWIADOMIEŃ (Sprint 0.17) ======================
+   Osobna tabela 'notifications', nie doklejona do tasks — przygotowane pod
+   przyszłe push/SMS (kolumny channel/sent_at już czekają, nieużywane dziś). */
+var notificationCache=[];
+async function syncNotificationsForToday(){
+  if(!sbEnabled)return;
+  var todayPending=planTasks.filter(function(t){return !t.overdue&&t.status==='pending';});
+  if(todayPending.length===0)return;
+  var existingRes=await sb.from('notifications').select('task_id').eq('user_id',currentUid).eq('due_date',todayStr());
+  if(existingRes.error)return;
+  var existingSet={};
+  (existingRes.data||[]).forEach(function(n){ if(n.task_id)existingSet[n.task_id]=true; });
+  var toCreate=todayPending.filter(function(t){return !existingSet[t.id];});
+  if(toCreate.length===0)return;
+  var payload=toCreate.map(function(t){
+    return {
+      user_id:currentUid,
+      task_id:t.id,
+      title:(t.category==='meeting'?'📍 Spotkanie: ':(t.icon||'📌')+' ')+(t.client||'—'),
+      body:(t.time?'🕐 '+t.time+' · ':'')+(t.reason||'')+(t.address?' · 📍 '+t.address:''),
+      due_date:todayStr()
+    };
+  });
+  var res=await sb.from('notifications').insert(payload);
+  if(res.error)console.warn('Błąd tworzenia powiadomień:',res.error);
+}
+async function loadNotificationCenter(){
+  var badge=document.getElementById('cmd-notif-badge');
+  if(!sbEnabled||!badge)return;
+  var res=await sb.from('notifications').select('*').eq('user_id',currentUid).eq('due_date',todayStr()).order('created_at',{ascending:true});
+  if(res.error)return;
+  notificationCache=res.data||[];
+  var unread=notificationCache.filter(function(n){return !n.read_at;}).length;
+  if(unread>0){badge.style.display='flex';badge.textContent=unread>9?'9+':String(unread);}
+  else{badge.style.display='none';}
+}
+function openNotificationCenter(){
+  renderNotificationList();
+  go('s-notifications');
+  markAllNotificationsRead();
+}
+function renderNotificationList(){
+  var el=document.getElementById('notif-list');
+  if(!el)return;
+  if(notificationCache.length===0){
+    el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak przypomnień na dziś. 🎉</div>';
+    return;
+  }
+  el.innerHTML=notificationCache.map(function(n){
+    return '<div class="card" style="padding:12px 13px;'+(n.read_at?'opacity:.55;':'')+'">'
+      +'<div style="font-size:13px;font-weight:700;">'+n.title+'</div>'
+      +'<div style="font-size:11px;color:#8a9ab0;margin-top:3px;">'+(n.body||'')+'</div>'
+      +'</div>';
+  }).join('');
+}
+async function markAllNotificationsRead(){
+  var unreadIds=notificationCache.filter(function(n){return !n.read_at;}).map(function(n){return n.id;});
+  if(unreadIds.length===0||!sbEnabled)return;
+  var res=await sb.from('notifications').update({read_at:new Date().toISOString()}).in('id',unreadIds);
+  if(res.error){console.warn('Błąd oznaczania jako przeczytane:',res.error);return;}
+  notificationCache.forEach(function(n){ if(!n.read_at)n.read_at=new Date().toISOString(); });
+  var badge=document.getElementById('cmd-notif-badge'); if(badge)badge.style.display='none';
+}
 function loadMyDay(){
   var el=document.getElementById('cmd-my-day');
   if(!el)return;
   if(!sbEnabled){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Supabase niepodłączony.</div></div>';return;}
   var todayTasks=planTasks.filter(function(t){return !t.overdue&&t.status==='pending';})
-    .sort(function(a,b){return (a.time||'').localeCompare(b.time||'');});
+    .sort(function(a,b){
+      var aMeet=a.category==='meeting'?0:1, bMeet=b.category==='meeting'?0:1;
+      if(aMeet!==bMeet)return aMeet-bMeet;
+      return (a.time||'').localeCompare(b.time||'');
+    });
   if(todayTasks.length===0){
     el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak zaplanowanych zadań na dziś. 🎉</div></div>';
     return;
   }
   el.innerHTML=todayTasks.map(function(t){
-    return '<div class="row"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">'+(t.icon||'📌')+'</span><div><div style="font-size:12px;font-weight:700;">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">🕐 '+(t.time||'')+' · '+(t.reason||'')+'</div></div></div></div>';
+    var isMeeting=t.category==='meeting';
+    var bg=isMeeting?'background:rgba(168,85,247,.08);':'';
+    return '<div class="row" style="'+bg+'"><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">'+(t.icon||'📌')+'</span><div><div style="font-size:12px;font-weight:700;'+(isMeeting?'color:#a855f7;':'')+'">'+(t.client||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">🕐 '+(t.time||'')+(t.address?' · 📍 '+t.address:'')+' · '+(t.reason||'')+'</div></div></div></div>';
   }).join('');
 }
 async function loadDaySummary(){
   var el=document.getElementById('cmd-day-summary');
   if(!el||!sbEnabled)return;
+  var myIds=await getMyClientIds();
   var todayStart=todayStr()+'T00:00:00.000Z';
   var tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
   var tomorrowStart=dateToYMD(tomorrow)+'T00:00:00.000Z';
-  var results=await Promise.all([
-    sb.from('activities').select('type,description,created_at').gte('created_at',todayStart).lt('created_at',tomorrowStart).limit(500),
-    sb.from('offers').select('id',{count:'exact',head:true}).gte('sent_at',todayStart).lt('sent_at',tomorrowStart),
-    sb.from('clients').select('id',{count:'exact',head:true}).gte('created_at',todayStart).lt('created_at',tomorrowStart).is('deleted_at',null),
-    sb.from('tasks').select('id',{count:'exact',head:true}).eq('status','done').gte('updated_at',todayStart).lt('updated_at',tomorrowStart)
-  ]);
+  var dummyId='00000000-0000-0000-0000-000000000000';
+  var activitiesQ=sb.from('activities').select('type,description,created_at').gte('created_at',todayStart).lt('created_at',tomorrowStart).limit(500);
+  var offersSentQ=sb.from('offers').select('id',{count:'exact',head:true}).gte('sent_at',todayStart).lt('sent_at',tomorrowStart);
+  var newClientsQ=sb.from('clients').select('id',{count:'exact',head:true}).gte('created_at',todayStart).lt('created_at',tomorrowStart).is('deleted_at',null);
+  var tasksDoneQ=sb.from('tasks').select('id',{count:'exact',head:true}).eq('status','done').gte('updated_at',todayStart).lt('updated_at',tomorrowStart);
+  if(myIds!==null){
+    var idsOrDummy=myIds.length?myIds:[dummyId];
+    activitiesQ=activitiesQ.in('client_id',idsOrDummy);
+    offersSentQ=offersSentQ.in('client_id',idsOrDummy);
+    newClientsQ=newClientsQ.eq('assigned_to',currentUid);
+    tasksDoneQ=tasksDoneQ.eq('assigned_to',currentUid);
+  }
+  var results=await Promise.all([activitiesQ,offersSentQ,newClientsQ,tasksDoneQ]);
   var actRes=results[0], offersSentRes=results[1], newClientsRes=results[2], tasksDoneRes=results[3];
   var acts=(actRes.data||[]);
   var calls=acts.filter(function(a){return a.type==='Telefon';}).length;
@@ -2884,14 +3076,23 @@ async function loadClientOffers(clientId){
 /* ====================== COMMAND — statystyki realne: klienci, oferty, follow-up ====================== */
 async function loadCommandStats(){
   if(!sbEnabled)return;
+  var myIds=await getMyClientIds(); // null = owner/admin, bez filtra; [] = handlowiec bez klientów
   // Cztery zapytania poniżej są od siebie niezależne — nie ma powodu czekać na jedno,
   // żeby zacząć następne. Promise.all realnie skraca czas ładowania Command.
   var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
+  var clientsCountQ=sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null);
+  var offersCountQ=sb.from('offers').select('id',{count:'exact',head:true}).is('deleted_at',null);
+  var followQ=sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true});
+  if(myIds!==null){
+    clientsCountQ=sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null).eq('assigned_to',currentUid);
+    offersCountQ=offersCountQ.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
+    followQ=followQ.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
+  }
   var results=await Promise.all([
     loadCategoryTargets(),
-    sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null),
-    sb.from('offers').select('id',{count:'exact',head:true}).is('deleted_at',null),
-    sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true}),
+    clientsCountQ,
+    offersCountQ,
+    followQ,
     loadCmdActivity(),
     checkAndCreateFollowupTasks(),
     loadStaleClients(),
@@ -2903,6 +3104,8 @@ async function loadCommandStats(){
   // odświeżamy Priorytety AI i Mój dzień, żeby były widoczne od razu.
   await loadTasks();
   loadMyDay();
+  await syncNotificationsForToday();
+  loadNotificationCenter();
 
   var elClients=document.getElementById('cmd-clients');
   if(elClients&&!qClients.error) elClients.textContent=qClients.count!=null?qClients.count:'0';
@@ -3052,9 +3255,9 @@ async function loadTasks(){
   }
   var res=await q;
   if(res.error){console.warn('Błąd pobierania zadań:',res.error);return;}
-  var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎'};
+  var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎',meeting:'📍'};
   planTasks=(res.data||[]).map(function(r){
-    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today)};
+    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,address:r.address||'',icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today)};
   });
   lastSyncTime=new Date();
   renderPlanDay();
