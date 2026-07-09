@@ -1200,10 +1200,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 
   <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">🧠 Aktywności</div>
-    <div style="display:flex;gap:6px;margin-bottom:8px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
+      <div style="font-size:14px;font-weight:800;">📜 Historia współpracy</div>
+      <div id="cd-last-activity" style="font-size:10px;color:#8a9ab0;"></div>
+    </div>
+    <div style="display:flex;gap:6px;margin:8px 0;">
       <input id="cd-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
       <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;">
+      <div onclick="cdActivityFilter('')" id="cd-af-all" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
+      <div onclick="cdActivityFilter('call')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
+      <div onclick="cdActivityFilter('meeting')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📍 Spotkania</div>
+      <div onclick="cdActivityFilter('offer')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
+      <div onclick="cdActivityFilter('delivery')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🚚 Dostawy</div>
+      <div onclick="cdActivityFilter('note')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Notatki</div>
+      <div onclick="cdActivityFilter('task')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">☑️ Zadania</div>
     </div>
     <div id="cd-activities-list"></div>
   </div>
@@ -1468,7 +1480,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.23.0';
+var APP_VERSION = 'v0.24.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1876,6 +1888,7 @@ function quickActionCall(){
 }
 function quickActionEmail(){
   if(!currentClientRecord||!currentClientRecord.email){alert('Ten klient nie ma zapisanego adresu e-mail — dodaj go przez Edytuj.');return;}
+  logActivity(currentClientId,'✉️','Email','Wysłano e-mail: '+currentClientRecord.email+'.');
   window.location.href='mailto:'+currentClientRecord.email;
 }
 function quickActionFocusNote(){
@@ -2092,42 +2105,85 @@ async function addContact(){
   loadContacts(currentClientId);
 }
 
+function relativeTimePl(date){
+  var diffMs=new Date()-date;
+  var mins=Math.floor(diffMs/60000);
+  if(mins<1)return 'przed chwilą';
+  if(mins<60)return mins+' '+(mins===1?'minutę':(mins<5?'minuty':'minut'))+' temu';
+  var hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+' '+(hrs===1?'godzinę':(hrs<5?'godziny':'godzin'))+' temu';
+  var days=Math.floor(hrs/24);
+  return days+' '+(days===1?'dzień':'dni')+' temu';
+}
+function activityBucket(type){
+  if(type==='Telefon')return 'call';
+  if(type==='Spotkanie')return 'meeting';
+  if(type==='Zadanie'||type==='Zadanie (auto)'||type==='Zadanie ukończone'||type==='Przypomnienie')return 'task';
+  if(type&&type.indexOf('Oferta')===0)return 'offer';
+  if(type==='Notatka')return 'note';
+  if(type==='Dostawa'||type==='Dostawa zakończona')return 'delivery'; // przygotowane na przyszłość — dziś nic tu jeszcze nie loguje
+  return 'other';
+}
+var cdActivitiesCache=[];
+var cdActivityActiveFilter='';
+function cdActivityFilter(bucket){
+  cdActivityActiveFilter=bucket;
+  var pills=document.querySelectorAll('[onclick^="cdActivityFilter"]');
+  pills.forEach(function(p){p.style.background='#1e2f42';p.style.color='#8a9ab0';});
+  if(event&&event.target){event.target.style.background='#e8601c';event.target.style.color='#fff';}
+  renderClientActivitiesList();
+}
+function renderClientActivitiesList(){
+  var el=document.getElementById('cd-activities-list');
+  if(!el)return;
+  var rows=cdActivityActiveFilter?cdActivitiesCache.filter(function(a){return activityBucket(a.type)===cdActivityActiveFilter;}):cdActivitiesCache;
+  if(rows.length===0){
+    el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">'+(cdActivityActiveFilter?'Brak wpisów w tej kategorii.':'Brak aktywności — dodaj pierwszą notatkę powyżej.')+'</div>';
+    return;
+  }
+  var canEdit=(currentRole==='owner'||currentRole==='admin');
+  el.innerHTML='<div class="tl-wrap">'+rows.map(function(a){
+    var dt=a.created_at?new Date(a.created_at):null;
+    var dateStr=dt?(dt.toLocaleDateString('pl-PL')+' '+dt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})):'';
+    var canEditThis=canEdit&&a.type==='Notatka';
+    return '<div class="tl-item"><div class="tl-dot">'+(a.icon||'📝')+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+(a.icon||'📝')+' '+(a.type||'Notatka')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+dateStr+'</span></div>'
+      +'<div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+(a.description||'')+'</div>'
+      +'<div style="font-size:10px;color:#8a9ab0;">✍️ '+(a.author||'—')+'</div>'
+      +(canEditThis?('<div style="display:flex;gap:6px;margin-top:8px;">'
+        +'<button onclick="editClientNote(\''+a.id+'\',\''+encodeURIComponent(a.description||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
+        +'<button onclick="archiveClientNote(\''+a.id+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:6px;color:#ef4444;font-size:10px;cursor:pointer;">🗄️ Archiwizuj</button>'
+        +'</div>'):'')
+    +'</div></div>';
+  }).join('')+'</div>';
+}
 async function loadClientActivities(clientId){
   var el=document.getElementById('cd-activities-list');
   if(!sbEnabled){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Supabase niepodłączony.</div>';return;}
   el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:12px 0;">Ładowanie…</div>';
-  var res=await sb.from('activities').select('*').eq('client_id',clientId).order('created_at',{ascending:false}).limit(50);
+  var res=await sb.from('activities').select('*').eq('client_id',clientId).order('created_at',{ascending:false}).limit(100);
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
+  cdActivitiesCache=rows;
+  cdActivityActiveFilter='';
   var elLastContact=document.getElementById('cd-intel-lastcontact');
   var elDaysSince=document.getElementById('cd-intel-dayssince');
+  var elLastActivity=document.getElementById('cd-last-activity');
   if(rows.length>0){
     var lastDate=new Date(rows[0].created_at);
     var days=Math.floor((new Date()-lastDate)/86400000);
     currentClientDaysSinceContact=days;
     if(elLastContact)elLastContact.textContent=lastDate.toLocaleDateString('pl-PL');
     if(elDaysSince){elDaysSince.textContent=days+' dni';elDaysSince.style.color=contactColor(days);}
+    if(elLastActivity)elLastActivity.textContent='Ostatnia aktywność: '+relativeTimePl(lastDate);
   }else{
     currentClientDaysSinceContact=null;
     if(elLastContact)elLastContact.textContent='brak';
     if(elDaysSince)elDaysSince.textContent='—';
+    if(elLastActivity)elLastActivity.textContent='Brak dotychczasowej aktywności';
   }
   renderClientAiInsights();
-  if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;padding:8px 0;">Brak aktywności — dodaj pierwszą notatkę powyżej.</div>';return;}
-  var canEdit=(currentRole==='owner'||currentRole==='admin');
-  el.innerHTML='<div class="tl-wrap">'+rows.map(function(a){
-    var dt=a.created_at?new Date(a.created_at):null;
-    var dateStr=dt?(dt.toLocaleDateString('pl-PL')+' '+dt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})):'';
-    return '<div class="tl-item"><div class="tl-dot">'+(a.icon||'📝')+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+(a.icon||'📝')+' '+(a.type||'Notatka')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+dateStr+'</span></div>'
-      +'<div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+(a.description||'')+'</div>'
-      +'<div style="font-size:10px;color:#8a9ab0;">✍️ '+(a.author||'—')+'</div>'
-      +(canEdit?('<div style="display:flex;gap:6px;margin-top:8px;">'
-        +'<button onclick="editClientNote(\''+a.id+'\',\''+encodeURIComponent(a.description||'')+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px;color:#fff;font-size:10px;cursor:pointer;">✏️ Edytuj</button>'
-        +'<button onclick="archiveClientNote(\''+a.id+'\')" style="flex:1;background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:6px;color:#ef4444;font-size:10px;cursor:pointer;">🗄️ Archiwizuj</button>'
-        +'</div>'):'')
-    +'</div></div>';
-  }).join('')+'</div>';
+  renderClientActivitiesList();
 }
 var editingNoteId=null;
 async function editClientNote(id,descEnc){
@@ -3913,6 +3969,16 @@ function planAction(id,action){
     sb.from('tasks').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id)
       .then(function(res){if(res.error)console.warn('Błąd zapisu statusu zadania:',res.error);});
     renderPlanDay(); // aktualizacja optymistyczna — nie czekamy na odpowiedź serwera
+    if(action==='done'&&t.client){
+      // tasks.client to tekst, nie FK do clients — dopasowanie najlepsze możliwe po nazwie,
+      // ten sam kompromis architektoniczny co przy AI rekomendacjach (Sprint 0.23).
+      sb.from('clients').select('id').eq('name',t.client).is('deleted_at',null).limit(1).maybeSingle()
+        .then(function(cRes){
+          if(cRes.data&&cRes.data.id){
+            logActivity(cRes.data.id,'✅','Zadanie ukończone','Ukończono: '+(t.reason||'zadanie')+'.');
+          }
+        });
+    }
   }else{
     planSave();
     renderPlanDay();
