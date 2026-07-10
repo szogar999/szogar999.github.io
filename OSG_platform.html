@@ -1481,7 +1481,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.25.0';
+var APP_VERSION = 'v0.27.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1824,13 +1824,26 @@ function renderClientState(){
     }).join('');
   }
 }
-async function loadClientTasksForAi(clientName){
+async function loadClientTasksForAi(clientId,clientName){
   currentClientTasks=[];
-  if(!sbEnabled||!clientName)return;
-  var q=sb.from('tasks').select('status,priority,date,category,time').eq('client',clientName).eq('status','pending');
-  if(!isOwnerOrAdmin()) q=q.eq('assigned_to',currentUid);
-  var res=await q;
-  if(!res.error) currentClientTasks=res.data||[];
+  if(!sbEnabled||!clientId)return;
+  // client_id = docelowe, bezpieczne dopasowanie (Sprint 0.26). Dopasowanie po nazwie
+  // zostaje TYLKO jako fallback dla starych, niezmigrowanych zadań (client_id IS NULL) —
+  // każde NOWE zadanie od tego sprintu zawsze ma już client_id, więc ten fallback
+  // z czasem naturalnie wygasa, w miarę jak stare zadania się kończą/archiwizują.
+  var qById=sb.from('tasks').select('status,priority,date,category,time,client_id').eq('client_id',clientId).eq('status','pending');
+  if(!isOwnerOrAdmin()) qById=qById.eq('assigned_to',currentUid);
+  var results;
+  if(clientName){
+    var qByNameFallback=sb.from('tasks').select('status,priority,date,category,time,client_id').is('client_id',null).eq('client',clientName).eq('status','pending');
+    if(!isOwnerOrAdmin()) qByNameFallback=qByNameFallback.eq('assigned_to',currentUid);
+    results=await Promise.all([qById,qByNameFallback]);
+  }else{
+    results=await Promise.all([qById]);
+  }
+  var byId=(results[0].data)||[];
+  var byName=(results[1]&&results[1].data)||[];
+  currentClientTasks=byId.concat(byName);
   renderClientState();
 }
 function renderPipelinePills(activeStage){
@@ -1870,7 +1883,7 @@ function dateToYMD(d){
 async function createFollowupTask(dateStr){
   if(!sbEnabled||!followupPromptClientId){dismissFollowupPrompt();return;}
   var res=await sb.from('tasks').insert({
-    client:followupPromptClientName,category:'call',priority:'yellow',date:dateStr,time:'09:00',
+    client:followupPromptClientName,client_id:followupPromptClientId,category:'call',priority:'yellow',date:dateStr,time:'09:00',
     reason:'Przypomnienie: '+followupPromptReason,status:'pending',assigned_to:currentUid||null
   });
   if(res.error){alert('Błąd tworzenia przypomnienia: '+res.error.message);dismissFollowupPrompt();return;}
@@ -1949,7 +1962,7 @@ async function saveQuickTask(){
   var address=document.getElementById('ct-address').value.trim()||null;
   var clientName=(currentClientRecord&&currentClientRecord.name)||'—';
   var res=await sb.from('tasks').insert({
-    client:clientName,category:quickTaskType,priority:priority,date:date,time:time,address:address,
+    client:clientName,client_id:currentClientId,category:quickTaskType,priority:priority,date:date,time:time,address:address,
     reason:reason,status:'pending',assigned_to:currentUid||null
   });
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
@@ -1995,7 +2008,7 @@ async function openClient(id){
   loadContacts(id);
   loadClientOffers(id);
   loadClientActivities(id);
-  loadClientTasksForAi(c.name);
+  loadClientTasksForAi(id,c.name);
 }
 
 var editingBuildingId=null;
@@ -2554,6 +2567,7 @@ async function checkAndCreateFollowupTasks(){
     var days=Math.floor((new Date()-new Date(o.sent_at))/86400000);
     return {
       client:(o.clients&&o.clients.name)||'—',
+      client_id:o.client_id,
       category:'offer',
       priority:(days>=5?'red':'yellow'),
       date:today,
@@ -2610,6 +2624,8 @@ var ClientStateEngine={
       return 'Zadzwoń do klienta';
     if(lastOffer&&lastOffer.status==='wysłana'&&offerWaitDays!=null&&offerWaitDays>=AI_OFFER_WAIT_ALERT)
       return 'Zrób follow-up';
+    if(lastOffer&&lastOffer.status==='wysłana')
+      return 'Brak pilnych działań'; // świeżo wysłana, jeszcze za wcześnie na follow-up — nie sugerujemy nic na siłę
     if(d.pipelineStage==='Wycena'&&(!lastOffer||lastOffer.status==='draft'))
       return 'Wyślij ofertę';
     if((d.pipelineStage==='Lead'||d.pipelineStage==='Pierwszy kontakt')&&!tasks.some(function(t){return t.category==='meeting';}))
@@ -2740,7 +2756,7 @@ async function computeAiSignalsGlobal(){
 
   var stageActQ=sb.from('activities').select('client_id,description,created_at').eq('type','Etap lejka').order('created_at',{ascending:false}).limit(500);
 
-  var meetingsQ=sb.from('tasks').select('client,time,date,category').eq('category','meeting').eq('date',today).eq('status','pending');
+  var meetingsQ=sb.from('tasks').select('client,client_id,time,date,category').eq('category','meeting').eq('date',today).eq('status','pending');
   if(myIds!==null) meetingsQ=meetingsQ.eq('assigned_to',currentUid);
 
   var touchQ=sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000);
@@ -2788,7 +2804,7 @@ async function computeAiSignalsGlobal(){
     var tMin=parseInt(parts[0],10)*60+parseInt(parts[1]||'0',10);
     var diff=tMin-nowMin;
     if(diff>=0&&diff<=60){
-      signals.push({severity:200-diff,icon:'📍',text:'Spotkanie z '+t.client+' za '+diff+' min.'});
+      signals.push({severity:200-diff,icon:'📍',text:'Spotkanie z '+t.client+' za '+diff+' min.',clientId:t.client_id||null});
     }
   });
 
@@ -3212,9 +3228,11 @@ async function generateOfferPdf(){
 }
 
 var previousOfferStatus=null;
+var offerSnapshotBeforeEdit=null;
 async function newOffer(){
   editingOfferId=null;
   previousOfferStatus=null;
+  offerSnapshotBeforeEdit=null;
   document.getElementById('oe-title').textContent='Nowa oferta';
   document.getElementById('oe-status').value='draft';
   document.getElementById('oe-vat').value='23';
@@ -3245,6 +3263,7 @@ async function openOffer(id){
   if(res.error||!res.data){alert('Błąd wczytywania oferty.');return;}
   var o=res.data;
   previousOfferStatus=o.status||'draft';
+  offerSnapshotBeforeEdit={net_total:Number(o.net_total||0),margin_pct:Number(o.margin_pct||0),itemCount:null};
   document.getElementById('oe-status').value=o.status||'draft';
   document.getElementById('oe-vat').value=(o.vat_rate!=null?String(o.vat_rate):'23');
   document.getElementById('oe-delivery').value=o.delivery_terms||'';
@@ -3255,6 +3274,7 @@ async function openOffer(id){
   var itemsRes=await itemsPromise;
   document.getElementById('oe-items').innerHTML='';
   var rows=(itemsRes.data||[]);
+  offerSnapshotBeforeEdit.itemCount=rows.length;
   if(rows.length===0) addOfferItemRow();
   else rows.forEach(function(r){addOfferItemRow(r);});
   recalcOfferTotals();
@@ -3308,13 +3328,25 @@ async function saveOffer(){
 
   // Historia — wpis przy KAŻDYM świadomym zapisie (klik "Zapisz ofertę" to akcja, nie klawiszologia,
   // więc to nie jest spam — to dokładnie audyt, o który prosiłeś). Status logujemy osobno, jeśli się zmienił.
+  // Historia — wpis przy KAŻDYM świadomym zapisie, ale TYLKO jeśli coś realnie się
+  // zmieniło w pozycjach/kwotach. Sama zmiana statusu ma swój własny, osobny log
+  // (niżej) — bez tego warunku dostawałbyś dwa wpisy za jedno kliknięcie
+  // "Zapisz ofertę" przy zwykłej zmianie statusu (znalezione w Sprincie 0.27).
+  var itemsActuallyChanged = !offerSnapshotBeforeEdit
+    || Math.abs(totals.sumNet-offerSnapshotBeforeEdit.net_total)>0.01
+    || Math.abs(totals.pctTotal-offerSnapshotBeforeEdit.margin_pct)>0.01
+    || items.length!==offerSnapshotBeforeEdit.itemCount;
   if(isNewOffer){
     logActivity(clientId,'📄','Oferta',
       'Utworzono ofertę: '+items.length+' '+plPozycje(items.length)+', '+totals.sumNet.toFixed(0)+' zł netto, marża '+totals.pctTotal.toFixed(1)+'%.');
-  }else{
+  }else if(itemsActuallyChanged){
     logActivity(clientId,'📄','Oferta — aktualizacja',
       'Zaktualizowano ofertę: '+items.length+' '+plPozycje(items.length)+', '+totals.sumNet.toFixed(0)+' zł netto, zysk '+totals.sumMarginAmt.toFixed(0)+' zł, marża '+totals.pctTotal.toFixed(1)+'%.');
   }
+  // Migawka aktualizuje się po KAŻDYM zapisie — appka zostaje na tym samym ekranie po
+  // zapisaniu (Sprint 0.13), więc bez tego kolejny zapis (np. sama zmiana statusu zaraz
+  // po utworzeniu) nigdy nie miałby świeżej migawki i zawsze fałszywie wykrywałby "zmianę".
+  offerSnapshotBeforeEdit={net_total:totals.sumNet,margin_pct:totals.pctTotal,itemCount:items.length};
   if(statusChanged){
     logActivity(clientId,'🔄','Oferta — zmiana statusu',
       'Status oferty: '+(OFFER_STATUS_LABEL[previousOfferStatus]||previousOfferStatus)+' → '+(OFFER_STATUS_LABEL[status]||status)+'.');
@@ -3605,7 +3637,7 @@ async function loadTasks(){
   if(res.error){console.warn('Błąd pobierania zadań:',res.error);return;}
   var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎',meeting:'📍'};
   planTasks=(res.data||[]).map(function(r){
-    return {id:r.id,client:r.client,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,address:r.address||'',icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today)};
+    return {id:r.id,client:r.client,client_id:r.client_id||null,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,address:r.address||'',icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today),date:r.date};
   });
   lastSyncTime=new Date();
   renderPlanDay();
@@ -4031,15 +4063,19 @@ function planAction(id,action){
     sb.from('tasks').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id)
       .then(function(res){if(res.error)console.warn('Błąd zapisu statusu zadania:',res.error);});
     renderPlanDay(); // aktualizacja optymistyczna — nie czekamy na odpowiedź serwera
-    if(action==='done'&&t.client){
-      // tasks.client to tekst, nie FK do clients — dopasowanie najlepsze możliwe po nazwie,
-      // ten sam kompromis architektoniczny co przy AI rekomendacjach (Sprint 0.23).
-      sb.from('clients').select('id').eq('name',t.client).is('deleted_at',null).limit(1).maybeSingle()
-        .then(function(cRes){
-          if(cRes.data&&cRes.data.id){
-            logActivity(cRes.data.id,'✅','Zadanie ukończone','Ukończono: '+(t.reason||'zadanie')+'.');
-          }
-        });
+    if(action==='done'){
+      if(t.client_id){
+        // client_id już jest na zadaniu (Sprint 0.26) — bezpieczne, zero zapytań, zero zgadywania.
+        logActivity(t.client_id,'✅','Zadanie ukończone','Ukończono: '+(t.reason||'zadanie')+'.');
+      }else if(t.client){
+        // Stare, niezmigrowane zadanie bez client_id — fallback po nazwie, jedyny pozostały przypadek.
+        sb.from('clients').select('id').eq('name',t.client).is('deleted_at',null).limit(1).maybeSingle()
+          .then(function(cRes){
+            if(cRes.data&&cRes.data.id){
+              logActivity(cRes.data.id,'✅','Zadanie ukończone','Ukończono: '+(t.reason||'zadanie')+'.');
+            }
+          });
+      }
     }
   }else{
     planSave();
