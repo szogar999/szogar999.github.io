@@ -1210,6 +1210,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div onclick="cdActivityFilter('delivery')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🚚 Dostawy</div>
       <div onclick="cdActivityFilter('note')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Notatki</div>
       <div onclick="cdActivityFilter('task')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">☑️ Zadania</div>
+      <div onclick="cdActivityFilter('contact')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">👤 Kontakty</div>
+      <div onclick="cdActivityFilter('building')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🏗️ Budowy</div>
     </div>
     <div id="cd-activities-list"></div>
   </div>
@@ -1481,7 +1483,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.27.0';
+var APP_VERSION = 'v0.27.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2060,6 +2062,7 @@ async function addBuilding(){
     address:document.getElementById('cb-address').value.trim()||null
   };
   var res;
+  var wasEditingBuilding=editingBuildingId;
   if(editingBuildingId){
     res=await sb.from('buildings').update(payload).eq('id',editingBuildingId);
   }else{
@@ -2068,6 +2071,10 @@ async function addBuilding(){
     res=await sb.from('buildings').insert(payload);
   }
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  if(!wasEditingBuilding){
+    var buildingDesc='Dodano budowę: '+name+(payload.address?('<br>'+payload.address):'');
+    logActivity(currentClientId,'🏗️','Budowa',buildingDesc);
+  }
   resetBuildingForm();
   toggleForm('cd-building-form');
   loadBuildings(currentClientId);
@@ -2127,6 +2134,7 @@ async function addContact(){
     email:document.getElementById('cc-email').value.trim()||null
   };
   var res;
+  var wasEditingContact=editingContactId;
   if(editingContactId){
     res=await sb.from('contacts').update(payload).eq('id',editingContactId);
   }else{
@@ -2135,6 +2143,12 @@ async function addContact(){
     res=await sb.from('contacts').insert(payload);
   }
   if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  if(!wasEditingContact){
+    var contactDesc='Dodano kontakt: '+name
+      +(payload.role_title?('<br>'+payload.role_title):'')
+      +(payload.phone?('<br>tel. '+payload.phone):'');
+    logActivity(currentClientId,'👤','Kontakt',contactDesc);
+  }
   resetContactForm();
   toggleForm('cd-contact-form');
   loadContacts(currentClientId);
@@ -2156,6 +2170,8 @@ function activityBucket(type){
   if(type==='Zadanie'||type==='Zadanie (auto)'||type==='Zadanie ukończone'||type==='Przypomnienie')return 'task';
   if(type&&type.indexOf('Oferta')===0)return 'offer';
   if(type==='Notatka')return 'note';
+  if(type==='Kontakt')return 'contact';
+  if(type==='Budowa')return 'building';
   if(type==='Dostawa'||type==='Dostawa zakończona')return 'delivery'; // przygotowane na przyszłość — dziś nic tu jeszcze nie loguje
   return 'other';
 }
