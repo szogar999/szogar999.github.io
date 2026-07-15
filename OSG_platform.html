@@ -1224,6 +1224,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 
   <div>
+    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">⚙️ Automatyzacje</div>
+    <div id="cd-automations-list" style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div>
+    </div>
+  </div>
+
+  <div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
       <div style="font-size:14px;font-weight:800;">📜 Historia współpracy</div>
       <div id="cd-last-activity" style="font-size:10px;color:#8a9ab0;"></div>
@@ -1494,14 +1501,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div id="followup-prompt" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#162130;border-top:2px solid #e8601c;padding:16px;z-index:500;box-shadow:0 -8px 30px rgba(0,0,0,.5);">
-  <div style="font-size:13px;font-weight:800;margin-bottom:4px;">🔔 Czy ustawić przypomnienie?</div>
+  <div id="followup-prompt-title" style="font-size:13px;font-weight:800;margin-bottom:4px;">🔔 Czy ustawić przypomnienie?</div>
   <div id="followup-prompt-context" style="font-size:11px;color:#8a9ab0;margin-bottom:10px;"></div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+  <div id="followup-btns-sent" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
     <button onclick="setFollowupReminder(1)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Jutro</button>
     <button onclick="setFollowupReminder(3)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 3 dni</button>
     <button onclick="setFollowupReminder(7)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za tydzień</button>
   </div>
-  <div style="display:flex;gap:6px;margin-bottom:8px;">
+  <div id="followup-btns-accepted" style="display:none;margin-bottom:8px;">
+    <button onclick="createAcceptedFollowupTask()" style="width:100%;background:#22c55e;border:none;border-radius:8px;padding:11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">📦 Utwórz zadanie: Ustal dostawę / następny etap</button>
+  </div>
+  <div id="followup-btns-rejected" style="display:none;gap:6px;margin-bottom:8px;">
+    <button onclick="setFollowupReminder(60)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 60 dni</button>
+    <button onclick="setFollowupReminder(90)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 90 dni</button>
+  </div>
+  <div id="followup-custom-wrap" style="display:flex;gap:6px;margin-bottom:8px;">
     <input type="date" id="followup-custom-date" style="flex:1;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
     <button onclick="setFollowupReminderCustom()" style="background:#e8601c;border:none;border-radius:8px;padding:9px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Ustaw</button>
   </div>
@@ -1534,7 +1548,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.30.0';
+var APP_VERSION = 'v0.31.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -1877,6 +1891,40 @@ function renderClientState(){
     }).join('');
   }
 }
+var AUTOMATION_SOURCE_LABEL={
+  offer_followup_2d:'Follow-up po ofercie',
+  meeting_no_note:'Brak notatki po spotkaniu',
+  stale_client:'Brak kontaktu z klientem'
+};
+async function loadClientAutomations(clientId){
+  var el=document.getElementById('cd-automations-list');
+  if(!el||!sbEnabled)return;
+  var res=await sb.from('tasks').select('id,reason,priority,automation_source,created_at')
+    .eq('client_id',clientId).eq('status','pending').not('automation_source','is',null)
+    .order('created_at',{ascending:false});
+  if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
+  var rows=res.data||[];
+  if(rows.length===0){el.innerHTML='<div style="font-size:11px;color:#8a9ab0;">Brak aktywnych automatyzacji dla tego klienta.</div>';return;}
+  el.innerHTML=rows.map(function(t){
+    var label=AUTOMATION_SOURCE_LABEL[t.automation_source]||t.automation_source;
+    var dt=t.created_at?new Date(t.created_at).toLocaleDateString('pl-PL'):'';
+    var color=t.priority==='red'?'#ef4444':'#f59e0b';
+    return '<div style="background:#0f1923;border-radius:9px;padding:9px 11px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<span style="font-size:9px;font-weight:700;color:'+color+';text-transform:uppercase;">⚙️ '+label+'</span>'
+        +'<span style="font-size:9px;color:#8a9ab0;">'+dt+'</span>'
+      +'</div>'
+      +'<div style="font-size:12px;margin-top:4px;">'+t.reason+'</div>'
+      +'<button onclick="closeAutomationTask(\''+t.id+'\')" style="margin-top:7px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;color:#8a9ab0;font-size:10px;cursor:pointer;">Zamknij</button>'
+    +'</div>';
+  }).join('');
+}
+async function closeAutomationTask(taskId){
+  if(!sbEnabled)return;
+  var res=await sb.from('tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',taskId);
+  if(res.error){alert('Błąd zamykania: '+res.error.message);return;}
+  if(currentClientId)loadClientAutomations(currentClientId);
+}
 async function loadClientTasksForAi(clientId,clientName){
   currentClientTasks=[];
   if(!sbEnabled||!clientId)return;
@@ -1908,15 +1956,34 @@ function renderPipelinePills(activeStage){
     return '<div onclick="updateClientStage(\''+s+'\')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;cursor:pointer;background:'+(active?color:'#162130')+';color:'+(active?'#fff':'#8a9ab0')+';border:1px solid '+(active?color:'rgba(255,255,255,.1)')+';">'+s+'</div>';
   }).join('');
 }
-var followupPromptClientId=null,followupPromptClientName='',followupPromptReason='';
-function askFollowupReminder(clientId,clientName,reason){
+var followupPromptClientId=null,followupPromptClientName='',followupPromptReason='',followupPromptMode='sent';
+function askFollowupReminder(clientId,clientName,reason,mode){
   if(!clientId)return;
   followupPromptClientId=clientId;
   followupPromptClientName=clientName||'—';
   followupPromptReason=reason||'Kontakt z klientem';
+  followupPromptMode=mode||'sent';
   document.getElementById('followup-prompt-context').textContent=clientName+' — '+reason;
   document.getElementById('followup-custom-date').value='';
+  var titles={sent:'🔔 Czy ustawić przypomnienie?',accepted:'🎉 Oferta zaakceptowana!',rejected:'📋 Oferta odrzucona'};
+  document.getElementById('followup-prompt-title').textContent=titles[followupPromptMode]||titles.sent;
+  document.getElementById('followup-btns-sent').style.display=(followupPromptMode==='sent')?'flex':'none';
+  document.getElementById('followup-btns-accepted').style.display=(followupPromptMode==='accepted')?'block':'none';
+  document.getElementById('followup-btns-rejected').style.display=(followupPromptMode==='rejected')?'flex':'none';
+  document.getElementById('followup-custom-wrap').style.display=(followupPromptMode==='sent')?'flex':'none';
   document.getElementById('followup-prompt').style.display='block';
+}
+async function createAcceptedFollowupTask(){
+  if(!sbEnabled||!followupPromptClientId){dismissFollowupPrompt();return;}
+  var res=await sb.from('tasks').insert({
+    client:followupPromptClientName,client_id:followupPromptClientId,category:'delivery',priority:'yellow',
+    date:todayStr(),time:'09:00',reason:'Ustal dostawę / następny etap współpracy.',
+    status:'pending',assigned_to:currentUid||null
+  });
+  if(res.error){alert('Błąd tworzenia zadania: '+res.error.message);dismissFollowupPrompt();return;}
+  logActivity(followupPromptClientId,'📦','Zadanie','Utworzono zadanie: Ustal dostawę / następny etap współpracy (po wygranej ofercie).');
+  dismissFollowupPrompt();
+  if(currentClientId===followupPromptClientId)loadClientActivities(currentClientId);
 }
 function dismissFollowupPrompt(){
   document.getElementById('followup-prompt').style.display='none';
@@ -2062,6 +2129,7 @@ async function openClient(id){
   loadClientOffers(id);
   loadClientActivities(id);
   loadClientTasksForAi(id,c.name);
+  loadClientAutomations(id);
 }
 
 var editingBuildingId=null;
@@ -2623,39 +2691,60 @@ async function loadCmdActivity(){
 async function checkAndCreateFollowupTasks(){
   if(!sbEnabled)return;
   var myIds=await getMyClientIds();
+  var dummyId='00000000-0000-0000-0000-000000000000';
   var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
   var offersQ=sb.from('offers').select('id,client_id,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null);
-  if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
+  if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:[dummyId]);
   var res=await offersQ;
   if(res.error||!res.data||res.data.length===0)return;
   var stale=res.data;
-  var existingRes=await sb.from('tasks').select('offer_id').eq('status','pending').not('offer_id','is',null);
+
+  // Pobieramy WSZYSTKIE pending zadania powiązane z tymi ofertami — nie tylko żeby
+  // sprawdzić czy istnieją (jak wcześniej), ale żeby móc je ESKALOWAĆ, jeśli już są.
+  var offerIds=stale.map(function(o){return o.id;});
+  var existingRes=await sb.from('tasks').select('id,offer_id,priority,reason').eq('status','pending').in('offer_id',offerIds);
   if(existingRes.error)return;
-  var existingSet={};
-  (existingRes.data||[]).forEach(function(t){ existingSet[t.offer_id]=true; });
-  var toCreate=stale.filter(function(o){ return !existingSet[o.id]; });
-  if(toCreate.length===0)return;
+  var existingByOffer={};
+  (existingRes.data||[]).forEach(function(t){ existingByOffer[t.offer_id]=t; });
+
+  var toCreate=[], toUpdate=[], toLog=[];
   var today=todayStr();
-  var payload=toCreate.map(function(o){
+  stale.forEach(function(o){
     var days=Math.floor((new Date()-new Date(o.sent_at))/86400000);
-    return {
-      client:(o.clients&&o.clients.name)||'—',
-      client_id:o.client_id,
-      category:'offer',
-      priority:(days>=5?'red':'yellow'),
-      date:today,
-      time:'09:00',
-      reason:'Oferta wysłana '+days+' dni temu, brak odpowiedzi — zadzwoń i zapytaj o decyzję.',
-      status:'pending',
-      offer_id:o.id,
-      assigned_to:currentUid||null
-    };
+    var clientName=(o.clients&&o.clients.name)||'—';
+    var existing=existingByOffer[o.id];
+    if(!existing){
+      toCreate.push({
+        client:clientName,client_id:o.client_id,category:'offer',
+        priority:(days>=5?'red':'yellow'),date:today,time:'09:00',
+        reason:'Oferta wysłana '+days+' dni temu, brak odpowiedzi — zadzwoń i zapytaj o decyzję.',
+        status:'pending',offer_id:o.id,assigned_to:currentUid||null,
+        automation_source:'offer_followup_2d'
+      });
+      toLog.push({clientId:o.client_id,msg:'System utworzył zadanie follow-up — brak odpowiedzi na wysłaną ofertę.'});
+    }else{
+      // Eskalacja — sprawdzamy TREŚĆ przed zapisem, żeby nie odświeżać tego samego
+      // poziomu przy każdym wejściu do Command (idempotentność wymagana w pkt 8).
+      if(days>=10&&existing.reason.indexOf('WYSOKIE RYZYKO')===-1){
+        toUpdate.push({id:existing.id,priority:'red',reason:'⚠️ WYSOKIE RYZYKO: oferta wysłana '+days+' dni temu, wciąż brak odpowiedzi.'});
+        toLog.push({clientId:o.client_id,msg:'Oferta oznaczona jako wysokie ryzyko — brak odpowiedzi od '+days+' dni.'});
+      }else if(days>=5&&existing.priority!=='red'){
+        toUpdate.push({id:existing.id,priority:'red',reason:'Oferta wysłana '+days+' dni temu, brak odpowiedzi — priorytet podniesiony.'});
+        toLog.push({clientId:o.client_id,msg:'Priorytet follow-upu podniesiony — brak odpowiedzi od '+days+' dni.'});
+      }
+    }
   });
-  var insertRes=await sb.from('tasks').insert(payload);
-  if(insertRes.error){console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);return;}
-  toCreate.forEach(function(o){
-    logActivity(o.client_id,'📅','Zadanie (auto)','System utworzył zadanie follow-up — brak odpowiedzi na wysłaną ofertę.');
-  });
+
+  if(toCreate.length){
+    var insertRes=await sb.from('tasks').insert(toCreate);
+    if(insertRes.error)console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);
+  }
+  for(var i=0;i<toUpdate.length;i++){
+    var u=toUpdate[i];
+    var updRes=await sb.from('tasks').update({priority:u.priority,reason:u.reason,updated_at:new Date().toISOString()}).eq('id',u.id);
+    if(updRes.error)console.warn('Błąd eskalacji follow-upu:',updRes.error);
+  }
+  toLog.forEach(function(l){ logActivity(l.clientId,'📅','Zadanie (auto)',l.msg); });
 }
 
 /* ====================== AUTOMATYZACJA — klienci bez kontaktu od dawna ====================== */
@@ -3603,6 +3692,8 @@ async function saveOffer(){
     }
   }
   var justSent=(status==='wysłana')&&(isNewOffer||statusChanged);
+  var justAccepted=statusChanged&&status==='zaakceptowana';
+  var justRejected=statusChanged&&status==='odrzucona';
 
   var newOfferId=offerId;
   previousOfferStatus=status;
@@ -3617,6 +3708,12 @@ async function saveOffer(){
   if(justSent){
     var offClient=allClientsCache.find(function(x){return x.id===clientId;});
     askFollowupReminder(clientId,(offClient&&offClient.name)||'—','Wysłana oferta');
+  }else if(justAccepted){
+    var wonClient=allClientsCache.find(function(x){return x.id===clientId;});
+    askFollowupReminder(clientId,(wonClient&&wonClient.name)||'—','Oferta zaakceptowana','accepted');
+  }else if(justRejected){
+    var lostClient=allClientsCache.find(function(x){return x.id===clientId;});
+    askFollowupReminder(clientId,(lostClient&&lostClient.name)||'—','Wróć do klienta — nowy etap inwestycji','rejected');
   }
 }
 function offersFilterType(t){
@@ -3637,6 +3734,105 @@ function offersFilter(status){
   target.style.background='#e8601c';target.style.color='#fff';
   renderOffersList();
 }
+/* ====================== AUTOMAT: spotkanie bez notatki w 24h (Sprint 0.31) ====================== */
+async function checkMeetingsWithoutNotes(){
+  if(!sbEnabled)return;
+  var myIds=await getMyClientIds();
+  var dummyId='00000000-0000-0000-0000-000000000000';
+  var cutoff=new Date(); cutoff.setHours(cutoff.getHours()-24);
+  var doneQ=sb.from('tasks').select('id,client,client_id,updated_at').eq('category','meeting').eq('status','done').lt('updated_at',cutoff.toISOString()).not('client_id','is',null);
+  if(myIds!==null) doneQ=doneQ.in('client_id',myIds.length?myIds:[dummyId]);
+  var res=await doneQ;
+  if(res.error||!res.data||res.data.length===0)return;
+  var meetings=res.data;
+
+  var clientIds=meetings.map(function(m){return m.client_id;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+  var both=await Promise.all([
+    sb.from('activities').select('client_id,created_at').eq('type','Notatka').in('client_id',clientIds),
+    sb.from('tasks').select('client_id').eq('status','pending').eq('automation_source','meeting_no_note').in('client_id',clientIds)
+  ]);
+  var notesRes=both[0], existingRemindersRes=both[1];
+  var notesByClient={};
+  (notesRes.data||[]).forEach(function(n){ if(!notesByClient[n.client_id])notesByClient[n.client_id]=[]; notesByClient[n.client_id].push(new Date(n.created_at)); });
+  var existingSet={}; (existingRemindersRes.data||[]).forEach(function(t){existingSet[t.client_id]=true;});
+
+  var toCreate=[];
+  meetings.forEach(function(m){
+    var meetingDoneAt=new Date(m.updated_at);
+    var notes=notesByClient[m.client_id]||[];
+    var hasNoteAfter=notes.some(function(n){return n>meetingDoneAt;});
+    if(!hasNoteAfter&&!existingSet[m.client_id]){
+      toCreate.push({
+        client:m.client,client_id:m.client_id,category:'call',priority:'yellow',
+        date:todayStr(),time:'09:00',reason:'Dodaj podsumowanie spotkania.',
+        status:'pending',assigned_to:currentUid||null,automation_source:'meeting_no_note'
+      });
+      existingSet[m.client_id]=true; // zabezpieczenie przed duplikatem w tej samej partii (kilka spotkań, jeden klient)
+    }
+  });
+  if(toCreate.length===0)return;
+  var insertRes=await sb.from('tasks').insert(toCreate);
+  if(insertRes.error){console.warn('Błąd tworzenia przypomnień o podsumowaniu spotkania:',insertRes.error);return;}
+  toCreate.forEach(function(t){
+    logActivity(t.client_id,'📝','Zadanie (auto)','System przypomina o podsumowaniu spotkania — brak notatki w ciągu 24h od zakończenia.');
+  });
+}
+
+/* ====================== AUTOMAT: eskalacja braku kontaktu (Sprint 0.31) ====================== */
+async function checkStaleClientReminders(){
+  if(!sbEnabled)return;
+  var myIds=await getMyClientIds();
+  var clientsQ=sb.from('clients').select('id,name,created_at').is('deleted_at',null);
+  if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
+  var results=await Promise.all([
+    clientsQ,
+    sb.from('activities').select('client_id,created_at').order('created_at',{ascending:false}).limit(1000),
+    sb.from('tasks').select('id,client_id,priority,reason').eq('status','pending').eq('automation_source','stale_client')
+  ]);
+  var clientsRes=results[0], touchRes=results[1], existingRes=results[2];
+  if(clientsRes.error||!clientsRes.data)return;
+  var lastTouch={};
+  (touchRes.data||[]).forEach(function(a){ if(a.client_id&&!lastTouch[a.client_id])lastTouch[a.client_id]=a.created_at; });
+  var existingByClient={}; (existingRes.data||[]).forEach(function(t){ existingByClient[t.client_id]=t; });
+
+  var now=new Date();
+  var toCreate=[], toUpdate=[], toLog=[];
+  clientsRes.data.forEach(function(c){
+    var last=lastTouch[c.id]||c.created_at;
+    var days=Math.floor((now-new Date(last))/86400000);
+    if(days<14)return;
+    var existing=existingByClient[c.id];
+    if(!existing){
+      toCreate.push({
+        client:c.name,client_id:c.id,category:'call',
+        priority:(days>=30?'red':'yellow'),date:todayStr(),time:'09:00',
+        reason:'Brak kontaktu od '+days+' dni'+(days>=45?' — RYZYKO UTRATY KLIENTA':'')+'.',
+        status:'pending',assigned_to:currentUid||null,automation_source:'stale_client'
+      });
+      toLog.push({clientId:c.id,msg:'System utworzył przypomnienie — brak kontaktu od '+days+' dni.'});
+    }else{
+      if(days>=45&&existing.reason.indexOf('RYZYKO UTRATY')===-1){
+        toUpdate.push({id:existing.id,priority:'red',reason:'Brak kontaktu od '+days+' dni — RYZYKO UTRATY KLIENTA.'});
+        toLog.push({clientId:c.id,msg:'Klient oznaczony jako zagrożony utratą — brak kontaktu od '+days+' dni.'});
+      }else if(days>=30&&existing.priority!=='red'){
+        toUpdate.push({id:existing.id,priority:'red',reason:'Brak kontaktu od '+days+' dni — pilne.'});
+        toLog.push({clientId:c.id,msg:'Przypomnienie oznaczone jako pilne — brak kontaktu od '+days+' dni.'});
+      }
+    }
+  });
+
+  if(toCreate.length){
+    var insertRes=await sb.from('tasks').insert(toCreate);
+    if(insertRes.error)console.warn('Błąd tworzenia przypomnień o braku kontaktu:',insertRes.error);
+  }
+  for(var i=0;i<toUpdate.length;i++){
+    var u=toUpdate[i];
+    var updRes=await sb.from('tasks').update({priority:u.priority,reason:u.reason,updated_at:new Date().toISOString()}).eq('id',u.id);
+    if(updRes.error)console.warn('Błąd eskalacji przypomnienia o braku kontaktu:',updRes.error);
+  }
+  toLog.forEach(function(l){ logActivity(l.clientId,'🔕','Zadanie (auto)',l.msg); });
+}
+
 async function loadOffers(){
   var statusEl=document.getElementById('of-status-line');
   if(!sbEnabled){
@@ -3738,6 +3934,8 @@ async function loadCommandStats(){
     followQ,
     loadCmdActivity(),
     checkAndCreateFollowupTasks(),
+    checkMeetingsWithoutNotes(),
+    checkStaleClientReminders(),
     loadStaleClients(),
     loadPipelineSummary(),
     loadDaySummary(),
