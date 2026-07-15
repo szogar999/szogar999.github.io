@@ -1228,15 +1228,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-offers">
-<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📄 Oferty</span></div>
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📄 Dokumenty</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-  <button onclick="newOffer()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Nowa oferta</button>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;">
-    <div onclick="offersFilter('')" id="of-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystkie</div>
-    <div onclick="offersFilter('draft')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Robocze</div>
-    <div onclick="offersFilter('wysłana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📤 Wysłane</div>
-    <div onclick="offersFilter('zaakceptowana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">✅ Zaakceptowane</div>
-    <div onclick="offersFilter('odrzucona')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">❌ Odrzucone</div>
+  <button onclick="newOffer()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Nowy dokument</button>
+  <div>
+    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:5px;">Typ</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <div onclick="offersFilterType('')" id="of-type-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystkie</div>
+      <div onclick="offersFilterType('oferta')" id="of-type-oferta" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
+      <div onclick="offersFilterType('proforma')" id="of-type-proforma" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Pro Forma</div>
+      <div onclick="offersFilterType('faktura_vat')" id="of-type-faktura_vat" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Faktury VAT</div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:5px;">Status</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="of-status-pills">
+      <div onclick="offersFilter('')" id="of-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystkie</div>
+      <div onclick="offersFilter('draft')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Robocze</div>
+      <div onclick="offersFilter('wysłana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📤 Wysłane</div>
+      <div onclick="offersFilter('zaakceptowana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">✅ Zaakceptowane</div>
+      <div onclick="offersFilter('odrzucona')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">❌ Odrzucone</div>
+    </div>
   </div>
   <div id="of-status-line" style="font-size:11px;color:#8a9ab0;"></div>
   <div id="of-list" style="display:flex;flex-direction:column;gap:8px;">
@@ -1246,7 +1258,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav">
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
-  <button class="nb on" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
+  <button class="nb on" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Dokumenty</button>
   <button class="nb" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
@@ -1255,6 +1267,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="screen" id="s-offer-edit">
 <div class="hdr"><button class="back" onclick="go('s-offers')">←</button><span id="oe-title" style="font-size:18px;font-weight:800;flex:1;">Nowa oferta</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+
+  <div>
+    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Typ dokumentu</div>
+    <div id="oe-doctype-pills" style="display:flex;gap:6px;">
+      <div onclick="setOfferDocType('oferta')" id="oe-dt-oferta" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#e8601c;color:#fff;cursor:pointer;">📄 Oferta</div>
+      <div onclick="setOfferDocType('proforma')" id="oe-dt-proforma" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Pro Forma</div>
+      <div onclick="setOfferDocType('faktura_vat')" id="oe-dt-faktura_vat" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Faktura VAT</div>
+    </div>
+  </div>
 
   <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:9px;">
     <div style="font-size:11px;color:#8a9ab0;">Klient *</div>
@@ -1483,7 +1504,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.27.1';
+var APP_VERSION = 'v0.29.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2168,7 +2189,7 @@ function activityBucket(type){
   if(type==='Telefon')return 'call';
   if(type==='Spotkanie')return 'meeting';
   if(type==='Zadanie'||type==='Zadanie (auto)'||type==='Zadanie ukończone'||type==='Przypomnienie')return 'task';
-  if(type&&type.indexOf('Oferta')===0)return 'offer';
+  if(type&&(type.indexOf('Oferta')===0||type.indexOf('Faktura')===0))return 'offer';
   if(type==='Notatka')return 'note';
   if(type==='Kontakt')return 'contact';
   if(type==='Budowa')return 'building';
@@ -2295,6 +2316,7 @@ async function loadCategoryTargets(){
 var OFFER_STATUS_LABEL={draft:'📝 Robocza','wysłana':'📤 Wysłana',zaakceptowana:'✅ Zaakceptowana',odrzucona:'❌ Odrzucona'};
 var OFFER_STATUS_COLOR={draft:'#8a9ab0','wysłana':'#3b82f6',zaakceptowana:'#22c55e',odrzucona:'#ef4444'};
 var offersActiveFilter='';
+var offersActiveTypeFilter='';
 var allOffersCache=[];
 var allClientsCache=[];
 
@@ -2500,8 +2522,13 @@ function plOferty(n){
 function offerNumber(o){
   var year=o.created_at?new Date(o.created_at).getFullYear():new Date().getFullYear();
   var seq=o.offer_seq!=null?String(o.offer_seq):'?';
-  return 'OSG/'+year+'/'+seq.padStart(4,'0');
+  var padded=seq.padStart(4,'0');
+  var docType=o.document_type||'oferta';
+  if(docType==='proforma')return 'PF-OSG-'+year+'-'+padded;
+  if(docType==='faktura_vat')return 'FV-OSG-'+year+'-'+padded;
+  return 'OSG/'+year+'/'+padded;
 }
+var DOCUMENT_TYPE_LABEL={oferta:'📄 Oferta',proforma:'🧾 Faktura Pro Forma',faktura_vat:'🧾 Faktura VAT'};
 function slugifyForFilename(str){
   var map={'ą':'a','ć':'c','ę':'e','ł':'l','ń':'n','ó':'o','ś':'s','ź':'z','ż':'z',
     'Ą':'A','Ć':'C','Ę':'E','Ł':'L','Ń':'N','Ó':'O','Ś':'S','Ź':'Z','Ż':'Z'};
@@ -3042,6 +3069,8 @@ async function generateOfferPdf(){
     var vatAmount=netTotal*(vatRate/100);
     var grossTotal=Number(o.gross_total!=null?o.gross_total:(netTotal+vatAmount));
 
+    var docType=o.document_type||'oferta';
+
     var jsPDF=window.jspdf.jsPDF;
     var doc=new jsPDF({unit:'mm',format:'a4'});
     doc.addFileToVFS('DejaVuSans.ttf', PDF_FONT_REGULAR_B64);
@@ -3071,25 +3100,31 @@ async function generateOfferPdf(){
     doc.setLineWidth(0.8);
     doc.line(15, 32, 195, 32);
 
-    // --- Tytuł + badge poufności ---
+    // --- Tytuł + badge — zależne od typu dokumentu (Oferta / Pro Forma / Faktura VAT) ---
+    var titleMain, titleAccent, badgeText;
+    if(docType==='proforma'){ titleMain='FAKTURA / '; titleAccent='PRO FORMA'; badgeText='NIE JEST FAKTURĄ VAT'; }
+    else if(docType==='faktura_vat'){ titleMain='FAKTURA / '; titleAccent='VAT'; badgeText='ORYGINAŁ'; }
+    else { titleMain='OFERTA / '; titleAccent='WYCENA'; badgeText='DOKUMENT POUFNY'; }
+
     doc.setFont('DejaVuSans','bold');
     doc.setFontSize(21);
     doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
-    doc.text('OFERTA / ', 15, 46);
-    var wOferta=doc.getTextWidth('OFERTA / ');
+    doc.text(titleMain, 15, 46);
+    var wOferta=doc.getTextWidth(titleMain);
     doc.setTextColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
-    doc.text('WYCENA', 15+wOferta, 46);
+    doc.text(titleAccent, 15+wOferta, 46);
 
     doc.setFillColor(PDF_C_ORANGE[0],PDF_C_ORANGE[1],PDF_C_ORANGE[2]);
-    doc.roundedRect(158,39,37,7.5,1.5,1.5,'F');
+    doc.roundedRect(148,39,47,7.5,1.5,1.5,'F');
     doc.setFont('DejaVuSans','bold');
     doc.setFontSize(7.5);
     doc.setTextColor(PDF_C_WHITE[0],PDF_C_WHITE[1],PDF_C_WHITE[2]);
-    doc.text('DOKUMENT POUFNY', 176.5, 44, {align:'center'});
+    doc.text(badgeText, 171.5, 44, {align:'center'});
 
     // --- Pasek informacyjny: numer / data / ważność / obszar ---
+    var numLabel=(docType==='proforma')?'Nr pro formy':(docType==='faktura_vat')?'Nr faktury':'Nr oferty';
     pdfPanel(doc,15,53,180,20);
-    pdfLabelValue(doc,'Nr oferty', numDisplay, 19, 61);
+    pdfLabelValue(doc,numLabel, numDisplay, 19, 61);
     pdfLabelValue(doc,'Data wystawienia', createdDate.toLocaleDateString('pl-PL'), 64, 61);
     pdfLabelValue(doc,'Ważność oferty', validDays+' dni', 109, 61);
     pdfLabelValue(doc,'Obszar dostawy', 'Warszawa / Mazowsze', 154, 61);
@@ -3192,7 +3227,16 @@ async function generateOfferPdf(){
     y+=boxH+4;
     condBox(15, y, 'Forma płatności', 'Przy dostawie', 'Gotówka lub przelew — faktura VAT do każdego zamówienia');
     condBox(15+boxW+gapX, y, 'Dostawa', 'Liczona indywidualnie', 'Zależnie od lokalizacji i wielkości zamówienia');
-    y+=boxH+8;
+    y+=boxH+4;
+
+    // --- Dane do przelewu — tylko dla Pro Formy/Faktury VAT, przeniesione wprost z proforma.html ---
+    if(docType==='proforma'||docType==='faktura_vat'){
+      ensureSpace(boxH+8);
+      condBox(15, y, 'Nr rachunku bankowego', '27 1050 1025 1000 0090 8669 0428', 'ING Bank Śląski');
+      condBox(15+boxW+gapX, y, 'Tytuł przelewu', numDisplay, 'Prosimy o podanie numeru dokumentu');
+      y+=boxH+4;
+    }
+    y+=4;
 
     // --- Uwagi / notatki (pusty box, zgodnie z wzorcem) ---
     ensureSpace(28);
@@ -3211,8 +3255,18 @@ async function generateOfferPdf(){
     doc.setFont('DejaVuSans','normal');
     doc.setFontSize(7.2);
     doc.setTextColor(PDF_C_MUTED[0],PDF_C_MUTED[1],PDF_C_MUTED[2]);
-    doc.text('Oferta przygotowana indywidualnie. Ceny obowiązują przez '+validDays+' dni od daty wystawienia (do '+validUntil.toLocaleDateString('pl-PL')+'). '+
-      'OSG Logistics zastrzega sobie prawo do weryfikacji wyceny po potwierdzeniu zamówienia.', 15, y, {maxWidth:180});
+    var legalNote;
+    if(docType==='proforma'){
+      legalNote='Niniejszy dokument jest fakturą pro forma i nie stanowi faktury VAT w rozumieniu przepisów podatkowych. Nie jest podstawą do odliczenia podatku VAT. '+
+        'Zamówienie zostanie zrealizowane po potwierdzeniu. OSG Logistics zastrzega sobie prawo do zmiany cen w przypadku znacznych wahań rynkowych.';
+    }else if(docType==='faktura_vat'){
+      legalNote='Faktura VAT wystawiona zgodnie z Ustawą z dnia 11 marca 2004 r. o podatku od towarów i usług. Nabywca ma prawo do odliczenia podatku VAT na zasadach ogólnych. '+
+        'Płatność w terminie wskazanym na dokumencie.';
+    }else{
+      legalNote='Oferta przygotowana indywidualnie. Ceny obowiązują przez '+validDays+' dni od daty wystawienia (do '+validUntil.toLocaleDateString('pl-PL')+'). '+
+        'OSG Logistics zastrzega sobie prawo do weryfikacji wyceny po potwierdzeniu zamówienia.';
+    }
+    doc.text(legalNote, 15, y, {maxWidth:180});
     y+=7;
 
     // --- Stopka ---
@@ -3232,10 +3286,11 @@ async function generateOfferPdf(){
     doc.text('© '+createdDate.getFullYear()+' OSG Logistics', 195, y, {align:'right'});
 
     var fileNumSlug=numDisplay.replace(/\//g,'-');
-    var fileName='OSG_Oferta_'+fileNumSlug+'_'+slugifyForFilename(clientName)+'.pdf';
+    var filePrefix=(docType==='proforma')?'OSG_ProForma_':(docType==='faktura_vat')?'OSG_FakturaVAT_':'OSG_Oferta_';
+    var fileName=filePrefix+fileNumSlug+'_'+slugifyForFilename(clientName)+'.pdf';
     doc.save(fileName);
 
-    logActivity(o.client_id,'📎','Oferta — PDF','Wygenerowano PDF dla oferty '+numDisplay+'.');
+    logActivity(o.client_id,'📎',(DOCUMENT_TYPE_LABEL[docType]||'Oferta').replace(/^\S+\s/,'')+' — PDF','Wygenerowano PDF dla dokumentu '+numDisplay+'.');
   }catch(err){
     alert('Błąd generowania PDF: '+err.message);
   }finally{
@@ -3243,12 +3298,23 @@ async function generateOfferPdf(){
   }
 }
 
+var currentOfferDocType='oferta';
+function setOfferDocType(t){
+  currentOfferDocType=t;
+  ['oferta','proforma','faktura_vat'].forEach(function(k){
+    var el=document.getElementById('oe-dt-'+k);
+    if(!el)return;
+    if(k===t){el.style.background='#e8601c';el.style.color='#fff';}
+    else{el.style.background='#1e2f42';el.style.color='#8a9ab0';}
+  });
+}
 var previousOfferStatus=null;
 var offerSnapshotBeforeEdit=null;
 async function newOffer(){
   editingOfferId=null;
   previousOfferStatus=null;
   offerSnapshotBeforeEdit=null;
+  setOfferDocType('oferta');
   document.getElementById('oe-title').textContent='Nowa oferta';
   document.getElementById('oe-status').value='draft';
   document.getElementById('oe-vat').value='23';
@@ -3278,8 +3344,10 @@ async function openOffer(id){
   var res=await sb.from('offers').select('*').eq('id',id).maybeSingle();
   if(res.error||!res.data){alert('Błąd wczytywania oferty.');return;}
   var o=res.data;
+  setOfferDocType(o.document_type||'oferta');
   previousOfferStatus=o.status||'draft';
   offerSnapshotBeforeEdit={net_total:Number(o.net_total||0),margin_pct:Number(o.margin_pct||0),itemCount:null};
+  document.getElementById('oe-title').textContent='Edycja — '+offerNumber(o);
   document.getElementById('oe-status').value=o.status||'draft';
   document.getElementById('oe-vat').value=(o.vat_rate!=null?String(o.vat_rate):'23');
   document.getElementById('oe-delivery').value=o.delivery_terms||'';
@@ -3311,7 +3379,7 @@ async function saveOffer(){
   var btn=document.getElementById('oe-save-btn');
   btn.disabled=true;btn.textContent='Zapisywanie…';
   var payload={
-    client_id:clientId, building_id:buildingId, status:status,
+    client_id:clientId, building_id:buildingId, status:status, document_type:currentOfferDocType,
     net_total:totals.sumNet, gross_total:totals.sumGross, vat_rate:totals.vatRate,
     margin_amount:totals.sumMarginAmt, margin_pct:totals.pctTotal,
     delivery_terms:document.getElementById('oe-delivery').value.trim()||null,
@@ -3353,8 +3421,8 @@ async function saveOffer(){
     || Math.abs(totals.pctTotal-offerSnapshotBeforeEdit.margin_pct)>0.01
     || items.length!==offerSnapshotBeforeEdit.itemCount;
   if(isNewOffer){
-    logActivity(clientId,'📄','Oferta',
-      'Utworzono ofertę: '+items.length+' '+plPozycje(items.length)+', '+totals.sumNet.toFixed(0)+' zł netto, marża '+totals.pctTotal.toFixed(1)+'%.');
+    logActivity(clientId,(currentOfferDocType==='oferta'?'📄':'🧾'),(DOCUMENT_TYPE_LABEL[currentOfferDocType]||'Oferta').replace(/^\S+\s/,''),
+      'Utworzono: '+items.length+' '+plPozycje(items.length)+', '+totals.sumNet.toFixed(0)+' zł netto, marża '+totals.pctTotal.toFixed(1)+'%.');
   }else if(itemsActuallyChanged){
     logActivity(clientId,'📄','Oferta — aktualizacja',
       'Zaktualizowano ofertę: '+items.length+' '+plPozycje(items.length)+', '+totals.sumNet.toFixed(0)+' zł netto, zysk '+totals.sumMarginAmt.toFixed(0)+' zł, marża '+totals.pctTotal.toFixed(1)+'%.');
@@ -3389,9 +3457,20 @@ async function saveOffer(){
     askFollowupReminder(clientId,(offClient&&offClient.name)||'—','Wysłana oferta');
   }
 }
+function offersFilterType(t){
+  offersActiveTypeFilter=t;
+  ['all','oferta','proforma','faktura_vat'].forEach(function(k){
+    var el=document.getElementById('of-type-'+k);
+    if(!el)return;
+    var match=(k==='all'&&t==='')||k===t;
+    el.style.background=match?'#e8601c':'#1e2f42';
+    el.style.color=match?'#fff':'#8a9ab0';
+  });
+  renderOffersList();
+}
 function offersFilter(status){
   offersActiveFilter=status;
-  document.querySelectorAll('#s-offers > div > div[style*="flex-wrap"] > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
+  document.querySelectorAll('#of-status-pills > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
   var target=status===''?document.getElementById('of-all'):event.target;
   target.style.background='#e8601c';target.style.color='#fff';
   renderOffersList();
@@ -3419,18 +3498,25 @@ async function loadOffers(){
 function renderOffersList(){
   var listEl=document.getElementById('of-list');
   if(!listEl)return;
-  var rows=allOffersCache.filter(function(o){return offersActiveFilter===''||o.status===offersActiveFilter;});
-  if(rows.length===0){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak ofert w tej kategorii.</div>';return;}
+  var rows=allOffersCache.filter(function(o){
+    var statusOk=offersActiveFilter===''||o.status===offersActiveFilter;
+    var typeOk=offersActiveTypeFilter===''||((o.document_type||'oferta')===offersActiveTypeFilter);
+    return statusOk&&typeOk;
+  });
+  if(rows.length===0){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak dokumentów w tej kategorii.</div>';return;}
   listEl.innerHTML=rows.map(function(o){
     var dt=o.created_at?new Date(o.created_at):null;
     var dateStr=dt?dt.toLocaleDateString('pl-PL'):'';
     var clientName=(o.clients&&o.clients.name)||'—';
     var buildingName=(o.buildings&&o.buildings.name)?(' · 🏗️ '+o.buildings.name):'';
+    var docType=o.document_type||'oferta';
+    var docTypeLabel=DOCUMENT_TYPE_LABEL[docType]||'📄 Oferta';
     return '<div class="card" style="padding:12px 13px;cursor:pointer;" onclick="openOffer(\''+o.id+'\')">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;">'
         +'<div style="font-size:14px;font-weight:800;">'+clientName+'</div>'
         +'<span style="font-size:9px;font-weight:700;color:'+(OFFER_STATUS_COLOR[o.status]||'#8a9ab0')+';background:rgba(255,255,255,.06);padding:3px 8px;border-radius:8px;">'+(OFFER_STATUS_LABEL[o.status]||o.status)+'</span>'
       +'</div>'
+      +'<div style="font-size:9px;font-weight:700;color:#a855f7;margin-top:3px;">'+docTypeLabel+'</div>'
       +'<div style="font-size:11px;color:#8a9ab0;margin-top:2px;">'+offerNumber(o)+' · '+dateStr+buildingName+'</div>'
       +'<div style="display:flex;gap:14px;margin-top:6px;font-size:12px;">'
         +'<span>💰 '+Number(o.net_total||0).toFixed(0)+' zł netto</span>'
