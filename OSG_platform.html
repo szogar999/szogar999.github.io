@@ -935,6 +935,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <button onclick="cmdStartDay()" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(232,96,28,.4);">▶️ Rozpocznij dzień</button>
 
+  <div id="cmd-ceo-wrap" style="display:none;flex-direction:column;gap:14px;">
+    <div style="font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px;">📊 Dashboard CEO</div>
+
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">1. Sprzedaż</div>
+      <div id="ceo-sales" style="display:grid;grid-template-columns:1fr 1fr;gap:11px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;padding:13px 13px 0;">2. Lejek sprzedaży</div>
+      <div id="ceo-pipeline" style="padding-bottom:4px;"><div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div></div>
+    </div>
+
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">3. Handlowcy</div>
+      <div id="ceo-salespeople" style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;padding:13px 13px 0;">4. Ryzyka</div>
+      <div id="ceo-risks" style="padding-bottom:4px;"><div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div></div>
+    </div>
+
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">5. Prognoza</div>
+      <div id="ceo-forecast" style="display:flex;flex-direction:column;gap:10px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Wszystkie liczby to sumy i zliczenia z realnych danych — żadna nie jest szacunkiem ani przewidywaniem modelu.</div>
+    </div>
+  </div>
+
   <div>
     <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧠 Dzisiaj AI uważa, że powinieneś zrobić przede wszystkim</div>
     <div class="card" id="cmd-ai-top5" style="padding:0;overflow:hidden;border:1px solid rgba(168,85,247,.3);">
@@ -1504,7 +1534,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.29.0';
+var APP_VERSION = 'v0.30.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2874,6 +2904,138 @@ async function loadAiSignals(){
         }).join('');
   }
 }
+/* ============================================================================
+   DASHBOARD CEO (Sprint 0.30) — tylko owner/admin. Zero nowych zapytań AI —
+   sekcja "Ryzyka" ponownie wykorzystuje computeAiSignalsGlobal() (Sprint 0.23),
+   ten sam silnik reguł co "AI wykryło" na Command. Reszta to czyste sumy
+   i zliczenia z danych już w bazie — żadna liczba tu nie jest zgadywana.
+   ============================================================================ */
+async function loadCeoDashboard(){
+  if(!isOwnerOrAdmin()||!sbEnabled)return;
+  var today=todayStr();
+  var results=await Promise.all([
+    sb.from('offers').select('id,client_id,status,net_total').eq('document_type','oferta').is('deleted_at',null),
+    sb.from('clients').select('id,name,pipeline_stage,assigned_to').is('deleted_at',null),
+    sb.from('users').select('id,name,role'),
+    sb.from('activities').select('type,author_id').in('type',['Telefon','Spotkanie']),
+    computeAiSignalsGlobal(),
+    sb.from('tasks').select('id').eq('category','offer').eq('status','pending').lt('date',today)
+  ]);
+  var offers=results[0].data||[], clients=results[1].data||[], users=results[2].data||[],
+      activities=results[3].data||[], riskSignals=results[4]||[], overdueFollowups=results[5].data||[];
+
+  renderCeoSales(offers);
+  renderCeoPipeline(clients,offers);
+  renderCeoSalespeople(users,clients,offers,activities);
+  renderCeoRisks(riskSignals,overdueFollowups);
+  renderCeoForecast(clients,offers);
+}
+
+function renderCeoSales(offers){
+  var el=document.getElementById('ceo-sales');
+  if(!el)return;
+  var all=offers.reduce(function(s,o){return s+Number(o.net_total||0);},0);
+  var won=offers.filter(function(o){return o.status==='zaakceptowana';}).reduce(function(s,o){return s+Number(o.net_total||0);},0);
+  var lost=offers.filter(function(o){return o.status==='odrzucona';}).reduce(function(s,o){return s+Number(o.net_total||0);},0);
+  var pending=offers.filter(function(o){return o.status==='draft'||o.status==='wysłana';}).reduce(function(s,o){return s+Number(o.net_total||0);},0);
+  function box(label,val,color){
+    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:16px;font-weight:800;margin-top:2px;color:'+color+';">'+val.toFixed(0)+' zł</div></div>';
+  }
+  el.innerHTML=box('Wszystkie oferty',all,'#fff')+box('Wygrane',won,'#22c55e')+box('Przegrane',lost,'#ef4444')+box('Oczekujące',pending,'#f59e0b');
+}
+
+function renderCeoPipeline(clients,offers){
+  var el=document.getElementById('ceo-pipeline');
+  if(!el)return;
+  var stageOfClient={};
+  var counts={}; PIPELINE_STAGES.forEach(function(s){counts[s]=0;});
+  clients.forEach(function(c){
+    var stage=c.pipeline_stage; if(!stage||PIPELINE_STAGES.indexOf(stage)===-1)stage='Lead';
+    counts[stage]++; stageOfClient[c.id]=stage;
+  });
+  var values={}; PIPELINE_STAGES.forEach(function(s){values[s]=0;});
+  offers.forEach(function(o){
+    var stage=stageOfClient[o.client_id];
+    if(stage) values[stage]+=Number(o.net_total||0);
+  });
+  el.innerHTML=PIPELINE_STAGES.map(function(s){
+    var color=PIPELINE_COLORS[s]||'#8a9ab0';
+    return '<div class="row" onclick="pipelineFilterCrm(\''+s+'\')" style="cursor:pointer;">'
+      +'<div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:'+color+';display:inline-block;flex-shrink:0;"></span><span style="font-size:12px;font-weight:700;">'+s+'</span></div>'
+      +'<div style="text-align:right;"><div style="font-size:12px;font-weight:800;">'+counts[s]+' '+(counts[s]===1?'klient':'klientów')+'</div><div style="font-size:10px;color:#8a9ab0;">'+values[s].toFixed(0)+' zł</div></div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderCeoSalespeople(users,clients,offers,activities){
+  var el=document.getElementById('ceo-salespeople');
+  if(!el)return;
+  var relevant=users.filter(function(u){return u.role==='sales'||u.role==='owner'||u.role==='admin';});
+  var clientOwner={}; clients.forEach(function(c){ if(c.assigned_to) clientOwner[c.id]=c.assigned_to; });
+
+  var rows=relevant.map(function(u){
+    var myClients=clients.filter(function(c){return c.assigned_to===u.id;}).length;
+    var myCalls=activities.filter(function(a){return a.type==='Telefon'&&a.author_id===u.id;}).length;
+    var myMeetings=activities.filter(function(a){return a.type==='Spotkanie'&&a.author_id===u.id;}).length;
+    var myOffers=offers.filter(function(o){return clientOwner[o.client_id]===u.id;});
+    var myWon=myOffers.filter(function(o){return o.status==='zaakceptowana';}).length;
+    var myDecided=myOffers.filter(function(o){return o.status==='wysłana'||o.status==='zaakceptowana'||o.status==='odrzucona';}).length;
+    var eff=myDecided>0?(myWon/myDecided*100):0;
+    return {name:u.name,clients:myClients,calls:myCalls,meetings:myMeetings,offers:myOffers.length,won:myWon,eff:eff};
+  }).filter(function(r){return r.clients>0||r.calls>0||r.meetings>0||r.offers>0;});
+
+  if(rows.length===0){el.innerHTML='<div style="font-size:12px;color:#8a9ab0;">Brak danych do pokazania.</div>';return;}
+  el.innerHTML=rows.map(function(r){
+    var effColor=r.eff>=30?'#22c55e':r.eff>=10?'#f59e0b':'#8a9ab0';
+    return '<div style="background:#0f1923;border-radius:10px;padding:10px 12px;">'
+      +'<div style="font-size:13px;font-weight:800;margin-bottom:6px;">'+r.name+'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;font-size:10px;color:#8a9ab0;">'
+        +'<div>👷 '+r.clients+' klientów</div>'
+        +'<div>📞 '+r.calls+' telefonów</div>'
+        +'<div>📍 '+r.meetings+' spotkań</div>'
+        +'<div>📄 '+r.offers+' ofert</div>'
+        +'<div style="color:#22c55e;">✅ '+r.won+' wygranych</div>'
+        +'<div style="color:'+effColor+';">🎯 '+r.eff.toFixed(0)+'% skut.</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function renderCeoRisks(riskSignals,overdueFollowups){
+  var el=document.getElementById('ceo-risks');
+  if(!el)return;
+  var items=[];
+  if(overdueFollowups.length>0){
+    items.push('<div class="row"><div style="font-size:12px;color:#ef4444;">⏰ '+overdueFollowups.length+' '+(overdueFollowups.length===1?'przeterminowany follow-up ofertowy':'przeterminowanych follow-upów ofertowych')+'.</div></div>');
+  }
+  riskSignals.slice(0,6).forEach(function(s){
+    items.push('<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div>');
+  });
+  el.innerHTML=items.length?items.join(''):'<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak wykrytych ryzyk. 🎉</div></div>';
+}
+
+function renderCeoForecast(clients,offers){
+  var el=document.getElementById('ceo-forecast');
+  if(!el)return;
+  var stageOfClient={};
+  clients.forEach(function(c){ stageOfClient[c.id]=c.pipeline_stage||'Lead'; });
+
+  var potentialValue=offers.filter(function(o){return o.status==='draft'||o.status==='wysłana';})
+    .reduce(function(s,o){return s+Number(o.net_total||0);},0);
+
+  var advancedStages={'Oferta wysłana':true,'Negocjacje':true};
+  var predictedRevenue=offers.filter(function(o){return (o.status==='draft'||o.status==='wysłana')&&advancedStages[stageOfClient[o.client_id]];})
+    .reduce(function(s,o){return s+Number(o.net_total||0);},0);
+
+  var activeClients=clients.filter(function(c){return c.pipeline_stage!=='Wygrana'&&c.pipeline_stage!=='Przegrana';}).length;
+
+  function box(label,val,note){
+    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:18px;font-weight:800;margin-top:2px;">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+note+'</div></div>';
+  }
+  el.innerHTML=box('Potencjalna wartość sprzedaży',potentialValue.toFixed(0)+' zł','suma ofert w toku (robocze + wysłane)')
+    +box('Przychód blisko domknięcia',predictedRevenue.toFixed(0)+' zł','oferty klientów w etapach: Oferta wysłana, Negocjacje')
+    +box('Aktywni klienci',String(activeClients),'klienci poza etapami Wygrana / Przegrana');
+}
+
 async function loadPipelineSummary(){
   var el=document.getElementById('cmd-pipeline-summary');
   if(!el||!sbEnabled)return;
@@ -3579,7 +3741,8 @@ async function loadCommandStats(){
     loadStaleClients(),
     loadPipelineSummary(),
     loadDaySummary(),
-    loadAiSignals()
+    loadAiSignals(),
+    (isOwnerOrAdmin()?loadCeoDashboard():Promise.resolve())
   ]);
   var qClients=results[1], qOffers=results[2], qFollow=results[3];
   // checkAndCreateFollowupTasks() mogło właśnie dopisać nowe zadania do bazy —
@@ -3684,6 +3847,8 @@ function applyRoleUI(){
   var nav=document.getElementById('nav-zarzadzanie');
   if(nav)nav.style.display=isOwnerOrAdmin?'flex':'none';
   document.querySelectorAll('#nav-op-zakupy').forEach(function(el){el.style.display=isOwnerOrAdmin?'flex':'none';});
+  var ceoWrap=document.getElementById('cmd-ceo-wrap');
+  if(ceoWrap)ceoWrap.style.display=isOwnerOrAdmin?'flex':'none';
 }
 
 async function handleAuthedUser(user){
