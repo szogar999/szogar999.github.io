@@ -995,7 +995,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         <div style="font-size:10px;font-weight:700;color:#a855f7;margin-bottom:5px;">🔕 KLIENCI BEZ KONTAKTU</div>
         <div id="cmd-todo-stale" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
       </div>
-      <div onclick="renderPlanDay();go('s-planday')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:2px;">📋 Zobacz cały Plan Dnia →</div>
+      <div onclick="openCalendar();go('s-calendar')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:2px;">🗓️ Zobacz w Kalendarzu →</div>
     </div>
   </div>
 
@@ -1031,7 +1031,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb on" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
   <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
+  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
@@ -1085,7 +1085,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb on" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
   <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
+  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
@@ -1296,7 +1296,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
   <button class="nb on" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Dokumenty</button>
-  <button class="nb" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
+  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
@@ -1374,6 +1374,93 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div class="screen" id="s-calendar">
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🗓️ Kalendarz</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+
+  <div style="display:flex;gap:6px;">
+    <div onclick="switchCalendarView('day')" id="cal-view-day" style="flex:1;text-align:center;font-size:12px;font-weight:700;padding:9px;border-radius:9px;background:#e8601c;color:#fff;cursor:pointer;">Dzień</div>
+    <div onclick="switchCalendarView('week')" id="cal-view-week" style="flex:1;text-align:center;font-size:12px;font-weight:700;padding:9px;border-radius:9px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">Tydzień</div>
+  </div>
+
+  <div id="cal-salesperson-wrap" style="display:none;">
+    <select id="cal-salesperson-filter" onchange="onCalendarSalespersonChange()" style="width:100%;padding:9px 10px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;">
+      <option value="">— wszyscy handlowcy —</option>
+    </select>
+  </div>
+
+  <button onclick="openCalendarEventForm()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:12px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">+ Nowe wydarzenie</button>
+
+  <div id="cal-day-nav" style="display:flex;align-items:center;justify-content:space-between;">
+    <button onclick="calendarShiftDay(-1)" style="background:#1e2f42;border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:14px;cursor:pointer;">←</button>
+    <div id="cal-day-label" style="font-size:13px;font-weight:800;">—</div>
+    <button onclick="calendarShiftDay(1)" style="background:#1e2f42;border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:14px;cursor:pointer;">→</button>
+  </div>
+
+  <div id="cal-day-view" style="display:flex;flex-direction:column;gap:8px;"></div>
+  <div id="cal-week-view" style="display:none;flex-direction:column;gap:8px;"></div>
+</div>
+<div class="nav">
+  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
+  <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
+  <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Dokumenty</button>
+  <button class="nb on" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
+  <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
+</div>
+</div>
+
+<div id="cal-event-form" style="display:none;position:fixed;inset:0;z-index:500;background:#0f1923;flex-direction:column;overflow-y:auto;">
+  <div class="hdr"><button class="back" onclick="closeCalendarEventForm()">←</button><span style="font-size:16px;font-weight:800;flex:1;">+ Nowe wydarzenie</span></div>
+  <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Klient *</div>
+      <select id="cev-client" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— wybierz klienta —</option></select>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Typ</div>
+      <select id="cev-type" onchange="onCalEventTypeChange()" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+        <option value="call">📞 Telefon</option>
+        <option value="meeting">📍 Spotkanie</option>
+        <option value="delivery">🚚 Dostawa</option>
+        <option value="offer">📄 Oferta</option>
+        <option value="lead">💎 Lead</option>
+      </select>
+    </div>
+    <div id="cev-address-wrap" style="display:none;">
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Adres spotkania *</div>
+      <input id="cev-address" placeholder="np. ul. Marszałkowska 12, Warszawa" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Treść *</div>
+      <input id="cev-reason" placeholder="Czego dotyczy?" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div style="display:flex;gap:9px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Data</div>
+        <input type="date" id="cev-date" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Godzina</div>
+        <input type="time" id="cev-time" value="09:00" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Priorytet</div>
+      <select id="cev-priority" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+        <option value="red">🔴 Pilne</option>
+        <option value="yellow" selected>🟡 Ważne</option>
+        <option value="green">🟢 Może poczekać</option>
+      </select>
+    </div>
+    <div id="cev-assigned-wrap" style="display:none;">
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Przypisany użytkownik</div>
+      <select id="cev-assigned" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"></select>
+    </div>
+    <div id="cev-error" style="display:none;color:#ef4444;font-size:12px;"></div>
+    <button onclick="saveCalendarEvent()" style="width:100%;background:#e8601c;border:none;border-radius:10px;padding:13px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;">💾 Zapisz wydarzenie</button>
+  </div>
+</div>
+
 <div class="screen" id="s-planday">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📋 Plan Dnia</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
@@ -1393,7 +1480,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
   <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb on" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
+  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
@@ -1415,7 +1502,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
   <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
   <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="renderPlanDay();go('s-planday')"><span class="ic">📋</span>Plan Dnia</button>
+  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb on" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
@@ -1548,7 +1635,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.31.0';
+var APP_VERSION = 'v0.32.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4100,10 +4187,7 @@ async function loadTasks(){
   }
   var res=await q;
   if(res.error){console.warn('Błąd pobierania zadań:',res.error);return;}
-  var CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎',meeting:'📍'};
-  planTasks=(res.data||[]).map(function(r){
-    return {id:r.id,client:r.client,client_id:r.client_id||null,category:(r.category||'').toLowerCase(),priority:(r.priority||'yellow').toLowerCase(),time:r.time,reason:r.reason,status:r.status,address:r.address||'',icon:CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',overdue:(r.date&&r.date<today),date:r.date};
-  });
+  planTasks=(res.data||[]).map(function(r){ return mapTaskRow(r,today); });
   lastSyncTime=new Date();
   renderPlanDay();
   renderCmdPriorities();
@@ -4168,7 +4252,7 @@ async function logActivity(clientId,icon,type,desc){
 
 
 var OWNER_ONLY_SCREENS=['s-director','s-purchasing','s-product','s-system-status-admin'];
-var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday'];
+var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar'];
 function go(id){
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
     alert('🔒 Brak dostępu — ten ekran jest dostępny tylko dla właściciela/admina.');
@@ -4511,6 +4595,245 @@ var planActiveFilter='';
 var planPrioOrder={red:0,yellow:1,green:2};
 var planPrioColor={red:'#ef4444',yellow:'#f59e0b',green:'#22c55e'};
 var planPrioLabel={red:'🔴 Pilne',yellow:'🟡 Ważne',green:'🟢 Może poczekać'};
+/* Sprint 0.32 — wspólne dla Plan Dnia, Mój dzień i Kalendarza. Jedna definicja,
+   zero kopiowania tej samej logiki w kilku miejscach (wymóg pkt. 5 sprintu). */
+var TASK_CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎',meeting:'📍'};
+function mapTaskRow(r,todayRef){
+  var td=todayRef||todayStr();
+  return {id:r.id,client:r.client,client_id:r.client_id||null,category:(r.category||'').toLowerCase(),
+    priority:(r.priority||'yellow').toLowerCase(),time:r.time,date:r.date,reason:r.reason,status:r.status,
+    address:r.address||'',icon:TASK_CATEGORY_ICONS[(r.category||'').toLowerCase()]||'📌',
+    overdue:!!(r.date&&r.date<td&&r.status==='pending'),automation_source:r.automation_source||null,
+    assigned_to:r.assigned_to||null};
+}
+function sortByTime(tasks){
+  return tasks.slice().sort(function(a,b){return (a.time||'').localeCompare(b.time||'');});
+}
+/* Pobranie zadań dla DOWOLNEGO zakresu dat (Kalendarz — dzień lub tydzień).
+   Inny zakres niż loadTasks() (który zawsze pokazuje dziś+zaległe), ale TEN SAM
+   mapper (mapTaskRow) i te same reguły izolacji ról — zero powielonej logiki. */
+async function fetchTasksForRange(startDate,endDateExclusive,salespersonId){
+  if(!sbEnabled)return [];
+  var q=sb.from('tasks').select('*').gte('date',startDate).lt('date',endDateExclusive);
+  if(isOwnerOrAdmin()){
+    if(salespersonId)q=q.eq('assigned_to',salespersonId);
+  }else{
+    q=q.eq('assigned_to',currentUid);
+  }
+  var res=await q;
+  if(res.error){console.warn('Błąd pobierania zadań dla zakresu:',res.error);return [];}
+  var today=todayStr();
+  return (res.data||[]).map(function(r){return mapTaskRow(r,today);});
+}
+function googleMapsUrl(address){
+  return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address||'');
+}
+
+/* ============================================================================
+   KALENDARZ (Sprint 0.32) — używa WYŁĄCZNIE fetchTasksForRange/mapTaskRow/
+   sortByTime/planAction, te same funkcje co Plan Dnia i Mój dzień. Zero drugiej
+   logiki zadań (wymóg pkt. 5).
+   ============================================================================ */
+var calendarViewMode='day';
+var calendarActiveDate=new Date();
+var calendarTasks=[];
+var calendarSalespersonFilter='';
+
+async function openCalendar(){
+  calendarActiveDate=new Date();
+  var wrap=document.getElementById('cal-salesperson-wrap');
+  if(wrap)wrap.style.display=isOwnerOrAdmin()?'block':'none';
+  if(isOwnerOrAdmin())await populateCalendarSalespersonFilter();
+  switchCalendarView('day');
+}
+async function populateCalendarSalespersonFilter(){
+  var sel=document.getElementById('cal-salesperson-filter');
+  if(!sel||!sbEnabled)return;
+  var res=await sb.from('users').select('id,name,role').in('role',['sales','owner','admin']);
+  if(res.error)return;
+  var current=sel.value;
+  sel.innerHTML='<option value="">— wszyscy handlowcy —</option>'+(res.data||[]).map(function(u){
+    return '<option value="'+u.id+'">'+u.name+'</option>';
+  }).join('');
+  sel.value=current;
+}
+function onCalendarSalespersonChange(){
+  calendarSalespersonFilter=document.getElementById('cal-salesperson-filter').value;
+  renderCalendarActiveView();
+}
+function switchCalendarView(mode){
+  calendarViewMode=mode;
+  document.getElementById('cal-view-day').style.background=(mode==='day')?'#e8601c':'#1e2f42';
+  document.getElementById('cal-view-day').style.color=(mode==='day')?'#fff':'#8a9ab0';
+  document.getElementById('cal-view-week').style.background=(mode==='week')?'#e8601c':'#1e2f42';
+  document.getElementById('cal-view-week').style.color=(mode==='week')?'#fff':'#8a9ab0';
+  document.getElementById('cal-day-view').style.display=(mode==='day')?'flex':'none';
+  document.getElementById('cal-week-view').style.display=(mode==='week')?'flex':'none';
+  document.getElementById('cal-day-nav').style.display=(mode==='day')?'flex':'none';
+  renderCalendarActiveView();
+}
+function calendarShiftDay(delta){
+  calendarActiveDate.setDate(calendarActiveDate.getDate()+delta);
+  renderCalendarActiveView();
+}
+function renderCalendarActiveView(){
+  var screenEl=document.getElementById('s-calendar');
+  if(!screenEl||!screenEl.classList.contains('active'))return; // nieaktywny ekran — nic do odświeżenia
+  if(calendarViewMode==='day')renderCalendarDayView(); else renderCalendarWeekView();
+}
+function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+async function renderCalendarDayView(){
+  var dateStr=ymd(calendarActiveDate);
+  var nextDay=new Date(calendarActiveDate); nextDay.setDate(nextDay.getDate()+1);
+  document.getElementById('cal-day-label').textContent=calendarActiveDate.toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short'});
+  var el=document.getElementById('cal-day-view');
+  el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:16px 0;">Ładowanie…</div>';
+  calendarTasks=sortByTime(await fetchTasksForRange(dateStr,ymd(nextDay),calendarSalespersonFilter));
+  if(!document.getElementById('cal-day-view'))return; // użytkownik mógł zmienić ekran w trakcie ładowania
+  if(calendarTasks.length===0){el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 0;">Brak wydarzeń tego dnia.</div>';return;}
+  el.innerHTML=calendarTasks.map(function(t){ return renderCalendarEventCard(t); }).join('');
+}
+function renderCalendarEventCard(t){
+  var isMeeting=t.category==='meeting';
+  var done=t.status==='done', postponed=t.status==='postponed';
+  var opacity=done||postponed?'.55':'1';
+  var bg=isMeeting?'background:rgba(168,85,247,.08);border-left:3px solid #a855f7;':'border-left:3px solid '+(planPrioColor[t.priority]||'#8a9ab0')+';';
+  var statusTag=done?'<span style="font-size:9px;color:#22c55e;font-weight:700;">✅ WYKONANE</span>'
+    :postponed?'<span style="font-size:9px;color:#f59e0b;font-weight:700;">⏭️ PRZEŁOŻONE</span>'
+    :(t.overdue?'<span style="font-size:9px;color:#ef4444;font-weight:700;background:rgba(239,68,68,.12);padding:2px 6px;border-radius:6px;">⏰ ZALEGŁE</span>':'');
+  var automatTag=t.automation_source?'<span style="font-size:9px;color:#a855f7;font-weight:700;background:rgba(168,85,247,.12);padding:2px 6px;border-radius:6px;margin-left:5px;">⚙️ Automat</span>':'';
+  var navBtn=isMeeting&&t.address?'<button onclick="window.open(\''+googleMapsUrl(t.address)+'\',\'_blank\')" style="background:#a855f7;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;">🧭 Nawiguj</button>':'';
+  return '<div class="card" style="padding:12px 13px;opacity:'+opacity+';'+bg+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
+      +'<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:16px;">'+t.icon+'</span><div>'
+        +'<div style="font-size:13px;font-weight:800;'+(isMeeting?'color:#a855f7;':'')+'">'+(t.client||'—')+'</div>'
+        +'<div style="font-size:10px;color:#8a9ab0;margin-top:1px;">'+(planPrioLabel[t.priority]||t.priority)+' · 🕐 '+(t.time||'')+'</div>'
+      +'</div></div>'
+      +'<div>'+statusTag+automatTag+'</div>'
+    +'</div>'
+    +'<div style="font-size:12px;color:#c7d0da;line-height:1.5;margin-bottom:8px;">'+(t.reason||'')+'</div>'
+    +(isMeeting&&t.address?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:9px;">📍 '+t.address+'</div>':'')
+    +(done||postponed?'':
+      '<div style="display:flex;gap:6px;">'
+      +'<button onclick="planAction(\''+t.id+'\',\'done\',calendarTasks)" style="flex:1;background:#22c55e;color:#fff;border:none;border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;">✅ Wykonane</button>'
+      +'<button onclick="planAction(\''+t.id+'\',\'postpone\',calendarTasks)" style="flex:1;background:#1e2f42;color:#8a9ab0;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;">⏭️ Przełóż</button>'
+      +navBtn
+      +'</div>')
+  +'</div>';
+}
+async function renderCalendarWeekView(){
+  var start=new Date(); start.setHours(0,0,0,0);
+  var end=new Date(start); end.setDate(end.getDate()+7);
+  var weekTasks=await fetchTasksForRange(ymd(start),ymd(end),calendarSalespersonFilter);
+  var today=todayStr();
+  var el=document.getElementById('cal-week-view');
+  var days=[];
+  for(var i=0;i<7;i++){ var d=new Date(start); d.setDate(d.getDate()+i); days.push(d); }
+  el.innerHTML=days.map(function(d){
+    var dStr=ymd(d);
+    var dayTasks=weekTasks.filter(function(t){return t.date===dStr;});
+    var meetings=dayTasks.filter(function(t){return t.category==='meeting';}).length;
+    var calls=dayTasks.filter(function(t){return t.category==='call';}).length;
+    var overdueCount=dayTasks.filter(function(t){return t.overdue;}).length;
+    var isToday=dStr===today;
+    return '<div class="card" onclick="openCalendarDayFromWeek(\''+dStr+'\')" style="padding:12px 13px;cursor:pointer;'+(isToday?'border-left:3px solid #e8601c;':'')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<div style="font-size:13px;font-weight:800;">'+d.toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short'})+(isToday?' · dziś':'')+'</div>'
+        +'<div style="font-size:12px;font-weight:800;">'+dayTasks.length+' '+(dayTasks.length===1?'zadanie':'zadań')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#8a9ab0;">'
+        +'<span>📍 '+meetings+' spotk.</span><span>📞 '+calls+' telef.</span>'
+        +(overdueCount?'<span style="color:#ef4444;">⏰ '+overdueCount+' zaległych</span>':'')
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+function openCalendarDayFromWeek(dateStr){
+  var parts=dateStr.split('-');
+  calendarActiveDate=new Date(parseInt(parts[0],10),parseInt(parts[1],10)-1,parseInt(parts[2],10));
+  switchCalendarView('day');
+}
+
+/* ---------- Formularz nowego wydarzenia ---------- */
+function openCalendarEventForm(){
+  document.getElementById('cev-error').style.display='none';
+  document.getElementById('cev-reason').value='';
+  document.getElementById('cev-address').value='';
+  document.getElementById('cev-type').value='call';
+  document.getElementById('cev-priority').value='yellow';
+  document.getElementById('cev-date').value=ymd(calendarViewMode==='day'?calendarActiveDate:new Date());
+  document.getElementById('cev-time').value='09:00';
+  onCalEventTypeChange();
+  populateCalendarClientDropdown();
+  var assignedWrap=document.getElementById('cev-assigned-wrap');
+  if(assignedWrap){
+    assignedWrap.style.display=isOwnerOrAdmin()?'block':'none';
+    if(isOwnerOrAdmin())populateCalendarAssignedDropdown();
+  }
+  document.getElementById('cal-event-form').style.display='flex';
+}
+function closeCalendarEventForm(){
+  document.getElementById('cal-event-form').style.display='none';
+}
+function onCalEventTypeChange(){
+  var isMeeting=document.getElementById('cev-type').value==='meeting';
+  document.getElementById('cev-address-wrap').style.display=isMeeting?'block':'none';
+}
+async function populateCalendarClientDropdown(){
+  var sel=document.getElementById('cev-client');
+  if(!sel||!sbEnabled)return;
+  var q=sb.from('clients').select('id,name').is('deleted_at',null).order('name',{ascending:true});
+  if(!isOwnerOrAdmin())q=q.eq('assigned_to',currentUid);
+  var res=await q;
+  if(res.error)return;
+  sel.innerHTML='<option value="">— wybierz klienta —</option>'+(res.data||[]).map(function(c){
+    return '<option value="'+c.id+'" data-name="'+c.name.replace(/"/g,'&quot;')+'">'+c.name+'</option>';
+  }).join('');
+}
+async function populateCalendarAssignedDropdown(){
+  var sel=document.getElementById('cev-assigned');
+  if(!sel||!sbEnabled)return;
+  var res=await sb.from('users').select('id,name,role').in('role',['sales','owner','admin']);
+  if(res.error)return;
+  sel.innerHTML=(res.data||[]).map(function(u){
+    return '<option value="'+u.id+'"'+(u.id===currentUid?' selected':'')+'>'+u.name+'</option>';
+  }).join('');
+}
+async function saveCalendarEvent(){
+  var errEl=document.getElementById('cev-error');
+  errEl.style.display='none';
+  var clientSel=document.getElementById('cev-client');
+  var clientId=clientSel.value;
+  if(!clientId){errEl.textContent='Wybierz klienta.';errEl.style.display='block';return;}
+  var clientName=clientSel.options[clientSel.selectedIndex].getAttribute('data-name')||clientSel.options[clientSel.selectedIndex].textContent;
+  var type=document.getElementById('cev-type').value;
+  var reason=document.getElementById('cev-reason').value.trim();
+  if(!reason){errEl.textContent='Opisz czego dotyczy wydarzenie.';errEl.style.display='block';return;}
+  var address=document.getElementById('cev-address').value.trim();
+  if(type==='meeting'&&!address){errEl.textContent='Podaj adres spotkania.';errEl.style.display='block';return;}
+  var date=document.getElementById('cev-date').value||todayStr();
+  var time=document.getElementById('cev-time').value||'09:00';
+  var priority=document.getElementById('cev-priority').value;
+  var assignedWrap=document.getElementById('cev-assigned-wrap');
+  var assignedTo=(assignedWrap&&assignedWrap.style.display!=='none')?(document.getElementById('cev-assigned').value||currentUid):currentUid;
+
+  if(!sbEnabled)return;
+  var res=await sb.from('tasks').insert({
+    client:clientName,client_id:clientId,category:type,priority:priority,date:date,time:time,
+    address:address||null,reason:reason,status:'pending',assigned_to:assignedTo||null
+  });
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  logActivity(clientId,(type==='meeting'?'📍':'📅'),(type==='meeting'?'Spotkanie':'Zadanie'),
+    (type==='meeting'?'Zaplanowano spotkanie ':'Utworzono zadanie ')+'na '+date+' '+time+': '+reason+(address?(' ('+address+')'):''));
+  closeCalendarEventForm();
+  // Sprint 0.32 pkt. 4 — nowe wydarzenie ma pojawić się w Moim dniu, Planie Dnia i Centrum
+  // powiadomień. loadCommandStats() odświeża to wszystko kaskadowo w jednym miejscu —
+  // nie duplikujemy tej listy odświeżeń tutaj.
+  await loadCommandStats();
+  renderCalendarActiveView();
+  if(currentClientId===clientId)loadClientActivities(currentClientId);
+}
+
 function planFilter(cat){
   planActiveFilter=cat;
   document.querySelectorAll('#s-planday > div > div[style*="flex-wrap"] > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
@@ -4518,16 +4841,33 @@ function planFilter(cat){
   target.style.background='#e8601c';target.style.color='#fff';
   renderPlanDay();
 }
-function planAction(id,action){
-  var t=planTasks.find(function(x){return String(x.id)===String(id);});
+function planAction(id,action,sourceArr){
+  var arr=sourceArr||planTasks;
+  var t=arr.find(function(x){return String(x.id)===String(id);});
   if(!t)return;
   if(action==='call'){alert('📞 Łączę z: '+(t.client||'')+'…');return;}
   var newStatus=action==='done'?'done':'postponed';
   t.status=newStatus;
+  // Jeśli zadanie żyje w DWÓCH tablicach naraz (np. dziś widoczne i w planTasks, i w
+  // lokalnym widoku Kalendarza) — synchronizujemy obie, żeby żaden widok nie pokazywał
+  // stanu sprzed akcji (wymóg Sprint 0.32 pkt. 5: spójność między ekranami).
+  if(arr!==planTasks){
+    var t2=planTasks.find(function(x){return String(x.id)===String(id);});
+    if(t2)t2.status=newStatus;
+  }
+  if(typeof calendarTasks!=='undefined'&&arr!==calendarTasks){
+    var t3=calendarTasks.find(function(x){return String(x.id)===String(id);});
+    if(t3)t3.status=newStatus;
+  }
   if(sbEnabled&&sb){
     sb.from('tasks').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id)
       .then(function(res){if(res.error)console.warn('Błąd zapisu statusu zadania:',res.error);});
-    renderPlanDay(); // aktualizacja optymistyczna — nie czekamy na odpowiedź serwera
+    // Aktualizacja optymistyczna — nie czekamy na odpowiedź serwera. Odświeżamy WSZYSTKIE
+    // widoki karmiące się tymi samymi danymi (Plan Dnia, Mój dzień, Kalendarz), nie tylko ten
+    // z którego akcja wyszła — to jest dokładnie wymóg "wspólnej funkcji oznaczania wykonania".
+    renderPlanDay();
+    loadMyDay();
+    if(typeof renderCalendarActiveView==='function')renderCalendarActiveView();
     if(action==='done'){
       if(t.client_id){
         // client_id już jest na zadaniu (Sprint 0.26) — bezpieczne, zero zapytań, zero zgadywania.
