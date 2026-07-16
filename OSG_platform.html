@@ -1686,6 +1686,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <div id="followup-btns-accepted" style="display:none;margin-bottom:8px;">
     <button id="followup-accepted-btn" onclick="createAcceptedFollowupTask()" style="width:100%;background:#22c55e;border:none;border-radius:8px;padding:11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">📦 Utwórz zadanie: Ustal dostawę / następny etap</button>
+    <button id="followup-create-purchases-btn" onclick="confirmCreatePurchases()" style="width:100%;margin-top:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">🛒 Utwórz zakupy z tej oferty</button>
   </div>
   <div id="followup-btns-rejected" style="display:none;gap:6px;margin-bottom:8px;">
     <button onclick="setFollowupReminder(60)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 60 dni</button>
@@ -2177,6 +2178,39 @@ async function createAcceptedFollowupTask(){
   logActivity(followupPromptClientId,'📦','Zadanie','Utworzono zadanie: Ustal dostawę / następny etap współpracy (po wygranej ofercie).');
   dismissFollowupPrompt();
   if(currentClientId===followupPromptClientId)loadClientActivities(currentClientId);
+}
+async function confirmCreatePurchases(){
+  if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
+  var offerId=followupPromptOfferId, clientId=followupPromptClientId;
+  var results=await Promise.all([
+    sb.from('offer_items').select('*').eq('offer_id',offerId),
+    sb.from('offers').select('building_id').eq('id',offerId).maybeSingle()
+  ]);
+  var itemsRes=results[0], offerRes=results[1];
+  if(itemsRes.error){alert('Błąd pobierania pozycji oferty: '+itemsRes.error.message);dismissFollowupPrompt();return;}
+  var items=itemsRes.data||[];
+  if(!items.length){alert('Ta oferta nie ma pozycji — nie ma czego wpisać do zakupów.');dismissFollowupPrompt();return;}
+  var buildingId=(offerRes.data&&offerRes.data.building_id)||null;
+
+  var purchaseRes=await sb.from('purchases').insert({
+    offer_id:offerId,client_id:clientId,building_id:buildingId,
+    status:'do zamówienia',created_by:currentUid||null
+  }).select().maybeSingle();
+  if(purchaseRes.error){alert('Błąd tworzenia zakupu: '+purchaseRes.error.message);dismissFollowupPrompt();return;}
+  var purchaseId=purchaseRes.data.id;
+
+  var itemsPayload=items.map(function(it){
+    return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit};
+  });
+  var itemsInsertRes=await sb.from('purchase_items').insert(itemsPayload);
+  if(itemsInsertRes.error){
+    alert('Zakup utworzony, ale nie zapisały się pozycje: '+itemsInsertRes.error.message);
+    dismissFollowupPrompt();return;
+  }
+  logActivity(clientId,'🛒','Zakup','Utworzono zakup z oferty: '+items.length+' '+plPozycje(items.length)+', status: do zamówienia.');
+  dismissFollowupPrompt();
+  alert('Utworzono zakup ('+items.length+' '+plPozycje(items.length)+'). Znajdziesz go w 🛒 Do zakupu.');
+  if(currentClientId===clientId)loadClientActivities(currentClientId);
 }
 function dismissFollowupPrompt(){
   document.getElementById('followup-prompt').style.display='none';
