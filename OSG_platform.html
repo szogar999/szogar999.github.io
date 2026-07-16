@@ -963,6 +963,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="ceo-forecast" style="display:flex;flex-direction:column;gap:10px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
       <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Wszystkie liczby to sumy i zliczenia z realnych danych — żadna nie jest szacunkiem ani przewidywaniem modelu.</div>
     </div>
+
+    <button onclick="loadOwnerDeliveries();go('s-deliveries-owner')" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">🚚 Dostawy →</button>
   </div>
 
   <div>
@@ -1116,6 +1118,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div id="delivery-confirm-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);align-items:flex-end;justify-content:center;">
+  <div style="background:#162130;border-radius:16px 16px 0 0;padding:18px 16px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px;">
+    <div style="font-size:15px;font-weight:800;">🏁 Potwierdź dostarczenie</div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Imię osoby odbierającej *</div>
+      <input id="dvc-name" placeholder="np. Pan Marek" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Godzina odbioru</div>
+      <input type="time" id="dvc-time" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Notatka (opcjonalnie)</div>
+      <input id="dvc-note" placeholder="np. Zostawiono na palecie przy bramie" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div id="dvc-error" style="display:none;color:#ef4444;font-size:12px;"></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button onclick="closeDeliveryConfirm()" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;color:#8a9ab0;font-size:13px;font-weight:700;cursor:pointer;">Anuluj</button>
+      <button onclick="saveDeliveryConfirm()" style="flex:2;background:#22c55e;border:none;border-radius:10px;padding:12px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">✅ Potwierdź</button>
+    </div>
+  </div>
+</div>
+
 <div class="screen" id="s-client-detail">
 <div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span id="cd-title" style="font-size:18px;font-weight:800;flex:1;">Klient</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
@@ -1150,12 +1175,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div id="cd-pipeline-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
   </div>
 
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">
+  <div id="cd-qa-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
     <button id="cd-qa-call" onclick="quickActionCall()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📞<br>Zadzwoń</button>
     <button id="cd-qa-email" onclick="quickActionEmail()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">✉️<br>Email</button>
     <button onclick="newOfferForClient(currentClientId)" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📄<br>Oferta</button>
     <button onclick="quickActionFocusNote()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📝<br>Notatka</button>
     <button onclick="toggleForm('cd-task-form')" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📅<br>Zadanie</button>
+    <button id="cd-qa-delivery" onclick="openDeliveryForm({clientId:currentClientId})" style="display:none;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">🚚<br>Dostawa</button>
   </div>
 
   <div id="cd-task-form" style="display:none;flex-direction:column;gap:8px;">
@@ -1485,6 +1511,69 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
+<div class="screen" id="s-deliveries-owner">
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🚚 Dostawy</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
+  <button onclick="openDeliveryForm()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:12px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">+ Nowa dostawa</button>
+
+  <div><div style="font-size:13px;font-weight:800;margin-bottom:7px;">📅 Dzisiaj</div><div id="do-today" style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div></div>
+  <div><div style="font-size:13px;font-weight:800;margin-bottom:7px;">➡️ Jutro</div><div id="do-tomorrow" style="display:flex;flex-direction:column;gap:8px;"></div></div>
+  <div><div style="font-size:13px;font-weight:800;margin-bottom:7px;">🚚 W trasie</div><div id="do-transit" style="display:flex;flex-direction:column;gap:8px;"></div></div>
+  <div><div style="font-size:13px;font-weight:800;margin-bottom:7px;color:#ef4444;">⚠️ Problemy</div><div id="do-problem" style="display:flex;flex-direction:column;gap:8px;"></div></div>
+  <div><div style="font-size:13px;font-weight:800;margin-bottom:7px;color:#8a9ab0;">✅ Zakończone (ostatnie 20)</div><div id="do-done" style="display:flex;flex-direction:column;gap:8px;"></div></div>
+</div>
+</div>
+
+<div id="delivery-form-modal" style="display:none;position:fixed;inset:0;z-index:600;background:#0f1923;flex-direction:column;overflow-y:auto;">
+  <div class="hdr"><button class="back" onclick="closeDeliveryForm()">←</button><span style="font-size:16px;font-weight:800;flex:1;">+ Nowa dostawa</span></div>
+  <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Klient *</div>
+      <select id="dv-client" onchange="onDeliveryClientChange()" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— wybierz klienta —</option></select>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Budowa (opcjonalnie)</div>
+      <select id="dv-building" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— brak / ogólna —</option></select>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Powiązana oferta (opcjonalnie)</div>
+      <select id="dv-offer" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— brak —</option></select>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Adres *</div>
+      <input id="dv-address" placeholder="np. ul. Budowlana 5, Warszawa" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div style="display:flex;gap:9px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Data *</div>
+        <input type="date" id="dv-date" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Godzina / przedział</div>
+        <input id="dv-time" placeholder="np. 10:00-12:00" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Telefon kontaktowy</div>
+      <input id="dv-phone" placeholder="np. 600 100 200" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Opis towaru *</div>
+      <input id="dv-items" placeholder="np. Cement 20 worków, kleje x10" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Uwagi dla kierowcy</div>
+      <input id="dv-notes" placeholder="np. Wjazd od tyłu, brama kodowa 1234" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
+    </div>
+    <div>
+      <div style="font-size:11px;color:#8a9ab0;margin-bottom:4px;">Przypisany kierowca</div>
+      <select id="dv-driver" style="width:100%;padding:11px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— nieprzypisana —</option></select>
+    </div>
+    <div id="dv-error" style="display:none;color:#ef4444;font-size:12px;"></div>
+    <button onclick="saveDelivery()" style="width:100%;background:#e8601c;border:none;border-radius:10px;padding:13px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;">💾 Zapisz dostawę</button>
+  </div>
+</div>
+
 <div class="screen" id="s-purchasing">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🛒 Centrum Zakupów</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
@@ -1596,7 +1685,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button onclick="setFollowupReminder(7)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za tydzień</button>
   </div>
   <div id="followup-btns-accepted" style="display:none;margin-bottom:8px;">
-    <button onclick="createAcceptedFollowupTask()" style="width:100%;background:#22c55e;border:none;border-radius:8px;padding:11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">📦 Utwórz zadanie: Ustal dostawę / następny etap</button>
+    <button id="followup-accepted-btn" onclick="createAcceptedFollowupTask()" style="width:100%;background:#22c55e;border:none;border-radius:8px;padding:11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">📦 Utwórz zadanie: Ustal dostawę / następny etap</button>
   </div>
   <div id="followup-btns-rejected" style="display:none;gap:6px;margin-bottom:8px;">
     <button onclick="setFollowupReminder(60)" style="flex:1;min-width:70px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 6px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za 60 dni</button>
@@ -1635,7 +1724,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.32.0';
+var APP_VERSION = 'v0.33.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2044,12 +2133,14 @@ function renderPipelinePills(activeStage){
   }).join('');
 }
 var followupPromptClientId=null,followupPromptClientName='',followupPromptReason='',followupPromptMode='sent';
-function askFollowupReminder(clientId,clientName,reason,mode){
+var followupPromptOfferId=null;
+function askFollowupReminder(clientId,clientName,reason,mode,offerId){
   if(!clientId)return;
   followupPromptClientId=clientId;
   followupPromptClientName=clientName||'—';
   followupPromptReason=reason||'Kontakt z klientem';
   followupPromptMode=mode||'sent';
+  followupPromptOfferId=offerId||null;
   document.getElementById('followup-prompt-context').textContent=clientName+' — '+reason;
   document.getElementById('followup-custom-date').value='';
   var titles={sent:'🔔 Czy ustawić przypomnienie?',accepted:'🎉 Oferta zaakceptowana!',rejected:'📋 Oferta odrzucona'};
@@ -2058,7 +2149,22 @@ function askFollowupReminder(clientId,clientName,reason,mode){
   document.getElementById('followup-btns-accepted').style.display=(followupPromptMode==='accepted')?'block':'none';
   document.getElementById('followup-btns-rejected').style.display=(followupPromptMode==='rejected')?'flex':'none';
   document.getElementById('followup-custom-wrap').style.display=(followupPromptMode==='sent')?'flex':'none';
+  if(followupPromptMode==='accepted'){
+    var btn=document.getElementById('followup-accepted-btn');
+    // owner/admin: prosto do formularza dostawy, wypełnionego (punkt 8). sales: nie może
+    // tworzyć dostaw (RLS), więc zostaje przy zwykłym zadaniu-przypomnieniu jak dotąd.
+    if(isOwnerOrAdmin()){
+      btn.textContent='🚚 Przejdź do formularza dostawy';
+      btn.onclick=function(){ dismissFollowupPrompt(); openDeliveryFormFromAcceptedOffer(); };
+    }else{
+      btn.textContent='📦 Utwórz zadanie: Ustal dostawę / następny etap';
+      btn.onclick=createAcceptedFollowupTask;
+    }
+  }
   document.getElementById('followup-prompt').style.display='block';
+}
+function openDeliveryFormFromAcceptedOffer(){
+  openDeliveryForm({clientId:followupPromptClientId,offerId:followupPromptOfferId});
 }
 async function createAcceptedFollowupTask(){
   if(!sbEnabled||!followupPromptClientId){dismissFollowupPrompt();return;}
@@ -3797,7 +3903,7 @@ async function saveOffer(){
     askFollowupReminder(clientId,(offClient&&offClient.name)||'—','Wysłana oferta');
   }else if(justAccepted){
     var wonClient=allClientsCache.find(function(x){return x.id===clientId;});
-    askFollowupReminder(clientId,(wonClient&&wonClient.name)||'—','Oferta zaakceptowana','accepted');
+    askFollowupReminder(clientId,(wonClient&&wonClient.name)||'—','Oferta zaakceptowana','accepted',offerId);
   }else if(justRejected){
     var lostClient=allClientsCache.find(function(x){return x.id===clientId;});
     askFollowupReminder(clientId,(lostClient&&lostClient.name)||'—','Wróć do klienta — nowy etap inwestycji','rejected');
@@ -4062,7 +4168,7 @@ async function loadCommandStats(){
 }
 
 /* ====================== DRIVER — moje dostawy (realne dane, Supabase) ====================== */
-var DELIVERY_STATUS_LABEL={oczekuje:'⏳ Oczekuje',odebrane:'📦 Odebrane',w_trasie:'🚚 W trasie',dostarczone:'✅ Dostarczone'};
+var driverDeliveriesCache=[];
 async function loadDeliveries(){
   var listEl=document.getElementById('dd-list');
   var statusEl=document.getElementById('dd-status-line');
@@ -4072,45 +4178,289 @@ async function loadDeliveries(){
     return;
   }
   if(listEl)listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
-  var res=await sb.from('deliveries').select('*').eq('assigned_to',currentUid).order('delivery_time',{ascending:true});
+  // RLS i tak wymusza assigned_to=auth.uid() dla roli driver (Sprint 0.33) — filtr
+  // tutaj jest wyłącznie dla czytelności zapytania, nie jedyną linią obrony.
+  var res=await sb.from('deliveries').select('*').eq('assigned_to',currentUid).is('deleted_at',null).order('delivery_date',{ascending:true});
   if(res.error){
     if(statusEl)statusEl.textContent='Błąd wczytywania: '+res.error.message;
     if(listEl)listEl.innerHTML='';
     return;
   }
-  var deliveries=res.data||[];
+  driverDeliveriesCache=res.data||[];
   lastSyncTime=new Date();
-  if(statusEl)statusEl.textContent=deliveries.length+' '+(deliveries.length===1?'dostawa':'dostaw')+' przypisanych do Ciebie.';
-  if(deliveries.length===0){
+  if(statusEl)statusEl.textContent=driverDeliveriesCache.length+' '+(driverDeliveriesCache.length===1?'dostawa':'dostaw')+' przypisanych do Ciebie.';
+  if(driverDeliveriesCache.length===0){
     listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak przypisanych dostaw.</div>';
     return;
   }
-  listEl.innerHTML=deliveries.map(function(d){
-    var label=DELIVERY_STATUS_LABEL[d.status]||d.status||'—';
-    return '<div class="card" style="padding:12px 13px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">'
-        +'<div><div style="font-size:14px;font-weight:800;">'+(d.client||'—')+'</div>'
-        +(d.building?'<div style="font-size:11px;color:#8a9ab0;margin-top:1px;">'+d.building+'</div>':'')+'</div>'
-        +'<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,.08);padding:3px 8px;border-radius:8px;white-space:nowrap;">'+label+'</span>'
-      +'</div>'
-      +(d.address?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📍 '+d.address+'</div>':'')
-      +(d.phone?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📞 '+d.phone+'</div>':'')
-      +(d.delivery_time?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:6px;">🕐 '+d.delivery_time+'</div>':'')
-      +(d.notes?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">'+d.notes+'</div>':'')
-      +'<div style="display:flex;gap:6px;">'
-        +'<button onclick="setDeliveryStatus(\''+d.id+'\',\'odebrane\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">📦 Odebrane</button>'
-        +'<button onclick="setDeliveryStatus(\''+d.id+'\',\'w_trasie\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">🚚 W trasie</button>'
-        +'<button onclick="setDeliveryStatus(\''+d.id+'\',\'dostarczone\')" style="flex:1;background:#22c55e;border:none;border-radius:8px;padding:8px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">✅ Dostarczone</button>'
-      +'</div>'
-    +'</div>';
+  listEl.innerHTML=driverDeliveriesCache.map(function(d){ return renderDriverDeliveryCard(d); }).join('');
+}
+function renderDriverDeliveryCard(d){
+  var label=DELIVERY_STATUS_LABEL[d.status]||d.status||'—';
+  var isFinal=(d.status==='dostarczona'||d.status==='anulowana');
+  var next=deliveryNextStatus(d.status);
+  var badgeColor=d.status==='problem'?'#ef4444':d.status==='dostarczona'?'#22c55e':'rgba(255,255,255,.08)';
+  var btns='';
+  if(!isFinal){
+    if(next==='dostarczona'){
+      btns+='<button onclick="openDeliveryConfirm(\''+d.id+'\')" style="flex:1;background:#22c55e;border:none;border-radius:8px;padding:9px 4px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">'+DELIVERY_STATUS_LABEL['dostarczona']+'</button>';
+    }else if(next){
+      btns+='<button onclick="changeDeliveryStatus(\''+d.id+'\',\''+next+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 4px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">'+DELIVERY_STATUS_LABEL[next]+'</button>';
+    }
+    if(d.status!=='problem'){
+      btns+='<button onclick="changeDeliveryStatus(\''+d.id+'\',\'problem\')" style="background:#3a1f1f;border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:9px 10px;color:#ef4444;font-size:11px;font-weight:700;cursor:pointer;">⚠️</button>';
+    }
+  }
+  return '<div class="card" style="padding:12px 13px;'+(d.status==='problem'?'border-left:3px solid #ef4444;':'')+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">'
+      +'<div><div style="font-size:14px;font-weight:800;">'+(d.client||'—')+'</div>'
+      +(d.building?'<div style="font-size:11px;color:#8a9ab0;margin-top:1px;">'+d.building+'</div>':'')+'</div>'
+      +'<span style="font-size:10px;font-weight:700;background:'+badgeColor+';color:'+(d.status==='problem'?'#fff':'inherit')+';padding:3px 8px;border-radius:8px;white-space:nowrap;">'+label+'</span>'
+    +'</div>'
+    +(d.address?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📍 '+d.address+'</div>':'')
+    +(d.item_description?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📦 '+d.item_description+'</div>':'')
+    +((d.delivery_date||d.delivery_time)?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:6px;">🕐 '+(d.delivery_date?new Date(d.delivery_date).toLocaleDateString('pl-PL'):'')+(d.delivery_time?' · '+d.delivery_time:'')+'</div>':'')
+    +(d.notes?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">📝 '+d.notes+'</div>':'')
+    +'<div style="display:flex;gap:6px;margin-bottom:'+(btns?'6px':'0')+';">'
+      +(d.address?'<button onclick="window.open(\''+googleMapsUrl(d.address)+'\',\'_blank\')" style="flex:1;background:#a855f7;border:none;border-radius:8px;padding:9px 4px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">🧭 Nawiguj</button>':'')
+      +(d.phone?'<button onclick="window.open(\'tel:'+d.phone.replace(/\s/g,'')+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 4px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📞 Zadzwoń</button>':'')
+    +'</div>'
+    +(btns?('<div style="display:flex;gap:6px;">'+btns+'</div>'):'')
+    +(d.status==='dostarczona'&&d.received_by?'<div style="font-size:10px;color:#22c55e;margin-top:7px;">✅ Odebrał: '+d.received_by+(d.received_at?' o '+new Date(d.received_at).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'')+'</div>':'')
+  +'</div>';
+}
+
+/* ============================================================================
+   WSPÓLNA funkcja zmiany statusu — używana przez panel kierowcy I panel ownera.
+   Waliduje przejście (chyba że isManualOverride), zapisuje do bazy, loguje w
+   activities, odświeża OBA ekrany niezależnie od tego, z którego wyszła akcja.
+   ============================================================================ */
+async function changeDeliveryStatus(id,newStatus,isManualOverride){
+  if(!sbEnabled)return;
+  var current=driverDeliveriesCache.find(function(d){return d.id===id;})
+    || (typeof ownerDeliveriesCache!=='undefined'&&ownerDeliveriesCache.find(function(d){return d.id===id;}));
+  if(!current){console.warn('Nie znaleziono dostawy w pamięci podręcznej — odśwież ekran.');return;}
+  if(!deliveryCanSetStatus(current.status,newStatus,isManualOverride)){
+    alert('Nie można przejść ze statusu "'+(DELIVERY_STATUS_LABEL[current.status]||current.status)+'" bezpośrednio do "'+(DELIVERY_STATUS_LABEL[newStatus]||newStatus)+'".');
+    return;
+  }
+  var res=await sb.from('deliveries').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd zapisu statusu: '+res.error.message);return;}
+  var clientIdForLog=current.client_id;
+  var statusLabel=DELIVERY_STATUS_LABEL[newStatus]||newStatus;
+  var logMsg=isManualOverride
+    ? 'Korekta ręczna statusu dostawy: '+(DELIVERY_STATUS_LABEL[current.status]||current.status)+' → '+statusLabel+' (klient: '+(current.client||'—')+').'
+    : 'Status dostawy zmieniony na: '+statusLabel+' (klient: '+(current.client||'—')+').';
+  if(clientIdForLog)logActivity(clientIdForLog,'🚚','Dostawy',logMsg);
+  await loadDeliveries();
+  if(typeof loadOwnerDeliveries==='function'&&document.getElementById('s-deliveries-owner')&&document.getElementById('s-deliveries-owner').classList.contains('active')){
+    loadOwnerDeliveries();
+  }
+}
+
+/* ---------- Potwierdzenie dostawy (punkt 6) ---------- */
+var deliveryConfirmId=null;
+function openDeliveryConfirm(id){
+  deliveryConfirmId=id;
+  document.getElementById('dvc-name').value='';
+  document.getElementById('dvc-note').value='';
+  document.getElementById('dvc-time').value=new Date().toTimeString().slice(0,5);
+  document.getElementById('dvc-error').style.display='none';
+  document.getElementById('delivery-confirm-modal').style.display='flex';
+}
+function closeDeliveryConfirm(){
+  document.getElementById('delivery-confirm-modal').style.display='none';
+}
+async function saveDeliveryConfirm(){
+  var errEl=document.getElementById('dvc-error');
+  errEl.style.display='none';
+  var name=document.getElementById('dvc-name').value.trim();
+  if(!name){errEl.textContent='Podaj imię osoby odbierającej.';errEl.style.display='block';return;}
+  var note=document.getElementById('dvc-note').value.trim();
+  var time=document.getElementById('dvc-time').value||new Date().toTimeString().slice(0,5);
+  var current=driverDeliveriesCache.find(function(d){return d.id===deliveryConfirmId;});
+  if(!current)return;
+  if(!deliveryCanSetStatus(current.status,'dostarczona',false)){
+    errEl.textContent='Nie można oznaczyć jako dostarczone z bieżącego statusu.';errEl.style.display='block';return;
+  }
+  var receivedAt=todayStr()+'T'+time+':00';
+  var res=await sb.from('deliveries').update({
+    status:'dostarczona',received_by:name,received_note:note||null,received_at:receivedAt,updated_at:new Date().toISOString()
+  }).eq('id',deliveryConfirmId);
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  if(current.client_id)logActivity(current.client_id,'🏁','Dostawy','Dostarczono. Odebrał: '+name+(note?' — '+note:'')+'.');
+  closeDeliveryConfirm();
+  await loadDeliveries();
+}
+
+async function loadOwnerDeliveries(){
+  if(!sbEnabled||!isOwnerOrAdmin())return;
+  var today=todayStr();
+  var tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  var tomorrowStr=tomorrow.getFullYear()+'-'+String(tomorrow.getMonth()+1).padStart(2,'0')+'-'+String(tomorrow.getDate()).padStart(2,'0');
+  var res=await sb.from('deliveries').select('*').is('deleted_at',null).order('delivery_date',{ascending:true});
+  if(res.error){console.warn('Błąd wczytywania dostaw:',res.error);return;}
+  ownerDeliveriesCache=res.data||[];
+
+  var todayList=ownerDeliveriesCache.filter(function(d){return d.delivery_date===today&&d.status!=='problem';});
+  var tomorrowList=ownerDeliveriesCache.filter(function(d){return d.delivery_date===tomorrowStr&&d.status!=='problem';});
+  var transitList=ownerDeliveriesCache.filter(function(d){return d.status==='w_trasie';});
+  var problemList=ownerDeliveriesCache.filter(function(d){return d.status==='problem';});
+  var doneList=ownerDeliveriesCache.filter(function(d){return d.status==='dostarczona'||d.status==='anulowana';})
+    .sort(function(a,b){return (b.updated_at||'').localeCompare(a.updated_at||'');}).slice(0,20);
+
+  renderOwnerDeliverySection('do-today',todayList,'Brak dostaw na dziś.');
+  renderOwnerDeliverySection('do-tomorrow',tomorrowList,'Brak dostaw zaplanowanych na jutro.');
+  renderOwnerDeliverySection('do-transit',transitList,'Nikt obecnie nie jest w trasie.');
+  renderOwnerDeliverySection('do-problem',problemList,'Brak zgłoszonych problemów. 🎉');
+  renderOwnerDeliverySection('do-done',doneList,'Brak zakończonych dostaw.');
+}
+function renderOwnerDeliverySection(elId,list,emptyMsg){
+  var el=document.getElementById(elId);
+  if(!el)return;
+  if(list.length===0){el.innerHTML='<div style="font-size:12px;color:#8a9ab0;">'+emptyMsg+'</div>';return;}
+  el.innerHTML=list.map(function(d){ return renderOwnerDeliveryCard(d); }).join('');
+}
+function renderOwnerDeliveryCard(d){
+  var label=DELIVERY_STATUS_LABEL[d.status]||d.status||'—';
+  var badgeColor=d.status==='problem'?'#ef4444':d.status==='dostarczona'?'#22c55e':'rgba(255,255,255,.08)';
+  var driverName=(ownerUsersCache.find(function(u){return u.id===d.assigned_to;})||{}).name||'— nieprzypisana —';
+  var statusOptions=['zaplanowana','do_odbioru','odebrana','w_trasie','dostarczona','problem','anulowana'].map(function(s){
+    return '<option value="'+s+'"'+(s===d.status?' selected':'')+'>'+DELIVERY_STATUS_LABEL[s]+'</option>';
+  }).join('');
+  return '<div class="card" style="padding:12px 13px;'+(d.status==='problem'?'border-left:3px solid #ef4444;':'')+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">'
+      +'<div><div style="font-size:14px;font-weight:800;">'+(d.client||'—')+'</div>'
+      +(d.building?'<div style="font-size:11px;color:#8a9ab0;margin-top:1px;">'+d.building+'</div>':'')+'</div>'
+      +'<span style="font-size:10px;font-weight:700;background:'+badgeColor+';color:'+(d.status==='problem'?'#fff':'inherit')+';padding:3px 8px;border-radius:8px;white-space:nowrap;">'+label+'</span>'
+    +'</div>'
+    +(d.address?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📍 '+d.address+'</div>':'')
+    +(d.item_description?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📦 '+d.item_description+'</div>':'')
+    +((d.delivery_date||d.delivery_time)?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:6px;">🕐 '+(d.delivery_date?new Date(d.delivery_date).toLocaleDateString('pl-PL'):'')+(d.delivery_time?' · '+d.delivery_time:'')+'</div>':'')
+    +'<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">🧑‍✈️ '+driverName+'</div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:6px;">'
+      +(d.client_id?'<button onclick="openClient(\''+d.client_id+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">👷 Klient</button>':'')
+      +(d.offer_id?'<button onclick="openOffer(\''+d.offer_id+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">📄 Oferta</button>':'')
+    +'</div>'
+    +'<div style="display:flex;gap:6px;">'
+      +'<select onchange="assignDriverToDelivery(\''+d.id+'\',this.value)" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;">'+ownerDriverOptionsHtml(d.assigned_to)+'</select>'
+      +'<select onchange="ownerOverrideDeliveryStatus(\''+d.id+'\',this.value)" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;">'+statusOptions+'</select>'
+    +'</div>'
+  +'</div>';
+}
+function ownerDriverOptionsHtml(selectedId){
+  return '<option value="">— nieprzypisana —</option>'+ownerUsersCache.filter(function(u){return u.role==='driver';}).map(function(u){
+    return '<option value="'+u.id+'"'+(u.id===selectedId?' selected':'')+'>'+u.name+'</option>';
   }).join('');
 }
-async function setDeliveryStatus(id,status){
+async function assignDriverToDelivery(id,driverId){
   if(!sbEnabled)return;
-  var res=await sb.from('deliveries').update({status:status,updated_at:new Date().toISOString()}).eq('id',id);
-  if(res.error){alert('Błąd zapisu statusu: '+res.error.message);return;}
-  loadDeliveries();
+  var d=ownerDeliveriesCache.find(function(x){return x.id===id;});
+  var res=await sb.from('deliveries').update({assigned_to:driverId||null,updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd przypisania kierowcy: '+res.error.message);loadOwnerDeliveries();return;}
+  var driverName=(ownerUsersCache.find(function(u){return u.id===driverId})||{}).name||'brak';
+  if(d&&d.client_id)logActivity(d.client_id,'🚚','Dostawy','Przypisano kierowcę: '+driverName+' (klient: '+(d.client||'—')+').');
+  loadOwnerDeliveries();
 }
+async function ownerOverrideDeliveryStatus(id,newStatus){
+  var d=ownerDeliveriesCache.find(function(x){return x.id===id;});
+  if(!d||newStatus===d.status)return;
+  // Zwykły ruch w przód traktujemy jak normalne przejście (bez etykiety "korekta"),
+  // każdy inny ruch (przeskok, cofnięcie) to świadoma ręczna korekta — zawsze zalogowana jako taka.
+  var isNormalStep=deliveryCanSetStatus(d.status,newStatus,false);
+  await changeDeliveryStatus(id,newStatus,!isNormalStep);
+  loadOwnerDeliveries();
+}
+
+/* ---------- Formularz tworzenia dostawy (współdzielony z trzech miejsc) ---------- */
+var ownerDeliveriesCache=[];
+var ownerUsersCache=[];
+var deliveryFormPrefill=null;
+function openDeliveryForm(prefill){
+  deliveryFormPrefill=prefill||null;
+  document.getElementById('dv-error').style.display='none';
+  document.getElementById('dv-address').value='';
+  document.getElementById('dv-time').value='';
+  document.getElementById('dv-phone').value='';
+  document.getElementById('dv-items').value=(prefill&&prefill.itemsDescription)||'';
+  document.getElementById('dv-notes').value='';
+  document.getElementById('dv-date').value=todayStr();
+  populateDeliveryDropdowns(prefill);
+  document.getElementById('delivery-form-modal').style.display='flex';
+}
+function closeDeliveryForm(){
+  document.getElementById('delivery-form-modal').style.display='none';
+  deliveryFormPrefill=null;
+}
+async function populateDeliveryDropdowns(prefill){
+  if(!sbEnabled)return;
+  var results=await Promise.all([
+    sb.from('clients').select('id,name').is('deleted_at',null).order('name',{ascending:true}),
+    sb.from('users').select('id,name,role')
+  ]);
+  var clientsRes=results[0], usersRes=results[1];
+  ownerUsersCache=usersRes.data||[];
+  var clientSel=document.getElementById('dv-client');
+  clientSel.innerHTML='<option value="">— wybierz klienta —</option>'+(clientsRes.data||[]).map(function(c){
+    return '<option value="'+c.id+'"'+(prefill&&prefill.clientId===c.id?' selected':'')+'>'+c.name+'</option>';
+  }).join('');
+  document.getElementById('dv-driver').innerHTML=ownerDriverOptionsHtml(null);
+  if(prefill&&prefill.clientId){ await onDeliveryClientChange(prefill); }
+  else{ document.getElementById('dv-building').innerHTML='<option value="">— brak / ogólna —</option>'; document.getElementById('dv-offer').innerHTML='<option value="">— brak —</option>'; }
+}
+async function onDeliveryClientChange(prefill){
+  var clientId=document.getElementById('dv-client').value;
+  var buildingSel=document.getElementById('dv-building');
+  var offerSel=document.getElementById('dv-offer');
+  if(!clientId){buildingSel.innerHTML='<option value="">— brak / ogólna —</option>';offerSel.innerHTML='<option value="">— brak —</option>';return;}
+  var results=await Promise.all([
+    sb.from('buildings').select('id,name').eq('client_id',clientId).is('deleted_at',null),
+    sb.from('offers').select('id,offer_seq,created_at,net_total').eq('client_id',clientId).eq('status','zaakceptowana').is('deleted_at',null).order('created_at',{ascending:false})
+  ]);
+  var buildingsRes=results[0], offersRes=results[1];
+  var pf=(prefill&&prefill.clientId===clientId)?prefill:null;
+  buildingSel.innerHTML='<option value="">— brak / ogólna —</option>'+(buildingsRes.data||[]).map(function(b){
+    return '<option value="'+b.id+'"'+(pf&&pf.buildingId===b.id?' selected':'')+'>'+b.name+'</option>';
+  }).join('');
+  offerSel.innerHTML='<option value="">— brak —</option>'+(offersRes.data||[]).map(function(o){
+    return '<option value="'+o.id+'"'+(pf&&pf.offerId===o.id?' selected':'')+'>'+offerNumber(o)+' ('+Number(o.net_total||0).toFixed(0)+' zł)</option>';
+  }).join('');
+}
+async function saveDelivery(){
+  var errEl=document.getElementById('dv-error');
+  errEl.style.display='none';
+  var clientSel=document.getElementById('dv-client');
+  var clientId=clientSel.value;
+  if(!clientId){errEl.textContent='Wybierz klienta.';errEl.style.display='block';return;}
+  var clientName=clientSel.options[clientSel.selectedIndex].textContent;
+  var address=document.getElementById('dv-address').value.trim();
+  if(!address){errEl.textContent='Podaj adres dostawy.';errEl.style.display='block';return;}
+  var itemDesc=document.getElementById('dv-items').value.trim();
+  if(!itemDesc){errEl.textContent='Opisz towar do dostarczenia.';errEl.style.display='block';return;}
+  var date=document.getElementById('dv-date').value;
+  if(!date){errEl.textContent='Podaj datę dostawy.';errEl.style.display='block';return;}
+  var buildingSel=document.getElementById('dv-building');
+  var buildingId=buildingSel.value||null;
+  var buildingName=buildingId?buildingSel.options[buildingSel.selectedIndex].textContent:null;
+  var offerId=document.getElementById('dv-offer').value||null;
+  var driverId=document.getElementById('dv-driver').value||null;
+
+  if(!sbEnabled)return;
+  var res=await sb.from('deliveries').insert({
+    client:clientName,client_id:clientId,building:buildingName,building_id:buildingId,offer_id:offerId,
+    address:address,phone:document.getElementById('dv-phone').value.trim()||null,
+    delivery_date:date,delivery_time:document.getElementById('dv-time').value.trim()||null,
+    item_description:itemDesc,notes:document.getElementById('dv-notes').value.trim()||null,
+    assigned_to:driverId,status:'zaplanowana',created_by:currentUid||null
+  });
+  if(res.error){errEl.textContent='Błąd zapisu: '+res.error.message;errEl.style.display='block';return;}
+  logActivity(clientId,'🚚','Dostawy','Utworzono dostawę na '+date+(document.getElementById('dv-time').value?' ('+document.getElementById('dv-time').value+')':'')+': '+itemDesc+'.');
+  closeDeliveryForm();
+  if(document.getElementById('s-deliveries-owner').classList.contains('active'))loadOwnerDeliveries();
+  if(currentClientId===clientId)loadClientActivities(currentClientId);
+}
+
+
 
 function afterAuthReady(){
   var g=document.getElementById('cmd-greeting');
@@ -4134,6 +4484,8 @@ function applyRoleUI(){
   document.querySelectorAll('#nav-op-zakupy').forEach(function(el){el.style.display=isOwnerOrAdmin?'flex':'none';});
   var ceoWrap=document.getElementById('cmd-ceo-wrap');
   if(ceoWrap)ceoWrap.style.display=isOwnerOrAdmin?'flex':'none';
+  var qaDelivery=document.getElementById('cd-qa-delivery');
+  if(qaDelivery)qaDelivery.style.display=isOwnerOrAdmin?'block':'none';
 }
 
 async function handleAuthedUser(user){
@@ -4251,8 +4603,8 @@ async function logActivity(clientId,icon,type,desc){
 }
 
 
-var OWNER_ONLY_SCREENS=['s-director','s-purchasing','s-product','s-system-status-admin'];
-var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar'];
+var OWNER_ONLY_SCREENS=['s-director','s-purchasing','s-product','s-system-status-admin','s-deliveries-owner'];
+var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar','s-deliveries-owner'];
 function go(id){
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
     alert('🔒 Brak dostępu — ten ekran jest dostępny tylko dla właściciela/admina.');
@@ -4595,6 +4947,33 @@ var planActiveFilter='';
 var planPrioOrder={red:0,yellow:1,green:2};
 var planPrioColor={red:'#ef4444',yellow:'#f59e0b',green:'#22c55e'};
 var planPrioLabel={red:'🔴 Pilne',yellow:'🟡 Ważne',green:'🟢 Może poczekać'};
+/* ============================================================================
+   DOSTAWY (Sprint 0.33) — jeden kanoniczny zestaw statusów i JEDNA funkcja
+   walidacji przejść, używana przez panel ownera i panel kierowcy. Zero
+   powielonych nazw statusów w różnych miejscach (wymóg sprintu).
+   ============================================================================ */
+var DELIVERY_STATUS_LABEL={
+  zaplanowana:'📅 Zaplanowana',do_odbioru:'📦 Do odbioru',odebrana:'✅ Odebrana',
+  w_trasie:'🚚 W trasie',dostarczona:'🏁 Dostarczona',problem:'⚠️ Problem',anulowana:'❌ Anulowana'
+};
+var DELIVERY_FLOW=['zaplanowana','do_odbioru','odebrana','w_trasie','dostarczona'];
+function deliveryNextStatus(current){
+  var idx=DELIVERY_FLOW.indexOf(current);
+  if(idx===-1||idx===DELIVERY_FLOW.length-1)return null;
+  return DELIVERY_FLOW[idx+1];
+}
+/* Czy przejście current→target jest dozwolone. isManualOverride=true pomija
+   walidację (ręczna korekta ownera/admina), ale WYWOŁUJĄCY musi to osobno
+   zalogować jako korektę — ta funkcja tylko mówi "czy zwykły przepływ na to
+   pozwala", nie podejmuje decyzji o logowaniu. */
+function deliveryCanSetStatus(current,target,isManualOverride){
+  if(isManualOverride)return true;
+  if(target===current)return false;
+  if(target==='problem')return DELIVERY_FLOW.indexOf(current)>-1&&current!=='dostarczona';
+  if(current==='problem')return DELIVERY_FLOW.indexOf(target)>-1;
+  if(target==='anulowana')return current!=='dostarczona'&&current!=='anulowana'&&current!=='problem';
+  return deliveryNextStatus(current)===target;
+}
 /* Sprint 0.32 — wspólne dla Plan Dnia, Mój dzień i Kalendarza. Jedna definicja,
    zero kopiowania tej samej logiki w kilku miejscach (wymóg pkt. 5 sprintu). */
 var TASK_CATEGORY_ICONS={call:'📞',offer:'📄',delivery:'🚚',lead:'💎',meeting:'📍'};
