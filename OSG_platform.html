@@ -2179,6 +2179,30 @@ async function createAcceptedFollowupTask(){
   dismissFollowupPrompt();
   if(currentClientId===followupPromptClientId)loadClientActivities(currentClientId);
 }
+async function findOrCreatePurchaseForOffer(offerId,clientId,buildingId){
+  // Krok A: czy aktywny zakup dla tej oferty już istnieje? (deleted_at is null)
+  var existingRes=await sb.from('purchases').select('*').eq('offer_id',offerId).is('deleted_at',null).maybeSingle();
+  if(existingRes.error&&existingRes.error.code!=='PGRST116'){throw new Error('Błąd sprawdzania istniejącego zakupu: '+existingRes.error.message);}
+  if(existingRes.data){return {purchase:existingRes.data,justCreated:false};}
+
+  // Krok B: nie istnieje (na ile widzimy) — próbujemy utworzyć.
+  var insertRes=await sb.from('purchases').insert({
+    offer_id:offerId,client_id:clientId,building_id:buildingId,
+    status:'do zamówienia',created_by:currentUid||null
+  }).select().maybeSingle();
+
+  if(!insertRes.error){return {purchase:insertRes.data,justCreated:true};}
+
+  // Krok C: insert oberwał unique constraint — ktoś (albo my, drugim kliknięciem
+  // w tej samej chwili) już utworzył zakup między naszym sprawdzeniem a insertem.
+  // To jest DOKŁADNIE ten wyścig, przed którym chronimy: łapiemy błąd 23505
+  // i po prostu odczytujemy to, co właśnie powstało, zamiast zgłaszać awarię.
+  if(insertRes.error.code==='23505'){
+    var retryRes=await sb.from('purchases').select('*').eq('offer_id',offerId).is('deleted_at',null).maybeSingle();
+    if(retryRes.data){return {purchase:retryRes.data,justCreated:false};}
+  }
+  throw new Error('Błąd tworzenia zakupu: '+insertRes.error.message);
+}
 async function confirmCreatePurchases(){
   if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
   var offerId=followupPromptOfferId, clientId=followupPromptClientId;
@@ -2188,28 +2212,56 @@ async function confirmCreatePurchases(){
   ]);
   var itemsRes=results[0], offerRes=results[1];
   if(itemsRes.error){alert('Błąd pobierania pozycji oferty: '+itemsRes.error.message);dismissFollowupPrompt();return;}
-  var items=itemsRes.data||[];
-  if(!items.length){alert('Ta oferta nie ma pozycji — nie ma czego wpisać do zakupów.');dismissFollowupPrompt();return;}
+  var offerItems=itemsRes.data||[];
+  if(!offerItems.length){alert('Ta oferta nie ma pozycji — nie ma czego wpisać do zakupów.');dismissFollowupPrompt();return;}
   var buildingId=(offerRes.data&&offerRes.data.building_id)||null;
 
-  var purchaseRes=await sb.from('purchases').insert({
-    offer_id:offerId,client_id:clientId,building_id:buildingId,
-    status:'do zamówienia',created_by:currentUid||null
-  }).select().maybeSingle();
-  if(purchaseRes.error){alert('Błąd tworzenia zakupu: '+purchaseRes.error.message);dismissFollowupPrompt();return;}
-  var purchaseId=purchaseRes.data.id;
-
-  var itemsPayload=items.map(function(it){
-    return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit};
-  });
-  var itemsInsertRes=await sb.from('purchase_items').insert(itemsPayload);
-  if(itemsInsertRes.error){
-    alert('Zakup utworzony, ale nie zapisały się pozycje: '+itemsInsertRes.error.message);
-    dismissFollowupPrompt();return;
+  var purchase,justCreated;
+  try{
+    var found=await findOrCreatePurchaseForOffer(offerId,clientId,buildingId);
+    purchase=found.purchase;justCreated=found.justCreated;
+  }catch(e){
+    alert(e.message);dismissFollowupPrompt();return;
   }
-  logActivity(clientId,'🛒','Zakup','Utworzono zakup z oferty: '+items.length+' '+plPozycje(items.length)+', status: do zamówienia.');
+  var purchaseId=purchase.id;
+
+  // Idempotentne dosypanie pozycji: sprawdzamy które offer_item_id już są
+  // zapisane pod tym zakupem, i wstawiamy WYŁĄCZNIE brakujące. Kliknięcie
+  // przycisku 2, 5 czy 20 razy dla tej samej oferty zawsze kończy się tym
+  // samym kompletem pozycji — ani jednej duplikowanej, ani jednej brakującej.
+  var existingItemsRes=await sb.from('purchase_items').select('offer_item_id').eq('purchase_id',purchaseId);
+  if(existingItemsRes.error){alert('Błąd odczytu istniejących pozycji: '+existingItemsRes.error.message);dismissFollowupPrompt();return;}
+  var existingOfferItemIds={};
+  (existingItemsRes.data||[]).forEach(function(r){if(r.offer_item_id)existingOfferItemIds[r.offer_item_id]=true;});
+  var missingItems=offerItems.filter(function(it){return !existingOfferItemIds[it.id];});
+
+  if(missingItems.length){
+    var itemsPayload=missingItems.map(function(it){
+      return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit};
+    });
+    var itemsInsertRes=await sb.from('purchase_items').insert(itemsPayload);
+    if(itemsInsertRes.error){
+      // 23505 tutaj = ktoś inny dosypał te same pozycje w międzyczasie (wyścig
+      // na etapie pozycji, analogicznie do wyścigu na etapie zakupu). To NIE jest
+      // błąd z perspektywy użytkownika — końcowy stan bazy jest i tak poprawny.
+      if(itemsInsertRes.error.code!=='23505'){
+        alert('Zakup istnieje, ale nie zapisały się pozycje: '+itemsInsertRes.error.message);
+        dismissFollowupPrompt();return;
+      }
+    }
+  }
+
+  if(justCreated){
+    logActivity(clientId,'🛒','Zakup','Utworzono zakup z oferty: '+offerItems.length+' '+plPozycje(offerItems.length)+', status: do zamówienia.');
+  }
   dismissFollowupPrompt();
-  alert('Utworzono zakup ('+items.length+' '+plPozycje(items.length)+'). Znajdziesz go w 🛒 Do zakupu.');
+  if(!justCreated&&!missingItems.length){
+    alert('Zakupy dla tej oferty już istnieją (status: '+purchase.status+', '+offerItems.length+' '+plPozycje(offerItems.length)+'). Nic nowego nie utworzono.');
+  }else if(!justCreated&&missingItems.length){
+    alert('Zakup dla tej oferty już istniał — dodano brakujące pozycje ('+missingItems.length+' z '+offerItems.length+'). Status: '+purchase.status+'.');
+  }else{
+    alert('Utworzono zakup ('+offerItems.length+' '+plPozycje(offerItems.length)+'). Znajdziesz go w 🛒 Do zakupu.');
+  }
   if(currentClientId===clientId)loadClientActivities(currentClientId);
 }
 function dismissFollowupPrompt(){
