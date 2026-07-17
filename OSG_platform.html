@@ -1575,17 +1575,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-purchasing">
-<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🛒 Centrum Zakupów</span></div>
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🛒 Do zakupu</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
-  <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:10px;padding:9px 12px;font-size:11px;color:#f59e0b;">⚠️ DANE PRZYKŁADOWE — katalog produktów nie jest jeszcze podpięty pod bazę (tabele <code>products</code>/<code>orders</code> puste). To co widzisz niżej to demo, nie realne dane firmy.</div>
-  <input id="pz-search" oninput="renderPurchasing()" placeholder="🔎 Szukaj produktu, np. Baumit" style="width:100%;padding:11px 13px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-    <select id="pz-manufacturer" onchange="renderPurchasing()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:10px;padding:8px 4px;"><option value="">Producent</option></select>
-    <select id="pz-supplier" onchange="renderPurchasing()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:10px;padding:8px 4px;"><option value="">Dostawca</option></select>
-    <select id="pz-category" onchange="renderPurchasing()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:10px;padding:8px 4px;"><option value="">Kategoria</option></select>
+  <div style="display:flex;gap:6px;">
+    <select id="pur-status-filter" onchange="renderPurchasing()" style="flex:1;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:11px;padding:9px 6px;">
+      <option value="">Wszystkie statusy</option>
+      <option value="do zamówienia">Do zamówienia</option>
+      <option value="zamówione">Zamówione</option>
+      <option value="częściowo odebrane">Częściowo odebrane</option>
+      <option value="odebrane">Odebrane</option>
+      <option value="wydane na budowę">Wydane na budowę</option>
+      <option value="anulowane">Anulowane</option>
+    </select>
+    <button onclick="togglePurManualForm()" style="background:#e8601c;border:none;border-radius:9px;padding:9px 12px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">+ Ręcznie</button>
   </div>
-  <div id="pz-count" style="font-size:10px;color:#8a9ab0;"></div>
-  <div id="pz-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+  <div id="pur-manual-form" style="display:none;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;flex-direction:column;gap:8px;">
+    <div style="font-size:12px;font-weight:800;">Ręcznie dodany zakup</div>
+    <select id="pur-m-client" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;"><option value="">— wybierz klienta —</option></select>
+    <input id="pur-m-product" placeholder="Nazwa produktu" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <input id="pur-m-qty" type="number" step="0.01" placeholder="Ilość" style="padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+      <input id="pur-m-unit" placeholder="Jednostka (szt)" style="padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+    </div>
+    <select id="pur-m-category" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;"><option value="">— kategoria (opcjonalnie) —</option></select>
+    <select id="pur-m-priority" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+      <option value="normalny">Priorytet: normalny</option><option value="niski">Priorytet: niski</option><option value="wysoki">Priorytet: wysoki</option><option value="pilny">Priorytet: pilny</option>
+    </select>
+    <input id="pur-m-needed" type="date" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+    <div style="display:flex;gap:6px;">
+      <button onclick="submitManualPurchase()" style="flex:1;background:#22c55e;border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;">Dodaj zakup</button>
+      <button onclick="togglePurManualForm()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px;color:#8a9ab0;font-size:12px;cursor:pointer;">Anuluj</button>
+    </div>
+  </div>
+  <div id="pur-count" style="font-size:10px;color:#8a9ab0;"></div>
+  <div id="pur-list" style="display:flex;flex-direction:column;gap:8px;"></div>
 </div>
 <div class="nav">
   <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
@@ -4689,7 +4712,7 @@ async function logActivity(clientId,icon,type,desc){
 }
 
 
-var OWNER_ONLY_SCREENS=['s-director','s-purchasing','s-product','s-system-status-admin','s-deliveries-owner'];
+var OWNER_ONLY_SCREENS=['s-director','s-product','s-system-status-admin','s-deliveries-owner'];
 var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar','s-deliveries-owner'];
 function go(id){
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
@@ -4855,36 +4878,136 @@ function pzMargin(p){return Math.round((p.avgSalePrice-p.lastPurchasePrice)/p.la
   function fill(id,arr){var el=document.getElementById(id);if(!el)return;arr.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o);});}
   fill('pz-manufacturer',man);fill('pz-supplier',sup);fill('pz-category',cat);
 })();
-function renderPurchasing(){
-  var q=(document.getElementById('pz-search').value||'').toLowerCase();
-  var man=document.getElementById('pz-manufacturer').value;
-  var sup=document.getElementById('pz-supplier').value;
-  var cat=document.getElementById('pz-category').value;
-  var list=pzProducts.filter(function(p){
-    var matchesText=(p.name+' '+p.manufacturer).toLowerCase().indexOf(q)>-1;
-    return matchesText&&(man===''||p.manufacturer===man)&&(sup===''||p.supplier===sup)&&(cat===''||p.category===cat);
-  });
-  document.getElementById('pz-count').textContent=list.length+' produktów';
-  var tile=function(label,val,color){return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:6px;text-align:center;"><div style="font-size:12px;font-weight:800;'+(color?'color:'+color+';':'')+'">'+val+'</div><div style="font-size:8px;color:#8a9ab0;margin-top:1px;">'+label+'</div></div>';};
-  var html=list.map(function(p){
-    var m=pzMargin(p);
-    return '<div class="card" onclick="showProduct('+p.id+')" style="cursor:pointer;padding:12px 13px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">'
-        +'<div><div style="font-size:13px;font-weight:800;">'+p.image+' '+p.name+'</div><div style="font-size:10px;color:#8a9ab0;margin-top:2px;">'+p.manufacturer+' · '+p.category+'</div></div>'
-        +'<span style="color:#e8601c;font-size:14px;flex-shrink:0;">→</span>'
-      +'</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;">'
-        +tile('Sprzedano',p.unitsSold)
-        +tile('Zakup',pzFmt(p.lastPurchasePrice)+' zł')
-        +tile('Sprzedaż',pzFmt(p.avgSalePrice)+' zł')
-        +tile('Marża',m+'%','#22c55e')
-      +'</div>'
-      +'<div style="font-size:10px;color:#8a9ab0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">'
-        +'<span>🏪 '+p.supplier+'</span><span>🗓️ '+p.lastPurchaseDate+'</span><span>📦 '+p.stock+'</span>'
-      +'</div>'
-    +'</div>';
+var PURCHASE_STATUSES=['do zamówienia','zamówione','częściowo odebrane','odebrane','wydane na budowę','anulowane'];
+var PURCHASE_STATUS_LABEL={'do zamówienia':'🕓 Do zamówienia','zamówione':'📦 Zamówione','częściowo odebrane':'📥 Częściowo odebrane','odebrane':'✅ Odebrane','wydane na budowę':'🚚 Wydane na budowę','anulowane':'❌ Anulowane'};
+var PURCHASE_STATUS_COLOR={'do zamówienia':'#f59e0b','zamówione':'#3b82f6','częściowo odebrane':'#a855f7','odebrane':'#22c55e','wydane na budowę':'#22c55e','anulowane':'#ef4444'};
+// Sales może przesuwać status tylko na wczesnych etapach — nie zamyka zakupów.
+// To lustrzane odbicie RLS (purchases_update pozwala sales edytować tylko
+// gdy bieżący status = 'do zamówienia'), więc UI i baza mówią to samo.
+var SALES_ALLOWED_NEXT_STATUSES=['do zamówienia','zamówione'];
+var purLastLoaded=[];
+
+async function renderPurchasing(){
+  var listEl=document.getElementById('pur-list');
+  listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
+  if(!sbEnabled){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Supabase niepodłączony.</div>';return;}
+  var statusFilter=document.getElementById('pur-status-filter').value;
+  var q=sb.from('purchases').select('*, clients(name), buildings(name), purchase_items(*, offer_items(category))').is('deleted_at',null).order('created_at',{ascending:false});
+  if(statusFilter) q=q.eq('status',statusFilter);
+  var res=await q;
+  if(res.error){listEl.innerHTML='<div style="text-align:center;color:#ef4444;font-size:12px;padding:20px 0;">Błąd ładowania: '+res.error.message+'</div>';return;}
+  purLastLoaded=res.data||[];
+  document.getElementById('pur-count').textContent=purLastLoaded.length+' '+plZakupy(purLastLoaded.length);
+  if(!purLastLoaded.length){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak zakupów do pokazania.</div>';return;}
+  listEl.innerHTML=purLastLoaded.map(purCardHtml).join('');
+}
+function plZakupy(n){
+  var mod10=n%10,mod100=n%100;
+  if(n===1)return 'zakup';
+  if(mod10>=2&&mod10<=4&&(mod100<10||mod100>=20))return 'zakupy';
+  return 'zakupów';
+}
+function purCardHtml(p){
+  var canEdit=isOwnerOrAdmin();
+  var clientName=(p.clients&&p.clients.name)||'—';
+  var buildingName=(p.buildings&&p.buildings.name)||null;
+  var items=p.purchase_items||[];
+  var statusOptions=PURCHASE_STATUSES;
+  if(!canEdit) statusOptions=SALES_ALLOWED_NEXT_STATUSES.indexOf(p.status)>-1?SALES_ALLOWED_NEXT_STATUSES:[p.status];
+  var statusSelect='<select onchange="updatePurchaseStatus(\''+p.id+'\',this.value,\''+p.client_id+'\')" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'
+    +statusOptions.map(function(s){return '<option value="'+s+'"'+(s===p.status?' selected':'')+'>'+PURCHASE_STATUS_LABEL[s]+'</option>';}).join('')
+    +'</select>';
+  var priorityBadge=p.priority?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">⚡ '+p.priority+'</span>':'';
+  var neededBadge=p.needed_by?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">📅 '+p.needed_by+'</span>':'';
+  var itemsHtml=items.map(function(it){
+    var itemCat=(it.offer_items&&it.offer_items.category)||p.category||'—';
+    return '<div class="row" style="padding:7px 0;"><div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div></div>';
   }).join('');
-  document.getElementById('pz-list').innerHTML=html||'<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak wyników.</div>';
+  var supplierBlock;
+  if(canEdit){
+    supplierBlock=''
+      +'<input value="'+(p.supplier_name||'')+'" placeholder="Dostawca" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_name\',this.value)" style="width:100%;padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;margin-bottom:5px;">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px;">'
+      +'<input value="'+(p.supplier_order_number||'')+'" placeholder="Nr zamówienia" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_order_number\',this.value)" style="padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">'
+      +'<input value="'+(p.supplier_contact||'')+'" placeholder="Kontakt" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_contact\',this.value)" style="padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">'
+      +'</div>'
+      +'<input type="date" value="'+(p.planned_pickup_date||'')+'" onchange="updatePurchaseField(\''+p.id+'\',\'planned_pickup_date\',this.value)" style="width:100%;padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">';
+  }else{
+    supplierBlock='<div style="font-size:11px;color:#8a9ab0;">🏪 '+(p.supplier_name||'brak dostawcy')+(p.supplier_order_number?' · nr '+p.supplier_order_number:'')+(p.planned_pickup_date?' · odbiór '+p.planned_pickup_date:'')+'</div>';
+  }
+  return '<div class="card" style="padding:12px 13px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
+      +'<div><div style="font-size:13px;font-weight:800;">👷 '+clientName+'</div>'+(buildingName?'<div style="font-size:10px;color:#8a9ab0;margin-top:1px;">🏗️ '+buildingName+'</div>':'')+'</div>'
+      +statusSelect
+    +'</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'+priorityBadge+neededBadge+'</div>'
+    +'<div style="background:rgba(0,0,0,.15);border-radius:8px;padding:2px 9px;margin-bottom:8px;">'+(itemsHtml||'<div style="padding:7px 0;font-size:11px;color:#8a9ab0;">Brak pozycji.</div>')+'</div>'
+    +supplierBlock
+  +'</div>';
+}
+async function updatePurchaseStatus(purchaseId,newStatus,clientId){
+  var current=purLastLoaded.find(function(p){return p.id===purchaseId;});
+  var oldStatus=current?current.status:null;
+  if(oldStatus===newStatus)return;
+  var res=await sb.from('purchases').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',purchaseId);
+  if(res.error){alert('Błąd zmiany statusu: '+res.error.message);renderPurchasing();return;}
+  var STATUS_LOG_TEXT={'zamówione':'Zamówiono u dostawcy.','częściowo odebrane':'Częściowo odebrano dostawę.','odebrane':'Odebrano zakup.','wydane na budowę':'Wydano materiały na budowę.','anulowane':'Anulowano zakup.','do zamówienia':'Cofnięto zakup do statusu: do zamówienia.'};
+  logActivity(clientId,'🛒','Zakup',STATUS_LOG_TEXT[newStatus]||('Zmieniono status zakupu na: '+newStatus+'.'));
+  renderPurchasing();
+}
+async function updatePurchaseField(purchaseId,field,value){
+  var payload={updated_at:new Date().toISOString()};
+  payload[field]=value||null;
+  var res=await sb.from('purchases').update(payload).eq('id',purchaseId);
+  if(res.error)alert('Błąd zapisu: '+res.error.message);
+}
+function togglePurManualForm(){
+  var el=document.getElementById('pur-manual-form');
+  var showing=el.style.display==='flex';
+  el.style.display=showing?'none':'flex';
+  if(!showing){
+    populatePurManualClientSelect();
+    var catSel=document.getElementById('pur-m-category');
+    if(catSel.options.length<=1){
+      catSel.innerHTML='<option value="">— kategoria (opcjonalnie) —</option>'+CATEGORY_LIST.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+    }
+  }
+}
+async function populatePurManualClientSelect(){
+  var sel=document.getElementById('pur-m-client');
+  if(!allClientsCache.length&&sbEnabled){
+    var res=await sb.from('clients').select('id,name').is('deleted_at',null).order('name',{ascending:true});
+    if(!res.error) allClientsCache=res.data||[];
+  }
+  sel.innerHTML='<option value="">— wybierz klienta —</option>'+allClientsCache.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join('');
+}
+async function submitManualPurchase(){
+  var clientId=document.getElementById('pur-m-client').value;
+  var productName=document.getElementById('pur-m-product').value.trim();
+  var qty=document.getElementById('pur-m-qty').value;
+  var unit=document.getElementById('pur-m-unit').value.trim();
+  var category=document.getElementById('pur-m-category').value||null;
+  var priority=document.getElementById('pur-m-priority').value;
+  var neededBy=document.getElementById('pur-m-needed').value||null;
+  if(!clientId){alert('Wybierz klienta.');return;}
+  if(!productName){alert('Podaj nazwę produktu.');return;}
+  var purchaseRes=await sb.from('purchases').insert({
+    client_id:clientId,category:category,priority:priority,needed_by:neededBy,
+    status:'do zamówienia',created_by:currentUid||null
+  }).select().maybeSingle();
+  if(purchaseRes.error){alert('Błąd tworzenia zakupu: '+purchaseRes.error.message);return;}
+  var itemRes=await sb.from('purchase_items').insert({
+    purchase_id:purchaseRes.data.id,product_name:productName,
+    quantity:qty?Number(qty):null,unit:unit||null
+  });
+  if(itemRes.error){alert('Zakup utworzony, ale nie zapisała się pozycja: '+itemRes.error.message);}
+  logActivity(clientId,'🛒','Zakup','Utworzono zakup ręcznie: '+productName+'.');
+  document.getElementById('pur-m-product').value='';
+  document.getElementById('pur-m-qty').value='';
+  document.getElementById('pur-m-unit').value='';
+  document.getElementById('pur-m-needed').value='';
+  togglePurManualForm();
+  renderPurchasing();
 }
 function pdChart(prices){
   var w=300,h=90,pad=10;
