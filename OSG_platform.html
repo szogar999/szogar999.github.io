@@ -1754,7 +1754,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.33.0';
+var APP_VERSION = 'v0.35.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2232,6 +2232,20 @@ async function findOrCreatePurchaseForOffer(offerId,clientId,buildingId){
   }
   throw new Error('Błąd tworzenia zakupu: '+insertRes.error.message);
 }
+// Sprint 0.35: jedyne miejsce w JS, które ustala tożsamość produktu —
+// i ono NICZEGO nie ustala samodzielnie. Woła bazę (RPC find_or_create_product),
+// która sama liczy normalizację i atomowo znajduje/tworzy produkt. JS jest
+// tu wyłącznie klientem: wysyła nazwę, dostaje id, albo dostaje błąd i przerywa.
+async function findOrCreateProductId(name,category,unit){
+  var res=await sb.rpc('find_or_create_product',{p_name:name,p_category:category||null,p_unit:unit||null});
+  if(res.error){
+    throw new Error('Nie udało się ustalić produktu "'+name+'": '+res.error.message);
+  }
+  if(!res.data){
+    throw new Error('Baza nie zwróciła identyfikatora produktu dla "'+name+'".');
+  }
+  return res.data;
+}
 async function confirmCreatePurchases(){
   if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
   var offerId=followupPromptOfferId, clientId=followupPromptClientId;
@@ -2265,9 +2279,19 @@ async function confirmCreatePurchases(){
   var missingItems=offerItems.filter(function(it){return !existingOfferItemIds[it.id];});
 
   if(missingItems.length){
-    var itemsPayload=missingItems.map(function(it){
-      return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit};
-    });
+    // Sprint 0.35: zanim cokolwiek wstawimy, każda pozycja MUSI dostać product_id
+    // z bazy. Jeśli choć jedna się nie uda — przerywamy całość. Nigdy nie tworzymy
+    // purchase_item bez product_id.
+    var itemsPayload;
+    try{
+      itemsPayload=await Promise.all(missingItems.map(async function(it){
+        var productId=await findOrCreateProductId(it.name,null,it.unit);
+        return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit,product_id:productId};
+      }));
+    }catch(e){
+      alert('Zakup istnieje, ale nie udało się ustalić tożsamości produktów — pozycje NIE zostały zapisane.\n\n'+e.message);
+      dismissFollowupPrompt();return;
+    }
     var itemsInsertRes=await sb.from('purchase_items').insert(itemsPayload);
     if(itemsInsertRes.error){
       // 23505 tutaj = ktoś inny dosypał te same pozycje w międzyczasie (wyścig
@@ -5018,9 +5042,18 @@ async function submitManualPurchase(){
     status:'do zamówienia',created_by:currentUid||null
   }).select().maybeSingle();
   if(purchaseRes.error){alert('Błąd tworzenia zakupu: '+purchaseRes.error.message);return;}
+  // Sprint 0.35: product_id jest obowiązkowy. Jeśli RPC zawiedzie, zakup już
+  // istnieje (bez pozycji) — ale pozycja NIE powstaje bez product_id.
+  var manualProductId;
+  try{
+    manualProductId=await findOrCreateProductId(productName,category,unit||null);
+  }catch(e){
+    alert('Zakup utworzony, ale nie udało się ustalić tożsamości produktu — pozycja NIE została zapisana.\n\n'+e.message);
+    togglePurManualForm();renderPurchasing();return;
+  }
   var itemRes=await sb.from('purchase_items').insert({
     purchase_id:purchaseRes.data.id,product_name:productName,
-    quantity:qty?Number(qty):null,unit:unit||null
+    quantity:qty?Number(qty):null,unit:unit||null,product_id:manualProductId
   });
   if(itemRes.error){alert('Zakup utworzony, ale nie zapisała się pozycja: '+itemRes.error.message);}
   logActivity(clientId,'🛒','Zakup','Utworzono zakup ręcznie: '+productName+'.');
