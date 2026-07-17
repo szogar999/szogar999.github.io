@@ -964,6 +964,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Wszystkie liczby to sumy i zliczenia z realnych danych — żadna nie jest szacunkiem ani przewidywaniem modelu.</div>
     </div>
 
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">6. 📦 Zakupy</div>
+      <div id="ceo-purchasing" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+      <div onclick="renderPurchasing();go('s-purchasing')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:10px;">🛒 Zobacz w Do zakupu →</div>
+    </div>
+
     <button onclick="loadOwnerDeliveries();go('s-deliveries-owner')" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">🚚 Dostawy →</button>
   </div>
 
@@ -3310,16 +3316,32 @@ async function loadCeoDashboard(){
     sb.from('users').select('id,name,role'),
     sb.from('activities').select('type,author_id').in('type',['Telefon','Spotkanie']),
     computeAiSignalsGlobal(),
-    sb.from('tasks').select('id').eq('category','offer').eq('status','pending').lt('date',today)
+    sb.from('tasks').select('id').eq('category','offer').eq('status','pending').lt('date',today),
+    sb.from('purchases').select('id,status,needed_by').is('deleted_at',null)
   ]);
   var offers=results[0].data||[], clients=results[1].data||[], users=results[2].data||[],
-      activities=results[3].data||[], riskSignals=results[4]||[], overdueFollowups=results[5].data||[];
+      activities=results[3].data||[], riskSignals=results[4]||[], overdueFollowups=results[5].data||[],
+      purchases=results[6].data||[];
 
   renderCeoSales(offers);
   renderCeoPipeline(clients,offers);
   renderCeoSalespeople(users,clients,offers,activities);
   renderCeoRisks(riskSignals,overdueFollowups);
   renderCeoForecast(clients,offers);
+  renderCeoPurchasing(purchases);
+}
+function renderCeoPurchasing(purchases){
+  var el=document.getElementById('ceo-purchasing');
+  if(!el)return;
+  var today=todayStr();
+  var czeka=purchases.filter(function(p){return p.status==='do zamówienia';}).length;
+  var zamowiono=purchases.filter(function(p){return p.status==='zamówione'||p.status==='częściowo odebrane';}).length;
+  var wydano=purchases.filter(function(p){return p.status==='wydane na budowę';}).length;
+  var opoznione=purchases.filter(function(p){
+    return p.needed_by&&p.needed_by<today&&['odebrane','wydane na budowę','anulowane'].indexOf(p.status)===-1;
+  }).length;
+  var tile=function(label,val,color){return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;'+(color?'color:'+color+';':'')+'">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+label+'</div></div>';};
+  el.innerHTML=tile('Czeka na zamówienie',czeka,'#f59e0b')+tile('Zamówione',zamowiono,'#3b82f6')+tile('Opóźnione',opoznione,'#ef4444')+tile('Wydane na budowę',wydano,'#22c55e');
 }
 
 function renderCeoSales(offers){
