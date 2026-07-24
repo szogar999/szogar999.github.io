@@ -970,6 +970,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div onclick="renderPurchasing();go('s-purchasing')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:10px;">🛒 Zobacz w Do zakupu →</div>
     </div>
 
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">7. 📦 Magazyn</div>
+      <div id="ceo-magazyn" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+      <div id="ceo-magazyn-braki" style="margin-top:9px;"></div>
+      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Stany liczone bezpośrednio z widoku v_product_stock — bez żadnej logiki dublowanej w aplikacji.</div>
+    </div>
+
     <button onclick="loadOwnerDeliveries();go('s-deliveries-owner')" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">🚚 Dostawy →</button>
   </div>
 
@@ -1754,7 +1761,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.35.1';
+var APP_VERSION = 'v0.35.2';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3341,11 +3348,12 @@ async function loadCeoDashboard(){
     sb.from('activities').select('type,author_id').in('type',['Telefon','Spotkanie']),
     computeAiSignalsGlobal(),
     sb.from('tasks').select('id').eq('category','offer').eq('status','pending').lt('date',today),
-    sb.from('purchases').select('id,status,needed_by').is('deleted_at',null)
+    sb.from('purchases').select('id,status,needed_by').is('deleted_at',null),
+    sb.from('v_product_stock').select('*')
   ]);
   var offers=results[0].data||[], clients=results[1].data||[], users=results[2].data||[],
       activities=results[3].data||[], riskSignals=results[4]||[], overdueFollowups=results[5].data||[],
-      purchases=results[6].data||[];
+      purchases=results[6].data||[], stock=results[7].data||[];
 
   renderCeoSales(offers);
   renderCeoPipeline(clients,offers);
@@ -3353,6 +3361,23 @@ async function loadCeoDashboard(){
   renderCeoRisks(riskSignals,overdueFollowups);
   renderCeoForecast(clients,offers);
   renderCeoPurchasing(purchases);
+  renderCeoMagazyn(stock);
+}
+function renderCeoMagazyn(stock){
+  var tileEl=document.getElementById('ceo-magazyn');
+  var brakiEl=document.getElementById('ceo-magazyn-braki');
+  if(!tileEl)return;
+  var naStanie=stock.filter(function(s){return Number(s.physical_stock)>0;}).length;
+  var zarezerwowane=stock.filter(function(s){return Number(s.reserved_qty)>0;}).length;
+  var braki=stock.filter(function(s){return s.is_shortage;});
+  var tile=function(label,val,color){return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;'+(color?'color:'+color+';':'')+'">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+label+'</div></div>';};
+  tileEl.innerHTML=tile('Produktów na stanie',naStanie,'#22c55e')+tile('Z rezerwacją',zarezerwowane,'#3b82f6')+tile('Braki',braki.length,braki.length?'#ef4444':'#8a9ab0')+tile('Wszystkich produktów',stock.length);
+  if(braki.length){
+    brakiEl.innerHTML='<div style="font-size:9px;color:#ef4444;font-weight:700;margin-bottom:5px;">⚠️ BRAKI (zarezerwowano więcej niż jest fizycznie):</div>'
+      +braki.map(function(s){return '<div style="font-size:11px;color:#fff;padding:4px 0;border-top:1px solid rgba(255,255,255,.06);">'+s.product_name+' — brakuje '+Math.abs(Number(s.available_for_sale))+'</div>';}).join('');
+  }else{
+    brakiEl.innerHTML='';
+  }
 }
 function renderCeoPurchasing(purchases){
   var el=document.getElementById('ceo-purchasing');
