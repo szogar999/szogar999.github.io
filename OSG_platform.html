@@ -4967,7 +4967,10 @@ function purCardHtml(p){
   var neededBadge=p.needed_by?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">📅 '+p.needed_by+'</span>':'';
   var itemsHtml=items.map(function(it){
     var itemCat=(it.offer_items&&it.offer_items.category)||p.category||'—';
-    return '<div class="row" style="padding:7px 0;"><div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div></div>';
+    var canReserve=(p.status==='odebrane'||p.status==='częściowo odebrane')&&it.product_id;
+    var reserveBtn=canReserve?'<button onclick="openReserveForm(\''+it.id+'\',\''+it.product_id+'\',\''+p.client_id+'\',\''+(it.product_name||'').replace(/'/g,"\\'")+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;color:#8a9ab0;font-size:10px;cursor:pointer;white-space:nowrap;">📦 Zarezerwuj</button>':'';
+    return '<div class="row" style="padding:7px 0;gap:8px;"><div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div><div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div>'+reserveBtn+'</div></div>'
+      +'<div id="reserve-form-'+it.id+'" style="display:none;"></div>';
   }).join('');
   var supplierBlock;
   if(canEdit){
@@ -5006,6 +5009,49 @@ async function updatePurchaseField(purchaseId,field,value){
   payload[field]=value||null;
   var res=await sb.from('purchases').update(payload).eq('id',purchaseId);
   if(res.error)alert('Błąd zapisu: '+res.error.message);
+}
+async function openReserveForm(itemId,productId,clientId,productName){
+  var el=document.getElementById('reserve-form-'+itemId);
+  if(!el)return;
+  if(el.style.display==='block'){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='block';
+  el.innerHTML='<div style="padding:8px 0;color:#8a9ab0;font-size:11px;">Ładowanie budów…</div>';
+  var buildRes=await sb.from('buildings').select('id,name').eq('client_id',clientId).is('deleted_at',null).order('created_at',{ascending:false});
+  var stockRes=await sb.from('v_product_stock').select('available_for_sale').eq('product_id',productId).maybeSingle();
+  var available=stockRes.data?stockRes.data.available_for_sale:null;
+  var buildings=buildRes.data||[];
+  var buildOptions=buildings.map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+  var availableNote=available!=null?('Dostępne: <b>'+available+'</b>'):'Brak danych o stanie.';
+  el.innerHTML=''
+    +'<div style="background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px;margin:6px 0;display:flex;flex-direction:column;gap:6px;">'
+    +'<div style="font-size:11px;font-weight:700;">Rezerwacja: '+productName+'</div>'
+    +'<div style="font-size:10px;color:#8a9ab0;">'+availableNote+'</div>'
+    +'<select id="rsv-building-'+itemId+'" style="width:100%;padding:7px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-size:11px;">'
+    +'<option value="">— wybierz budowę —</option>'+buildOptions+'</select>'
+    +'<input id="rsv-qty-'+itemId+'" type="number" step="0.01" placeholder="Ilość do zarezerwowania" style="width:100%;padding:7px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-size:11px;">'
+    +'<div style="display:flex;gap:6px;">'
+    +'<button onclick="submitReservation(\''+itemId+'\',\''+productId+'\',\''+clientId+'\')" style="flex:1;background:#22c55e;border:none;border-radius:6px;padding:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Zapisz rezerwację</button>'
+    +'<button onclick="openReserveForm(\''+itemId+'\',\''+productId+'\',\''+clientId+'\',\''+productName.replace(/'/g,"\\'")+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#8a9ab0;font-size:11px;cursor:pointer;">Anuluj</button>'
+    +'</div></div>';
+}
+async function submitReservation(itemId,productId,clientId){
+  var buildingId=document.getElementById('rsv-building-'+itemId).value;
+  var qtyRaw=document.getElementById('rsv-qty-'+itemId).value;
+  if(!buildingId){alert('Wybierz budowę.');return;}
+  var qty=Number(qtyRaw);
+  if(!qtyRaw||isNaN(qty)||qty<=0){alert('Podaj poprawną ilość większą od zera.');return;}
+  // Sprint 0.35: sprawdzenie realnego dostępnego stanu tuż przed zapisem —
+  // baza (v_product_stock) jest jedynym źródłem prawdy, nie liczymy tego w JS.
+  var stockRes=await sb.from('v_product_stock').select('available_for_sale').eq('product_id',productId).maybeSingle();
+  var available=stockRes.data?stockRes.data.available_for_sale:0;
+  if(qty>available){alert('Nie można zarezerwować '+qty+' — dostępne jest tylko '+available+'.');return;}
+  var res=await sb.from('reservations').insert({
+    product_id:productId,purchase_item_id:itemId,client_id:clientId,building_id:buildingId,
+    quantity:qty,status:'zarezerwowane',created_by:currentUid||null
+  });
+  if(res.error){alert('Błąd zapisu rezerwacji: '+res.error.message);return;}
+  document.getElementById('reserve-form-'+itemId).style.display='none';
+  renderPurchasing();
 }
 function togglePurManualForm(){
   var el=document.getElementById('pur-manual-form');
