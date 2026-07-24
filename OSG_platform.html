@@ -1754,7 +1754,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.35.0';
+var APP_VERSION = 'v0.35.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4401,6 +4401,15 @@ async function changeDeliveryStatus(id,newStatus,isManualOverride){
   }
   var res=await sb.from('deliveries').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',id);
   if(res.error){alert('Błąd zapisu statusu: '+res.error.message);return;}
+  // Sprint 0.35 Etap 2: start dostawy (w_trasie) wydaje powiązane rezerwacje
+  // i synchronizuje status zakupu — przez RPC, żeby działało niezależnie
+  // od roli (kierowca nie ma praw UPDATE na reservations/purchases wprost).
+  if(newStatus==='w_trasie'){
+    var rpcRes=await sb.rpc('issue_reservations_for_delivery',{p_delivery_id:id});
+    if(rpcRes.error){
+      alert('Status dostawy zapisany, ale nie udało się zaktualizować magazynu: '+rpcRes.error.message+'\nSprawdź rezerwacje ręcznie.');
+    }
+  }
   var clientIdForLog=current.client_id;
   var statusLabel=DELIVERY_STATUS_LABEL[newStatus]||newStatus;
   var logMsg=isManualOverride
@@ -4501,7 +4510,32 @@ function renderOwnerDeliveryCard(d){
       +'<select onchange="assignDriverToDelivery(\''+d.id+'\',this.value)" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;">'+ownerDriverOptionsHtml(d.assigned_to)+'</select>'
       +'<select onchange="ownerOverrideDeliveryStatus(\''+d.id+'\',this.value)" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;">'+statusOptions+'</select>'
     +'</div>'
+    +(d.building_id?('<button onclick="openLinkReservations(\''+d.id+'\',\''+d.building_id+'\')" style="width:100%;margin-top:6px;background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px;color:#8a9ab0;font-size:10px;cursor:pointer;">📦 Podepnij rezerwacje</button><div id="link-rsv-'+d.id+'"></div>'):'')
   +'</div>';
+}
+async function openLinkReservations(deliveryId,buildingId){
+  var el=document.getElementById('link-rsv-'+deliveryId);
+  if(!el)return;
+  if(el.innerHTML){el.innerHTML='';return;}
+  el.innerHTML='<div style="padding:6px 0;color:#8a9ab0;font-size:10px;">Ładowanie rezerwacji…</div>';
+  var res=await sb.from('reservations').select('id,quantity,products(name)').eq('building_id',buildingId).eq('status','zarezerwowane').is('delivery_id',null).is('deleted_at',null);
+  if(res.error){el.innerHTML='<div style="color:#ef4444;font-size:10px;">Błąd: '+res.error.message+'</div>';return;}
+  var rows=res.data||[];
+  if(!rows.length){el.innerHTML='<div style="padding:6px 0;color:#8a9ab0;font-size:10px;">Brak niepodpiętych rezerwacji dla tej budowy.</div>';return;}
+  el.innerHTML=rows.map(function(r){
+    var pname=(r.products&&r.products.name)||'—';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;background:#0f1923;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 8px;margin-top:5px;">'
+      +'<span style="font-size:10px;">'+pname+' — '+r.quantity+'</span>'
+      +'<button onclick="attachReservationToDelivery(\''+r.id+'\',\''+deliveryId+'\')" style="background:#22c55e;border:none;border-radius:5px;padding:4px 8px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">Podepnij</button>'
+      +'</div>';
+  }).join('');
+}
+async function attachReservationToDelivery(reservationId,deliveryId){
+  var res=await sb.from('reservations').update({delivery_id:deliveryId}).eq('id',reservationId);
+  if(res.error){alert('Błąd podpinania rezerwacji: '+res.error.message);return;}
+  document.getElementById('link-rsv-'+deliveryId).innerHTML='';
+  var d=ownerDeliveriesCache.find(function(x){return x.id===deliveryId;});
+  if(d&&d.building_id)openLinkReservations(deliveryId,d.building_id);
 }
 function ownerDriverOptionsHtml(selectedId){
   return '<option value="">— nieprzypisana —</option>'+ownerUsersCache.filter(function(u){return u.role==='driver';}).map(function(u){
