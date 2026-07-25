@@ -1761,7 +1761,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.35.2';
+var APP_VERSION = 'v0.35.4';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2293,7 +2293,7 @@ async function confirmCreatePurchases(){
     try{
       itemsPayload=await Promise.all(missingItems.map(async function(it){
         var productId=await findOrCreateProductId(it.name,null,it.unit);
-        return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit,product_id:productId};
+        return {purchase_id:purchaseId,offer_item_id:it.id,product_name:it.name,quantity:it.qty,unit:it.unit,product_id:productId,unit_price_net:it.buy_price!=null?it.buy_price:null};
       }));
     }catch(e){
       alert('Zakup istnieje, ale nie udało się ustalić tożsamości produktów — pozycje NIE zostały zapisane.\n\n'+e.message);
@@ -4002,6 +4002,28 @@ async function saveOffer(){
   var statusChanged=(!isNewOffer && previousOfferStatus!==status);
   var btn=document.getElementById('oe-save-btn');
   btn.disabled=true;btn.textContent='Zapisywanie…';
+
+  // Sprint 0.35 naprawa: przy EDYCJI istniejącej oferty najpierw próbujemy
+  // usunąć stare offer_items — ZANIM cokolwiek zapiszemy w nagłówku. Jeśli
+  // usunięcie oberwie się o FK (bo z tej oferty już powstał zakup i
+  // purchase_items.offer_item_id wskazuje na te wiersze), przerywamy CAŁOŚĆ:
+  // zero zmian w nagłówku, zero nowych/zdublowanych pozycji. Bez tej kolejności
+  // nagłówek zapisywał się zawsze, a błąd usuwania pozycji był cicho ignorowany —
+  // efekt: zdublowane pozycje zamiast czytelnego błędu.
+  if(editingOfferId){
+    var delRes=await sb.from('offer_items').delete().eq('offer_id',editingOfferId);
+    if(delRes.error){
+      btn.disabled=false;btn.textContent='💾 Zapisz ofertę';
+      if(delRes.error.code==='23503'){
+        errEl.textContent='Nie można zmienić pozycji tej oferty, ponieważ na jej podstawie utworzono już zakup. Możesz zmienić dane nagłówkowe oferty, ale nie jej pozycje.';
+      }else{
+        errEl.textContent='Błąd usuwania starych pozycji oferty: '+delRes.error.message+' — zapis przerwany, nic nie zostało zmienione.';
+      }
+      errEl.style.display='block';
+      return;
+    }
+  }
+
   var payload={
     client_id:clientId, building_id:buildingId, status:status, document_type:currentOfferDocType,
     net_total:totals.sumNet, gross_total:totals.sumGross, vat_rate:totals.vatRate,
@@ -4025,8 +4047,8 @@ async function saveOffer(){
     errEl.textContent='Błąd zapisu oferty: '+res.error.message; errEl.style.display='block';
     return;
   }
-  // Pozycje: prosto — usuń stare, wstaw aktualne (mała skala, brak potrzeby diffowania)
-  await sb.from('offer_items').delete().eq('offer_id',offerId);
+  // Pozycje: dla edycji stare już usunięte wyżej (przed zapisem nagłówka),
+  // dla nowej oferty nie ma czego usuwać — po prostu wstawiamy aktualne.
   var itemsPayload=items.map(function(it){
     return {offer_id:offerId,name:it.name,description:it.description||null,qty:it.qty,unit:it.unit,category:it.category,buy_price:it.buy_price,sell_price:it.sell_price,margin_amount:it.margin_amount,margin_pct:it.margin_pct};
   });
@@ -5156,6 +5178,9 @@ async function submitManualPurchase(){
     alert('Zakup utworzony, ale nie udało się ustalić tożsamości produktu — pozycja NIE została zapisana.\n\n'+e.message);
     togglePurManualForm();renderPurchasing();return;
   }
+  // unit_price_net celowo pomijane — formularz ręcznego zakupu nie ma dziś
+  // pola ceny, więc zostaje NULL. Dostanie wartość dopiero gdy (w przyszłości)
+  // ktoś doda tu pole ceny — nie zgadujemy jej znikąd.
   var itemRes=await sb.from('purchase_items').insert({
     purchase_id:purchaseRes.data.id,product_name:productName,
     quantity:qty?Number(qty):null,unit:unit||null,product_id:manualProductId
