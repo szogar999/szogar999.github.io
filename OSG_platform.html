@@ -1761,7 +1761,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.35.5';
+var APP_VERSION = 'v0.36.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2215,7 +2215,72 @@ async function createAcceptedFollowupTask(){
   dismissFollowupPrompt();
   if(currentClientId===followupPromptClientId)loadClientActivities(currentClientId);
 }
-async function findOrCreatePurchaseForOffer(offerId,clientId,buildingId){
+// ============================================================
+// Sprint 0.36 — NOWA ścieżka. Jedno wywołanie RPC
+// create_purchase_from_offer_atomic. Zero bezpośrednich
+// INSERT/SELECT+INSERT do purchases/purchase_items/produktów w tej
+// ścieżce. Brak manufakturowanego UUID — naturalny klucz to offer_id,
+// unikalny indeks na purchases.offer_id chroni przed duplikatem
+// niezależnie od tego ile razy i jak szybko klikniesz.
+// ============================================================
+function mapCreatePurchaseError(err){
+  var code=err&&err.code;
+  if(code==='OSG11') return 'Zakup można utworzyć wyłącznie z zaakceptowanej oferty.';
+  if(code==='OSG12') return 'Ta oferta nie ma żadnych pozycji — nie ma czego wpisać do zakupu.';
+  if(code==='OSG13'||code==='OSG14'||code==='OSG15'){
+    var items=[];
+    try{ items=JSON.parse(err.details||'[]'); }catch(e){}
+    var list=items.map(function(it){return '— pozycja '+it.pozycja+': "'+it.name+'"';}).join('\n');
+    var prefix = code==='OSG13' ? 'Co najmniej jedna pozycja oferty ma nieprawidłową ilość:'
+      : code==='OSG14' ? 'Co najmniej jedna pozycja oferty nie ma jednostki:'
+      : 'Nie można utworzyć zakupu, ponieważ co najmniej jedna pozycja oferty nie ma uzupełnionej ceny zakupu:';
+    return prefix+(list?'\n'+list:'')+'\n\nPopraw pozycję w ofercie i spróbuj ponownie.';
+  }
+  if(code==='42501') return 'Nie masz uprawnień do utworzenia zakupu dla tego klienta.';
+  if(code==='22023') return err.message||'Oferta nie istnieje.';
+  if(code==='28000') return 'Sesja wygasła — zaloguj się ponownie i spróbuj jeszcze raz.';
+  return 'Nieznany błąd techniczny przy tworzeniu zakupu: '+(err&&err.message?err.message:'brak szczegółów')+'. Możesz spróbować ponownie — to bezpieczne, nie utworzy duplikatu.';
+}
+async function confirmCreatePurchases(){
+  if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
+  var offerId=followupPromptOfferId, clientId=followupPromptClientId;
+  var btn=document.getElementById('followup-create-purchases-btn');
+  if(btn){btn.disabled=true;btn.textContent='Tworzenie…';} // zabezpieczenie UX — właściwą ochroną jest natural key offer_id w bazie
+
+  var rpcRes=await sb.rpc('create_purchase_from_offer_atomic',{p_offer_id:offerId});
+
+  if(btn){btn.disabled=false;btn.textContent='🛒 Utwórz zakupy z tej oferty';}
+
+  if(rpcRes.error){
+    alert(mapCreatePurchaseError(rpcRes.error));
+    return; // NIE zamykamy prompta — ponowne kliknięcie użyje tego samego offer_id, bezpieczny retry
+  }
+
+  var result=rpcRes.data||{};
+  dismissFollowupPrompt();
+
+  if(result.just_created){
+    logActivity(clientId,'🛒','Zakup','Utworzono zakup z oferty: '+result.total_items+' '+plPozycje(result.total_items)+', status: do zamówienia.');
+    alert('Utworzono zakup ('+result.total_items+' '+plPozycje(result.total_items)+'). Znajdziesz go w 🛒 Do zakupu.');
+  }else if(result.items_inserted>0){
+    alert('Zakup dla tej oferty już istniał — dodano brakujące pozycje ('+result.items_inserted+' z '+result.total_items+').');
+  }else{
+    // Zakup już istnieje w komplecie — to NIE błąd, traktujemy jako sukces i otwieramy go.
+    alert('Zakup dla tej oferty już istnieje ('+result.total_items+' '+plPozycje(result.total_items)+'). Otwieram go w 🛒 Do zakupu.');
+  }
+  renderPurchasing();
+  go('s-purchasing');
+  if(currentClientId===clientId)loadClientActivities(currentClientId);
+}
+
+// ============================================================
+// Sprint 0.36 — STARA ŚCIEŻKA, NIEUŻYWANA. Zostawiona świadomie jako
+// awaryjna. Żaden przycisk jej nie wywołuje — przycisk "🛒 Utwórz zakupy
+// z tej oferty" (followup-create-purchases-btn) woła nową funkcję
+// confirmCreatePurchases() zdefiniowaną niżej, opartą o RPC
+// create_purchase_from_offer_atomic.
+// ============================================================
+async function findOrCreatePurchaseForOfferOLD_UNUSED_FALLBACK(offerId,clientId,buildingId){
   // Krok A: czy aktywny zakup dla tej oferty już istnieje? (deleted_at is null)
   var existingRes=await sb.from('purchases').select('*').eq('offer_id',offerId).is('deleted_at',null).maybeSingle();
   if(existingRes.error&&existingRes.error.code!=='PGRST116'){throw new Error('Błąd sprawdzania istniejącego zakupu: '+existingRes.error.message);}
@@ -2253,7 +2318,7 @@ async function findOrCreateProductId(name,category,unit){
   }
   return res.data;
 }
-async function confirmCreatePurchases(){
+async function confirmCreatePurchasesOLD_UNUSED_FALLBACK(){
   if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
   var offerId=followupPromptOfferId, clientId=followupPromptClientId;
   var results=await Promise.all([
@@ -2268,7 +2333,7 @@ async function confirmCreatePurchases(){
 
   var purchase,justCreated;
   try{
-    var found=await findOrCreatePurchaseForOffer(offerId,clientId,buildingId);
+    var found=await findOrCreatePurchaseForOfferOLD_UNUSED_FALLBACK(offerId,clientId,buildingId);
     purchase=found.purchase;justCreated=found.justCreated;
   }catch(e){
     alert(e.message);dismissFollowupPrompt();return;
