@@ -1775,7 +1775,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.39.2';
+var APP_VERSION = 'v0.40.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2455,7 +2455,15 @@ async function updateClientStage(newStage){
 }
 function quickActionCall(){
   if(!currentClientRecord||!currentClientRecord.phone){alert('Ten klient nie ma zapisanego numeru telefonu — dodaj go przez Edytuj.');return;}
-  logActivity(currentClientId,'📞','Telefon','Zadzwoniono: '+currentClientRecord.phone+'.');
+  /* Sprint "Kontakt dzisiaj — fundament": type='Telefon' ZAMROŻONY.
+     Powód: ten wpis powstawał PRZED otwarciem dialera, więc oznaczał
+     kliknięcie, a nie rozmowę. Stare rekordy 'Telefon' zostają w bazie
+     nietknięte i są jedynym źródłem last_legacy_call_at.
+     Od teraz klik w dialer = 'Otwarto telefon' — typ neutralny, który
+     NIE uczestniczy w v_client_last_contact i NIE liczy się jako
+     wykonany telefon w KPI. Realny wynik zapisze dopiero moduł
+     "Kontakt dzisiaj": 'Rozmowa' (verified) lub 'Próba połączenia'. */
+  logActivity(currentClientId,'📲','Otwarto telefon','Otwarto dialer: '+currentClientRecord.phone+'. Wynik rozmowy niezarejestrowany.');
   window.location.href='tel:'+currentClientRecord.phone.replace(/[^0-9+]/g,'');
   askFollowupReminder(currentClientId,currentClientRecord.name,'Telefon do klienta');
 }
@@ -3940,7 +3948,10 @@ async function loadDaySummary(){
   var results=await Promise.all([activitiesQ,offersSentQ,newClientsQ,tasksDoneQ]);
   var actRes=results[0], offersSentRes=results[1], newClientsRes=results[2], tasksDoneRes=results[3];
   var acts=(actRes.data||[]);
-  var calls=acts.filter(function(a){return a.type==='Telefon';}).length;
+  /* Fundament: 'Telefon' zamrożony, ale stare wpisy nadal się liczą.
+     'Otwarto telefon' ŚWIADOMIE pominięte — samo kliknięcie dialera
+     nie jest wykonanym telefonem (decyzja Oskara). */
+  var calls=acts.filter(function(a){return a.type==='Rozmowa'||a.type==='Próba połączenia'||a.type==='Telefon';}).length;
   var notes=acts.filter(function(a){return a.type==='Notatka';}).length;
   var won=acts.filter(function(a){return a.type==='Etap lejka'&&(a.description||'').indexOf('→ Wygrana')>-1;}).length;
   var lost=acts.filter(function(a){return a.type==='Etap lejka'&&(a.description||'').indexOf('→ Przegrana')>-1;}).length;
@@ -5784,7 +5795,11 @@ function addMemoryNote(){
   memoryData.unshift({date:now.toLocaleDateString('pl-PL')+' '+now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}),icon:'📝',type:'Notatka',desc:txt,author:currentName});
   input.value='';
   renderMemory();
-  logActivity(DEMO_CLIENT_ID,'📝','Notatka',txt);
+  /* Sprint "Kontakt dzisiaj — fundament": zapis USUNIĘTY.
+     DEMO_CLIENT_ID='bemowo-demo' NIE jest uuid. Po migracji
+     activities.client_id na uuid ten INSERT wywalałby się błędem typu.
+     Tryb demo pokazuje interfejs i żyje w pamięci (memoryData) —
+     nie brudzi produkcyjnych danych. Świadoma decyzja, nie przeoczenie. */
 }
 var memActiveIcon='';
 function memFilterType(icon){
