@@ -1775,7 +1775,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.39.1';
+var APP_VERSION = 'v0.39.2';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2933,13 +2933,19 @@ function handleProductNameInput(inputEl){
 }
 async function fetchProductSuggestions(clientId,term,row,box){
   if(!sbEnabled)return;
+  /* Sprint 0.39.1 — filtr soft-delete. Bez tego usunięta oferta NADAL
+     podpowiadała ceny: kasowanie ukrywało ją na liście, ale jej pozycje
+     wciąż karmiły autocomplete. Join jest !inner, więc warunek na
+     offers.deleted_at odsiewa pozycje po stronie bazy, nie w JS. */
   var res=await sb.from('offer_items')
-    .select('name,description,unit,category,buy_price,sell_price,created_at,offers!inner(client_id)')
+    .select('name,description,unit,category,buy_price,sell_price,created_at,offers!inner(client_id,deleted_at)')
     .eq('offers.client_id',clientId)
+    .is('offers.deleted_at',null)
     .ilike('name','%'+term+'%')
     .order('created_at',{ascending:false})
     .limit(20);
-  if(res.error||!res.data||res.data.length===0){ box.style.display='none'; box.innerHTML=''; return; }
+  if(res.error){ console.warn('Autocomplete — zapytanie odrzucone:',res.error); box.style.display='none'; box.innerHTML=''; return; }
+  if(!res.data||res.data.length===0){ box.style.display='none'; box.innerHTML=''; return; }
   var seen={},items=[];
   res.data.forEach(function(r){
     var key=(r.name||'').toLowerCase();
