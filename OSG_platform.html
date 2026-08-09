@@ -977,6 +977,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Stany liczone bezpośrednio z widoku v_product_stock — bez żadnej logiki dublowanej w aplikacji.</div>
     </div>
 
+    <div class="card" style="padding:13px;">
+      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">8. 📦 Centrum uwagi — Zaopatrzenie <span id="ac-count"></span></div>
+      <div id="ac-list" style="display:flex;flex-direction:column;gap:7px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
+      <div id="ac-showall-wrap" style="display:none;margin-top:8px;text-align:center;">
+        <span onclick="acShowAll()" style="font-size:11px;color:#e8601c;font-weight:700;cursor:pointer;">Pokaż wszystkie →</span>
+      </div>
+      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Reguły oparte wyłącznie na danych — bez AI, bez rekomendacji.</div>
+    </div>
+
     <button onclick="loadOwnerDeliveries();go('s-deliveries-owner')" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">🚚 Dostawy →</button>
   </div>
 
@@ -1761,7 +1770,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.37.0';
+var APP_VERSION = 'v0.38.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3467,6 +3476,7 @@ async function loadCeoDashboard(){
   renderCeoForecast(clients,offers);
   renderCeoPurchasing(purchases);
   renderCeoMagazyn(stock);
+  loadAttentionCenter();
 }
 function renderCeoMagazyn(stock){
   var tileEl=document.getElementById('ceo-magazyn');
@@ -3483,6 +3493,89 @@ function renderCeoMagazyn(stock){
   }else{
     brakiEl.innerHTML='';
   }
+}
+// ============================================================
+// Sprint 0.38 — Centrum uwagi: Zaopatrzenie. Cała kwalifikacja i
+// priorytet liczone w widoku v_attention_center (baza) — JS tylko
+// wyświetla i wywołuje istniejące akcje/RPC. Zero AI, zero nowej
+// logiki magazynowej tutaj.
+// ============================================================
+var acAllItems=[];
+var acShowingAll=false;
+var AC_PRIORITY_COLOR={czerwony:'#ef4444',zolty:'#f59e0b',normalny:'#8a9ab0'};
+async function loadAttentionCenter(){
+  var listEl=document.getElementById('ac-list');
+  var countEl=document.getElementById('ac-count');
+  if(!listEl||!isOwnerOrAdmin()||!sbEnabled)return;
+  var res=await sb.from('v_attention_center').select('*').order('priority_rank',{ascending:true}).order('since_at',{ascending:true});
+  if(res.error){listEl.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd ładowania: '+res.error.message+'</div>';return;}
+  acAllItems=res.data||[];
+  acShowingAll=false;
+  countEl.textContent=acAllItems.length?('· '+acAllItems.length):'';
+  renderAttentionList();
+}
+function renderAttentionList(){
+  var listEl=document.getElementById('ac-list');
+  var wrapEl=document.getElementById('ac-showall-wrap');
+  if(!acAllItems.length){
+    listEl.innerHTML='<div style="font-size:12px;color:#22c55e;text-align:center;padding:8px 0;">✅ Brak zaległości.</div>';
+    wrapEl.style.display='none';
+    return;
+  }
+  var LIMIT=7;
+  var toShow=acShowingAll?acAllItems:acAllItems.slice(0,LIMIT);
+  listEl.innerHTML=toShow.map(acItemHtml).join('');
+  wrapEl.style.display=(!acShowingAll&&acAllItems.length>LIMIT)?'block':'none';
+}
+function acShowAll(){ acShowingAll=true; renderAttentionList(); }
+function acDaysSince(iso){
+  var d=Math.floor((Date.now()-new Date(iso).getTime())/86400000);
+  if(d<=0)return 'dziś';
+  if(d===1)return '1 dzień';
+  return d+' dni';
+}
+function acItemHtml(item){
+  var color=AC_PRIORITY_COLOR[item.priority]||'#8a9ab0';
+  var subtitle=[item.client_name,item.building_name].filter(Boolean).join(' · ');
+  return '<div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.15);border-left:3px solid '+color+';border-radius:6px;padding:8px 9px;">'
+    +'<div style="flex:1;min-width:0;">'
+    +'<div style="font-size:11px;font-weight:700;color:#fff;">'+item.title+'</div>'
+    +'<div style="font-size:10px;color:#8a9ab0;margin-top:1px;">'+(subtitle||'—')+' · czeka: '+acDaysSince(item.since_at)+'</div>'
+    +'</div>'
+    +'<button onclick=\'acRunAction('+JSON.stringify(item).replace(/'/g,"&#39;")+')\' style="background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:7px;padding:6px 10px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">'+item.action_label+'</button>'
+    +'</div>';
+}
+async function acRunAction(item){
+  var d=item.detail||{};
+  switch(item.action_type){
+    case 'create_purchase':
+      var rpcRes=await sb.rpc('create_purchase_from_offer_atomic',{p_offer_id:d.offer_id});
+      if(rpcRes.error){alert(mapCreatePurchaseError(rpcRes.error));return;}
+      alert('Utworzono zakup. Znajdziesz go w 🛒 Do zakupu.');
+      renderPurchasing();go('s-purchasing');
+      loadAttentionCenter();
+      break;
+    case 'open_purchasing':
+      go('s-purchasing');renderPurchasing();
+      break;
+    case 'open_reservation_form':
+      go('s-purchasing');await renderPurchasing();
+      openReserveForm(d.purchase_item_id,d.product_id,d.client_id,(d.product_name||'').replace(/'/g,"\\'"));
+      break;
+    case 'create_delivery':
+      openDeliveryForm({clientId:d.client_id,buildingId:d.building_id||null});
+      break;
+    case 'open_delivery':
+    case 'set_delivery_date':
+      loadOwnerDeliveries();go('s-deliveries-owner');
+      break;
+  }
+}
+async function updateDeliveryDate(id,dateValue){
+  if(!dateValue)return;
+  var res=await sb.from('deliveries').update({delivery_date:dateValue,updated_at:new Date().toISOString()}).eq('id',id);
+  if(res.error){alert('Błąd zapisu terminu: '+res.error.message);return;}
+  loadOwnerDeliveries();
 }
 function renderCeoPurchasing(purchases){
   var el=document.getElementById('ceo-purchasing');
@@ -4769,7 +4862,8 @@ function renderOwnerDeliveryCard(d){
     +'</div>'
     +(d.address?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📍 '+d.address+'</div>':'')
     +(d.item_description?'<div style="font-size:12px;color:#c7d0da;margin-bottom:3px;">📦 '+d.item_description+'</div>':'')
-    +((d.delivery_date||d.delivery_time)?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:6px;">🕐 '+(d.delivery_date?new Date(d.delivery_date).toLocaleDateString('pl-PL'):'')+(d.delivery_time?' · '+d.delivery_time:'')+'</div>':'')
+    +((d.delivery_date||d.delivery_time)?'<div style="font-size:11px;color:#8a9ab0;margin-bottom:6px;">🕐 '+(d.delivery_date?new Date(d.delivery_date).toLocaleDateString('pl-PL'):'')+(d.delivery_time?' · '+d.delivery_time:'')+'</div>'
+      :'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:10px;color:#f59e0b;">⚠️ Brak terminu:</span><input type="date" onchange="updateDeliveryDate(\''+d.id+'\',this.value)" style="flex:1;padding:5px 7px;background:#0f1923;border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:11px;"></div>')
     +'<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">🧑‍✈️ '+driverName+'</div>'
     +'<div style="display:flex;gap:6px;margin-bottom:6px;">'
       +(d.client_id?'<button onclick="openClient(\''+d.client_id+'\')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 4px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">👷 Klient</button>':'')
