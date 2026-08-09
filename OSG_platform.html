@@ -1775,7 +1775,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.39.0';
+var APP_VERSION = 'v0.39.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2837,7 +2837,10 @@ var allOffersCache=[];
 var allClientsCache=[];
 
 function offerItemRowHtml(item){
-  item=item||{name:'',qty:1,unit:'szt',category:CATEGORY_LIST[0],buy_price:0,sell_price:0,_rid:'r'+Math.random().toString(36).slice(2,9)};
+  /* Sprint 0.39.1 — ceny startują PUSTE, nie zerem. Powód: appka musi odróżnić
+     "nie wpisałem ceny" od "cena wynosi zero". Zero było kłamstwem, które
+     przechodziło przez zapis i zawyżało marżę całej oferty. */
+  item=item||{name:'',qty:1,unit:'szt',category:CATEGORY_LIST[0],buy_price:null,sell_price:null,_rid:'r'+Math.random().toString(36).slice(2,9)};
   if(!item._rid)item._rid='r'+Math.random().toString(36).slice(2,9);
   var catOptions=CATEGORY_LIST.map(function(c){return '<option value="'+c+'"'+(c===item.category?' selected':'')+'>'+c+'</option>';}).join('');
   return '<div class="card oe-item-row" data-rid="'+item._rid+'" style="padding:11px;display:flex;flex-direction:column;gap:7px;">'
@@ -2855,8 +2858,14 @@ function offerItemRowHtml(item){
     +'<select class="oe-i-cat" onchange="recalcOfferTotals()" style="padding:9px 6px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;outline:none;">'+catOptions+'</select>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
-    +'<input class="oe-i-buy" type="number" step="any" value="'+(item.buy_price!=null?item.buy_price:0)+'" placeholder="Cena zakupu" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
-    +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null?item.sell_price:0)+'" placeholder="Cena sprzedaży" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'<div>'
+      +'<div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;font-weight:700;letter-spacing:.3px;margin-bottom:3px;">Cena zakupu netto</div>'
+      +'<input class="oe-i-buy" type="number" step="any" value="'+(item.buy_price!=null&&item.buy_price!==''?item.buy_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()" style="width:100%;box-sizing:border-box;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'</div>'
+    +'<div>'
+      +'<div style="font-size:9px;color:#e8601c;text-transform:uppercase;font-weight:700;letter-spacing:.3px;margin-bottom:3px;">Cena sprzedaży netto</div>'
+      +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null&&item.sell_price!==''?item.sell_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}" style="width:100%;box-sizing:border-box;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'</div>'
     +'</div>'
     +'<div class="oe-i-price-suggest" style="display:none;font-size:10px;color:#8a9ab0;"></div>'
     +'<div class="oe-i-margin" style="font-size:11px;color:#8a9ab0;"></div>'
@@ -2893,8 +2902,8 @@ function addRecentPurchaseToOffer(idx){
   var r=recentPurchasesCache[idx];
   if(!r)return;
   var rid='r'+Math.random().toString(36).slice(2,9);
-  // Świadomie buy_price:0 — cena NIGDY nie wchodzi automatycznie, tylko przez "Użyj tej ceny" niżej.
-  addOfferItemRow({name:r.product_name,unit:r.unit||'szt',category:r.category||CATEGORY_LIST[0],qty:1,buy_price:0,sell_price:0,_rid:rid});
+  // Świadomie ceny PUSTE — cena NIGDY nie wchodzi automatycznie, tylko przez "Użyj tej ceny" niżej.
+  addOfferItemRow({name:r.product_name,unit:r.unit||'szt',category:r.category||CATEGORY_LIST[0],qty:1,buy_price:null,sell_price:null,_rid:rid});
   var row=document.querySelector('.oe-item-row[data-rid="'+rid+'"]');
   var box=row?row.querySelector('.oe-i-price-suggest'):null;
   if(box){
@@ -2938,9 +2947,16 @@ async function fetchProductSuggestions(clientId,term,row,box){
   });
   items=items.slice(0,5);
   box.innerHTML=items.map(function(r,idx){
-    return '<div class="oe-i-suggest-item" data-idx="'+idx+'" style="padding:8px 10px;'+(idx<items.length-1?'border-bottom:1px solid rgba(255,255,255,.06);':'')+'cursor:pointer;">'
-      +'<div style="font-size:12px;font-weight:700;color:#fff;">'+r.name+'</div>'
-      +'<div style="font-size:10px;color:#8a9ab0;">'+(r.unit||'')+' · '+(r.category||'')+' · u tego klienta: '+Number(r.sell_price||0).toFixed(2)+' zł</div>'
+    /* Sprint 0.39.1 (C-lite) — cena z historii wchodzi automatycznie TYLKO gdy
+       obie są wiarygodne. Cena 0 zł to nie cena, to ślad po niedokończonej
+       ofercie — nie wolno jej podawać jako "historii godnej powtórzenia". */
+    var priced=isTrustedHistoricPrice(r);
+    var line2 = priced
+      ? (r.unit||'')+' · '+(r.category||'')+' · u tego klienta: '+Number(r.sell_price).toFixed(2)+' zł'
+      : (r.unit||'')+' · '+(r.category||'')+' · <span style="color:#f59e0b;">bez wiarygodnej ceny — wypełni tylko opis</span>';
+    return '<div class="oe-i-suggest-item" data-idx="'+idx+'" style="padding:8px 10px;'+(idx<items.length-1?'border-bottom:1px solid rgba(255,255,255,.06);':'')+'cursor:pointer;'+(priced?'':'opacity:.72;')+'">'
+      +'<div style="font-size:12px;font-weight:700;color:'+(priced?'#fff':'#c7d0da')+';">'+r.name+'</div>'
+      +'<div style="font-size:10px;color:#8a9ab0;">'+line2+'</div>'
       +'</div>';
   }).join('');
   box.style.display='block';
@@ -2951,13 +2967,26 @@ async function fetchProductSuggestions(clientId,term,row,box){
     };
   });
 }
+/* Historia cenowa jest wiarygodna tylko gdy OBIE ceny są dodatnie.
+   sell_price<=0 => nie ma z czego liczyć marży. buy_price<=0 => koszt nieznany,
+   a wstawiony jako 0 udaje 100% marży. Jedno i drugie kłamie na pieniądzach. */
+function isTrustedHistoricPrice(it){
+  return Number(it&&it.sell_price)>0 && Number(it&&it.buy_price)>0;
+}
 function applyProductSuggestion(row,it){
   row.querySelector('.oe-i-name').value=it.name||'';
   row.querySelector('.oe-i-desc').value=it.description||'';
   row.querySelector('.oe-i-unit').value=it.unit||'szt';
   row.querySelector('.oe-i-cat').value=it.category||CATEGORY_LIST[0];
-  row.querySelector('.oe-i-buy').value=it.buy_price!=null?it.buy_price:0;
-  row.querySelector('.oe-i-sell').value=it.sell_price!=null?it.sell_price:0;
+  if(isTrustedHistoricPrice(it)){
+    // Szybka ścieżka zachowana: jedno kliknięcie = komplet danych, dokładnie jak dotąd.
+    row.querySelector('.oe-i-buy').value=it.buy_price;
+    row.querySelector('.oe-i-sell').value=it.sell_price;
+  }else{
+    // Tylko dane opisowe. Ceny zostają puste — świadomie, żeby wymusić decyzję.
+    row.querySelector('.oe-i-buy').value='';
+    row.querySelector('.oe-i-sell').value='';
+  }
   recalcOfferTotals();
 }
 function hideProductSuggestSoon(inputEl){
@@ -3024,7 +3053,16 @@ function recalcOfferTotals(){
     if(target!=null&&pct<target-5) warnTxt=' · ⚠️ poniżej celu ('+target+'%)';
     else if(target!=null&&pct<target) warnTxt=' · ⚠️ blisko celu ('+target+'%)';
     var badge=it._row.querySelector('.oe-i-margin');
-    if(badge)badge.innerHTML='<span style="color:'+color+';font-weight:700;">Marża: '+pct.toFixed(1)+'%'+'</span> · '+lineMarginAmt.toFixed(0)+' zł'+warnTxt;
+    /* Sprint 0.39.1 — bezpośrednia konsekwencja pustych cen: dopóki nie ma
+       kompletu, marża jest NIEZNANA, nie zerowa. "0.0%" przy pustym formularzu
+       to fałszywa informacja, a ostrzeżenie o celu nie ma czego pilnować. */
+    if(badge){
+      if(!(it.sell_price>0)||!(it.buy_price>0)){
+        badge.innerHTML='<span style="color:#8a9ab0;">Marża: — <span style="opacity:.7;">(uzupełnij obie ceny)</span></span>';
+      }else{
+        badge.innerHTML='<span style="color:'+color+';font-weight:700;">Marża: '+pct.toFixed(1)+'%'+'</span> · '+lineMarginAmt.toFixed(0)+' zł'+warnTxt;
+      }
+    }
   });
   var pctTotal=sumNet>0?(sumMarginAmt/sumNet*100):0;
   var vatRate=parseFloat((document.getElementById('oe-vat')||{}).value)||0;
@@ -4259,6 +4297,27 @@ async function saveOffer(){
   var totals=recalcOfferTotals(); // TYLKO podgląd w formularzu — nie jest wysyłane jako suma do zapisu
   var items=totals.items.filter(function(it){return it.name;});
   if(items.length===0){errEl.textContent='Dodaj przynajmniej jedną pozycję z nazwą (Produkt jest wymagany).';errEl.style.display='block';return;}
+  /* Sprint 0.39.1 — cena zakupu jest obowiązkowa. Bez niej marża oferty jest
+     fikcją: pozycja z kosztem 0 pokazuje 100% marży i zawyża wynik całości.
+     ŚWIADOMIE nie walidujemy tu ceny sprzedaży — decyzja Oskara, 0.39.1. */
+  var badBuy=[];
+  totals.items.forEach(function(it,idx){
+    if(!it.name) return;
+    if(!(Number(it.buy_price)>0)) badBuy.push({pos:idx+1,name:it.name});
+  });
+  if(badBuy.length){
+    errEl.innerHTML='Brak ceny zakupu netto — nie da się policzyć marży:<br>'
+      +badBuy.map(function(b){return '• poz. '+b.pos+' — <b>'+b.name+'</b>';}).join('<br>')
+      +'<br><span style="opacity:.75;">Uzupełnij cenę zakupu w tych pozycjach i zapisz ponownie.</span>';
+    errEl.style.display='block';
+    var firstBad=document.querySelectorAll('.oe-item-row')[badBuy[0].pos-1];
+    if(firstBad){
+      var inp=firstBad.querySelector('.oe-i-buy');
+      firstBad.scrollIntoView({behavior:'smooth',block:'center'});
+      if(inp){inp.style.border='1px solid #ef4444'; setTimeout(function(){inp.style.border='1px solid rgba(255,255,255,.1)';},4000);}
+    }
+    return;
+  }
   var buildingId=document.getElementById('oe-building').value||null;
   var status=document.getElementById('oe-status').value;
   var isNewOffer=!editingOfferId;
