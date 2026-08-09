@@ -1399,6 +1399,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 
+  <div id="oe-recent-purchases" style="display:none;">
+    <div style="font-size:11px;font-weight:700;color:#8a9ab0;margin-bottom:6px;">🛒 Ostatnio kupione — koszt OSG</div>
+    <div id="oe-recent-purchases-list" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;"></div>
+  </div>
+
   <div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <div style="font-size:14px;font-weight:800;">Pozycje oferty</div>
@@ -1770,7 +1775,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.38.0';
+var APP_VERSION = 'v0.39.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2853,8 +2858,56 @@ function offerItemRowHtml(item){
     +'<input class="oe-i-buy" type="number" step="any" value="'+(item.buy_price!=null?item.buy_price:0)+'" placeholder="Cena zakupu" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
     +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null?item.sell_price:0)+'" placeholder="Cena sprzedaży" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
     +'</div>'
+    +'<div class="oe-i-price-suggest" style="display:none;font-size:10px;color:#8a9ab0;"></div>'
     +'<div class="oe-i-margin" style="font-size:11px;color:#8a9ab0;"></div>'
     +'</div>';
+}
+/* Sprint 0.39 — "Ostatnio kupione": osobny blok, osobne źródło danych
+   (purchase_items.unit_price_net — realny koszt OSG, nie cena sprzedaży
+   klientowi). NIE dotyka handleProductNameInput/fetchProductSuggestions/
+   applyProductSuggestion poniżej — to zupełnie inny, równoległy mechanizm. */
+var recentPurchasesCache=[];
+async function loadRecentPurchases(){
+  var wrap=document.getElementById('oe-recent-purchases');
+  var listEl=document.getElementById('oe-recent-purchases-list');
+  if(!wrap||!listEl||!sbEnabled)return;
+  var res=await sb.from('v_product_last_purchase').select('*').order('last_purchased_at',{ascending:false}).limit(8);
+  if(res.error||!res.data||!res.data.length){ wrap.style.display='none'; recentPurchasesCache=[]; return; }
+  recentPurchasesCache=res.data;
+  wrap.style.display='block';
+  listEl.innerHTML=res.data.map(function(r,idx){
+    return '<div onclick="addRecentPurchaseToOffer('+idx+')" style="flex:0 0 auto;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;cursor:pointer;min-width:118px;">'
+      +'<div style="font-size:11px;font-weight:700;color:#fff;">'+r.product_name+'</div>'
+      +'<div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+(r.unit||'')+' · '+pzFmt(r.unit_price_net)+' zł</div>'
+      +'<div style="font-size:9px;color:#8a9ab0;">'+acRecentDaysLabel(r.last_purchased_at)+'</div>'
+      +'</div>';
+  }).join('');
+}
+function acRecentDaysLabel(iso){
+  var d=Math.floor((Date.now()-new Date(iso).getTime())/86400000);
+  if(d<=0)return 'dziś';
+  if(d===1)return '1 dzień temu';
+  return d+' dni temu';
+}
+function addRecentPurchaseToOffer(idx){
+  var r=recentPurchasesCache[idx];
+  if(!r)return;
+  var rid='r'+Math.random().toString(36).slice(2,9);
+  // Świadomie buy_price:0 — cena NIGDY nie wchodzi automatycznie, tylko przez "Użyj tej ceny" niżej.
+  addOfferItemRow({name:r.product_name,unit:r.unit||'szt',category:r.category||CATEGORY_LIST[0],qty:1,buy_price:0,sell_price:0,_rid:rid});
+  var row=document.querySelector('.oe-item-row[data-rid="'+rid+'"]');
+  var box=row?row.querySelector('.oe-i-price-suggest'):null;
+  if(box){
+    box.style.display='block';
+    box.innerHTML='Ostatnio kupiono: <b style="color:#fff;">'+pzFmt(r.unit_price_net)+' zł</b> · '+acRecentDaysLabel(r.last_purchased_at)
+      +' — <span onclick="useSuggestedBuyPrice(this,'+Number(r.unit_price_net)+')" style="color:#22c55e;font-weight:700;cursor:pointer;text-decoration:underline;">Użyj tej ceny</span>';
+  }
+}
+function useSuggestedBuyPrice(spanEl,price){
+  var row=spanEl.closest('.oe-item-row');
+  if(!row)return;
+  row.querySelector('.oe-i-buy').value=price;
+  recalcOfferTotals();
 }
 /* Podpowiedzi produktu z historii TEGO klienta — świadomie nie globalnie, bo różni klienci
    mają różne ceny (ustalone przez Oskara). Brak dopasowania = appka milczy, nie zgaduje. */
@@ -4149,6 +4202,7 @@ async function newOffer(){
   var pdfBtn=document.getElementById('oe-pdf-btn'); if(pdfBtn)pdfBtn.style.display='none';
   await loadClientsForOfferForm(null,null);
   addOfferItemRow();
+  loadRecentPurchases();
   go('s-offer-edit');
 }
 function newOfferForClient(clientId,clientName){
@@ -4164,6 +4218,7 @@ async function openOffer(id){
   document.getElementById('oe-title').textContent='Edycja oferty';
   document.getElementById('oe-error').style.display='none';
   var pdfBtn=document.getElementById('oe-pdf-btn'); if(pdfBtn)pdfBtn.style.display='block';
+  loadRecentPurchases();
   go('s-offer-edit');
   if(!sbEnabled)return;
   var res=await sb.from('offers').select('*').eq('id',id).maybeSingle();
