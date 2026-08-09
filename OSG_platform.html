@@ -1761,7 +1761,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.36.0';
+var APP_VERSION = 'v0.37.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5228,6 +5228,10 @@ function pzMargin(p){return Math.round((p.avgSalePrice-p.lastPurchasePrice)/p.la
   fill('pz-manufacturer',man);fill('pz-supplier',sup);fill('pz-category',cat);
 })();
 var PURCHASE_STATUSES=['do zamówienia','zamówione','częściowo odebrane','odebrane','wydane na budowę','anulowane'];
+// Sprint 0.37: te dwa statusy NIE są już ręcznie wybieralne — wynikają
+// wyłącznie z received_qty, wyliczane przez record_purchase_receipt_atomic.
+// Dropdown pokazuje tylko statusy procesowe, nad którymi user ma realną kontrolę.
+var MANUAL_PURCHASE_STATUSES=PURCHASE_STATUSES.filter(function(s){return s!=='częściowo odebrane'&&s!=='odebrane';});
 var PURCHASE_STATUS_LABEL={'do zamówienia':'🕓 Do zamówienia','zamówione':'📦 Zamówione','częściowo odebrane':'📥 Częściowo odebrane','odebrane':'✅ Odebrane','wydane na budowę':'🚚 Wydane na budowę','anulowane':'❌ Anulowane'};
 var PURCHASE_STATUS_COLOR={'do zamówienia':'#f59e0b','zamówione':'#3b82f6','częściowo odebrane':'#a855f7','odebrane':'#22c55e','wydane na budowę':'#22c55e','anulowane':'#ef4444'};
 // Sales może przesuwać status tylko na wczesnych etapach — nie zamyka zakupów.
@@ -5261,20 +5265,49 @@ function purCardHtml(p){
   var clientName=(p.clients&&p.clients.name)||'—';
   var buildingName=(p.buildings&&p.buildings.name)||null;
   var items=p.purchase_items||[];
-  var statusOptions=PURCHASE_STATUSES;
-  if(!canEdit) statusOptions=SALES_ALLOWED_NEXT_STATUSES.indexOf(p.status)>-1?SALES_ALLOWED_NEXT_STATUSES:[p.status];
-  var statusSelect='<select onchange="updatePurchaseStatus(\''+p.id+'\',this.value,\''+p.client_id+'\')" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'
-    +statusOptions.map(function(s){return '<option value="'+s+'"'+(s===p.status?' selected':'')+'>'+PURCHASE_STATUS_LABEL[s]+'</option>';}).join('')
-    +'</select>';
+  var isComputedStatus=(p.status==='częściowo odebrane'||p.status==='odebrane');
+  var statusControl;
+  if(isComputedStatus){
+    // Sprint 0.37: nieedytowalny badge — ten status wynika z received_qty,
+    // nie da się go nadpisać ręcznie. Poprawka idzie przez sekcję przyjęcia niżej.
+    statusControl='<span title="Status wyliczony automatycznie z przyjętych ilości — niemożliwy do zmiany ręcznie" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'+PURCHASE_STATUS_LABEL[p.status]+' 🔒</span>';
+  }else{
+    var statusOptions=MANUAL_PURCHASE_STATUSES;
+    if(!canEdit) statusOptions=SALES_ALLOWED_NEXT_STATUSES.indexOf(p.status)>-1?SALES_ALLOWED_NEXT_STATUSES.filter(function(s){return MANUAL_PURCHASE_STATUSES.indexOf(s)>-1;}):[p.status];
+    statusControl='<select onchange="updatePurchaseStatus(\''+p.id+'\',this.value,\''+p.client_id+'\')" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'
+      +statusOptions.map(function(s){return '<option value="'+s+'"'+(s===p.status?' selected':'')+'>'+PURCHASE_STATUS_LABEL[s]+'</option>';}).join('')
+      +'</select>';
+  }
   var priorityBadge=p.priority?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">⚡ '+p.priority+'</span>':'';
   var neededBadge=p.needed_by?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">📅 '+p.needed_by+'</span>':'';
+  // Sprint 0.37: przyjęcie dozwolone tylko gdy zakup jest w stanie, który RPC
+  // akceptuje (lustro OSG21 — nie pokazujemy formularza, który i tak zostanie odrzucony)
+  var canReceive=canEdit&&['zamówione','częściowo odebrane','odebrane'].indexOf(p.status)>-1;
   var itemsHtml=items.map(function(it){
     var itemCat=(it.offer_items&&it.offer_items.category)||p.category||'—';
     var canReserve=(p.status==='odebrane'||p.status==='częściowo odebrane')&&it.product_id;
     var reserveBtn=canReserve?'<button onclick="openReserveForm(\''+it.id+'\',\''+it.product_id+'\',\''+p.client_id+'\',\''+(it.product_name||'').replace(/'/g,"\\'")+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;color:#8a9ab0;font-size:10px;cursor:pointer;white-space:nowrap;">📦 Zarezerwuj</button>':'';
-    return '<div class="row" style="padding:7px 0;gap:8px;"><div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div><div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div>'+reserveBtn+'</div></div>'
+    var ordered=it.quantity!=null?it.quantity:0;
+    var received=it.received_qty!=null?it.received_qty:0;
+    var missing=ordered-received;
+    var receiptBlock=canReceive?(
+      '<div style="display:flex;gap:9px;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;">'
+      +'<div style="font-size:9px;color:#8a9ab0;">Zamówiono: <b style="color:#fff;">'+ordered+'</b></div>'
+      +'<div style="font-size:9px;color:#8a9ab0;">Przyjęto: <b style="color:#22c55e;">'+received+'</b></div>'
+      +'<div style="font-size:9px;color:'+(missing>0?'#f59e0b':'#8a9ab0')+';">Brakuje: <b>'+missing+'</b></div>'
+      +'<input type="number" id="receipt-qty-'+it.id+'" value="'+received+'" min="0" max="'+ordered+'" step="any" style="width:70px;padding:5px 7px;background:#0f1923;border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:11px;">'
+      +'</div>'
+    ):'';
+    return '<div class="row" style="padding:7px 0;gap:8px;flex-direction:column;align-items:stretch;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">'
+      +'<div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div>'
+      +'<div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div>'+reserveBtn+'</div>'
+      +'</div>'
+      +receiptBlock
+      +'</div>'
       +'<div id="reserve-form-'+it.id+'" style="display:none;"></div>';
   }).join('');
+  var receiptSaveBtn=canReceive&&items.length?('<button id="receipt-save-btn-'+p.id+'" onclick="submitPurchaseReceipt(\''+p.id+'\')" style="width:100%;margin-top:6px;background:#22c55e;border:none;border-radius:8px;padding:9px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">💾 Zapisz przyjęcie</button>'):'';
   var supplierBlock;
   if(canEdit){
     supplierBlock=''
@@ -5290,12 +5323,50 @@ function purCardHtml(p){
   return '<div class="card" style="padding:12px 13px;">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
       +'<div><div style="font-size:13px;font-weight:800;">👷 '+clientName+'</div>'+(buildingName?'<div style="font-size:10px;color:#8a9ab0;margin-top:1px;">🏗️ '+buildingName+'</div>':'')+'</div>'
-      +statusSelect
+      +statusControl
     +'</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'+priorityBadge+neededBadge+'</div>'
-    +'<div style="background:rgba(0,0,0,.15);border-radius:8px;padding:2px 9px;margin-bottom:8px;">'+(itemsHtml||'<div style="padding:7px 0;font-size:11px;color:#8a9ab0;">Brak pozycji.</div>')+'</div>'
+    +'<div style="background:rgba(0,0,0,.15);border-radius:8px;padding:2px 9px;margin-bottom:8px;">'+(itemsHtml||'<div style="padding:7px 0;font-size:11px;color:#8a9ab0;">Brak pozycji.</div>')+receiptSaveBtn+'</div>'
     +supplierBlock
   +'</div>';
+}
+function mapReceiptError(err){
+  var code=err&&err.code;
+  if(code==='OSG21') return 'Nie można rejestrować przyjęcia na tym etapie zakupu.';
+  if(code==='OSG22') return 'Ilość przyjęta nie może być ujemna.';
+  if(code==='OSG23') return err.message||'Przyjęto więcej niż zamówiono — popraw ilość.';
+  if(code==='OSG24') return 'Pozycja nie należy do tego zakupu.';
+  if(code==='42501') return 'Nie masz uprawnień do rejestrowania przyjęcia tego zakupu.';
+  if(code==='28000') return 'Sesja wygasła — zaloguj się ponownie i spróbuj jeszcze raz.';
+  return 'Nieznany błąd techniczny przy zapisie przyjęcia: '+(err&&err.message?err.message:'brak szczegółów')+'. Możesz spróbować ponownie — te same wartości są bezpieczne do ponowienia.';
+}
+async function submitPurchaseReceipt(purchaseId){
+  var p=purLastLoaded.find(function(x){return x.id===purchaseId;});
+  if(!p)return;
+  var items=(p.purchase_items||[]).map(function(it){
+    var inp=document.getElementById('receipt-qty-'+it.id);
+    var val=inp?parseFloat(inp.value):null;
+    if(inp&&(isNaN(val)||val===null)) val=it.received_qty||0;
+    return {purchase_item_id:it.id, received_qty: inp?val:(it.received_qty||0)};
+  });
+  var btn=document.getElementById('receipt-save-btn-'+purchaseId);
+  if(btn){btn.disabled=true;btn.textContent='Zapisywanie…';} // zabezpieczenie UI — właściwą ochroną jest atomowość RPC
+
+  // Sprint 0.37: JEDNO wywołanie RPC z kompletem pozycji tego zakupu.
+  // Zero bezpośrednich UPDATE purchase_items z JS.
+  var rpcRes=await sb.rpc('record_purchase_receipt_atomic',{p_purchase_id:purchaseId,p_items:items});
+
+  if(btn){btn.disabled=false;btn.textContent='💾 Zapisz przyjęcie';}
+
+  if(rpcRes.error){
+    alert(mapReceiptError(rpcRes.error));
+    return; // pola NIE są czyszczone — ponowne kliknięcie to bezpieczny retry tymi samymi wartościami
+  }
+
+  var result=rpcRes.data||{};
+  alert('Przyjęcie zapisane. Status: '+(PURCHASE_STATUS_LABEL[result.status]||result.status));
+  renderPurchasing();
+  if(typeof loadCommandStats==='function') loadCommandStats();
 }
 async function updatePurchaseStatus(purchaseId,newStatus,clientId){
   var current=purLastLoaded.find(function(p){return p.id===purchaseId;});
