@@ -1099,6 +1099,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <div id="ct-fresh-list" style="display:none;flex-direction:column;gap:8px;"></div>
 
+  <div onclick="ctTogglePlanned()" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px;opacity:.75;">
+    <span style="font-size:12px;font-weight:800;color:#8a9bb0;letter-spacing:.4px;">ZAPLANOWANE DALEJ</span>
+    <span id="ct-planned-count" style="font-size:11px;font-weight:800;background:rgba(138,155,176,.18);color:#8a9bb0;padding:2px 8px;border-radius:20px;">0</span>
+    <span id="ct-planned-arrow" style="font-size:11px;color:#8a9bb0;margin-left:auto;">▼ pokaż</span>
+  </div>
+  <div id="ct-planned-list" style="display:none;flex-direction:column;gap:6px;"></div>
+
   <button class="btn ghost" onclick="renderContactToday()">🔄 Odśwież</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
@@ -1800,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.41.1';
+var APP_VERSION = 'v0.41.2';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5337,7 +5344,7 @@ var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product',
    Frontend NIE pisze bezpośrednio do tasks ani activities —
    inaczej stracilibyśmy atomowość i regułę jednego pending call.
    ============================================================ */
-var ctDue=[], ctFresh=[], ctFreshOpen=false, ctBusy=false;
+var ctDue=[], ctFresh=[], ctPlanned=[], ctFreshOpen=false, ctPlannedOpen=false, ctBusy=false;
 
 function ctMsg(txt,ok){
   var el=document.getElementById('ct-msg'); if(!el)return;
@@ -5383,7 +5390,12 @@ async function renderContactToday(){
     sb.from('tasks').select('id,client_id,date,reason,clients(id,name,phone,next_action,pipeline_stage)')
       .eq('category','call').eq('status','pending').is('deleted_at',null)
       .lte('date',todayStr()).order('date',{ascending:true}),
-    sb.from('v_client_last_contact').select('*')
+    sb.from('v_client_last_contact').select('*'),
+    /* Zaplanowane DALEJ niż dziś. Bez tego klient z telefonem na jutro
+       znikał z obu kubełków — nie był ani "na dziś", ani "bez telefonu". */
+    sb.from('tasks').select('id,client_id,date,reason,clients(id,name,phone,pipeline_stage)')
+      .eq('category','call').eq('status','pending').is('deleted_at',null)
+      .gt('date',todayStr()).order('date',{ascending:true})
   ]);
   if(both[0].error){ dueEl.innerHTML='<div style="color:#ef4444;font-size:12px;">Błąd: '+both[0].error.message+'</div>'; return; }
 
@@ -5431,6 +5443,23 @@ async function renderContactToday(){
   document.getElementById('ct-due-count').textContent=ctDue.length;
   document.getElementById('ct-fresh-count').textContent=ctFresh.length;
 
+  ctPlanned=(both[2].data||[]).filter(function(t){return t.clients;});
+  document.getElementById('ct-planned-count').textContent=ctPlanned.length;
+  document.getElementById('ct-planned-list').innerHTML = ctPlanned.length===0
+    ? '<div style="font-size:11px;color:#8a9ab0;padding:6px 2px;">Nic nie jest umówione na później.</div>'
+    : ctPlanned.map(function(t){
+        var d=new Date(t.date), dni=Math.ceil((d-new Date(todayStr()))/86400000);
+        return '<div class="card" style="padding:9px 11px;display:flex;align-items:center;gap:8px;opacity:.8;">'
+          +'<div onclick="openClient(\''+t.clients.id+'\')" style="flex:1;min-width:0;cursor:pointer;">'
+            +'<div style="font-size:12px;font-weight:700;color:#c7d0da;">'+(t.clients.name||'—')+'</div>'
+            +'<div style="font-size:10px;color:#8a9ab0;">'+(t.clients.pipeline_stage||'Lead')+(t.reason?' · '+t.reason:'')+'</div>'
+          +'</div>'
+          +'<div style="font-size:10px;color:#8a9bb0;text-align:right;white-space:nowrap;">'
+            +d.toLocaleDateString('pl-PL',{day:'numeric',month:'short'})
+            +'<br><span style="color:#e8601c;font-weight:700;">za '+dni+(dni===1?' dzień':' dni')+'</span></div>'
+        +'</div>';
+      }).join('');
+
   dueEl.innerHTML = ctDue.length===0
     ? '<div style="text-align:center;color:#22c55e;font-size:13px;font-weight:700;padding:18px 0;">✅ Nikt nie czeka na telefon</div>'
     : ctDue.map(function(r,i){return ctRow(r,i,true);}).join('');
@@ -5439,7 +5468,7 @@ async function renderContactToday(){
 
 function ctRow(r,idx,isDue){
   var c=r.c, key=(isDue?'d':'f')+idx;
-  return '<div id="ct-row-'+key+'" class="card" style="padding:12px;">'
+  return '<div id="ct-row-'+key+'" data-cname="'+(c.name||'').replace(/"/g,'&quot;')+'" class="card" style="padding:12px;">'
     +'<div style="display:flex;align-items:flex-start;gap:8px;">'
       +'<div style="flex:1;min-width:0;">'
         +'<div onclick="openClient(\''+c.id+'\')" style="font-size:14px;font-weight:800;color:#fff;cursor:pointer;">'+(c.name||'—')+'</div>'
@@ -5522,9 +5551,23 @@ async function ctSubmit(key,clientId,result,nextDate,goToOffer){
     return;   // Przy błędzie NIE przechodzimy dalej — także do oferty.
   }
 
+  /* Wiersz NIE znika — zostaje wygaszony z potwierdzeniem, co dokładnie
+     zapisano. Przy 40 telefonach dziennie znikający wiersz wygląda jak
+     utrata danych i nie daje szansy wychwycić pomyłki. */
   var row=document.getElementById('ct-row-'+key);
-  if(row){ row.style.transition='opacity .25s'; row.style.opacity='0';
-           setTimeout(function(){ if(row)row.style.display='none'; },250); }
+  var potw = result==='no_answer' ? 'Nie odebrał — przypomnę '+nextDate
+           : (nextDate ? 'Rozmowa zapisana — telefon '+nextDate
+                       : 'Rozmowa zapisana — bez kolejnego telefonu');
+  if(row){
+    row.style.opacity='.45';
+    row.style.pointerEvents='none';
+    row.innerHTML='<div style="display:flex;align-items:center;gap:8px;">'
+      +'<span style="font-size:15px;">'+(result==='no_answer'?'📵':'✅')+'</span>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;color:#c7d0da;">'+(row.dataset.cname||'Zapisano')+'</div>'
+        +'<div style="font-size:10px;color:#8a9ab0;">'+potw+'</div>'
+      +'</div></div>';
+  }
 
   if(goToOffer){
     // Dopiero PO sukcesie RPC — rozmowa jest już zapisana w bazie.
@@ -5537,7 +5580,17 @@ async function ctSubmit(key,clientId,result,nextDate,goToOffer){
   ctMsg(result==='no_answer' ? 'Zapisano próbę. Przypomnę za 2 dni.'
         : (nextDate ? 'Zapisano rozmowę. Następny telefon: '+nextDate
                     : 'Zapisano rozmowę. Bez kolejnego telefonu.'), true);
-  setTimeout(renderContactToday,600);
+  // Bez auto-odswiezania: wygaszony wiersz ma zostac widoczny jako
+  // potwierdzenie. Lista czysci sie przy recznym "Odswiez" albo ponownym
+  // wejsciu na ekran — wtedy licznik "Zaplanowane dalej" pokaze nowe zadanie.
+  var dc=document.getElementById('ct-due-count');
+  if(dc){ var n=parseInt(dc.textContent,10)-1; if(n>=0)dc.textContent=n; }
+}
+
+function ctTogglePlanned(){
+  ctPlannedOpen=!ctPlannedOpen;
+  document.getElementById('ct-planned-list').style.display=ctPlannedOpen?'flex':'none';
+  document.getElementById('ct-planned-arrow').textContent=ctPlannedOpen?'▲ ukryj':'▼ pokaż';
 }
 
 function ctToggleFresh(){
