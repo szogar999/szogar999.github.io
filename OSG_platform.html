@@ -1093,7 +1093,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 
   <div onclick="ctToggleFresh()" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px;">
-    <span style="font-size:12px;font-weight:800;color:#8a9bb0;letter-spacing:.4px;">NIGDY NIETKNIĘTE</span>
+    <span style="font-size:12px;font-weight:800;color:#8a9bb0;letter-spacing:.4px;">BEZ ZAPLANOWANEGO TELEFONU</span>
     <span id="ct-fresh-count" style="font-size:11px;font-weight:800;background:rgba(138,155,176,.18);color:#8a9bb0;padding:2px 8px;border-radius:20px;">0</span>
     <span id="ct-fresh-arrow" style="font-size:11px;color:#8a9bb0;margin-left:auto;">▼ pokaż</span>
   </div>
@@ -1800,7 +1800,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.41.0';
+var APP_VERSION = 'v0.41.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5396,19 +5396,37 @@ async function renderContactToday(){
             contact_source:lc.contact_source, effective_last_contact_at:lc.effective_last_contact_at};
   });
 
-  // Kubełek 2: klienci BEZ aktywnego telefonu i bez potwierdzonego kontaktu.
-  var withCall={}; (both[0].data||[]).forEach(function(t){withCall[t.client_id]=1;});
+  /* Kubełek 2 — "Bez zaplanowanego telefonu".
+     contact_source NIE jest filtrem wejścia (poprawka po v0.41.0, gdzie
+     błędnie wpuszczał tylko 'none' i ukrywał klientów z dawnym kontaktem).
+     Wchodzą wszyscy bez aktywnego pending call, poza Przegranymi.
+     contact_source służy wyłącznie do sortowania i oznaczenia jakości. */
   var allPending=await sb.from('tasks').select('client_id')
       .eq('category','call').eq('status','pending').is('deleted_at',null);
-  var anyCall={}; (allPending.data||[]).forEach(function(t){anyCall[t.client_id]=1;});
+  var anyCall={}; (allPending.data||[]).forEach(function(t){ if(t.client_id) anyCall[t.client_id]=1; });
 
   var clientsRes=await sb.from('clients').select('id,name,phone,next_action,pipeline_stage')
-      .is('deleted_at',null).order('created_at',{ascending:true}).limit(200);
-  ctFresh=(clientsRes.data||[]).filter(function(c){
-    if(anyCall[c.id])return false;
-    var lc=lastMap[c.id];
-    return !lc || lc.contact_source==='none';
-  }).map(function(c){ return {c:c, contact_source:'none'}; });
+      .is('deleted_at',null).limit(500);
+  ctFresh=(clientsRes.data||[])
+    .filter(function(c){
+      if(anyCall[c.id])return false;                       // ma juz zaplanowany telefon
+      if((c.pipeline_stage||'')==='Przegrana')return false; // sprawa zamknieta
+      return true;
+    })
+    .map(function(c){
+      var lc=lastMap[c.id]||{contact_source:'none',effective_last_contact_at:null};
+      return {c:c, contact_source:lc.contact_source||'none',
+              effective_last_contact_at:lc.effective_last_contact_at||null};
+    })
+    .sort(function(a,b){
+      // 1. Brak historii na samej gorze — nikt ich nigdy nie dotknal.
+      var an=(a.contact_source==='none'||!a.effective_last_contact_at)?1:0;
+      var bn=(b.contact_source==='none'||!b.effective_last_contact_at)?1:0;
+      if(an!==bn) return bn-an;
+      if(an&&bn) return (a.c.name||'').localeCompare(b.c.name||'');
+      // 2. Potem od NAJSTARSZEGO kontaktu — najbardziej zapomniani wyzej.
+      return new Date(a.effective_last_contact_at)-new Date(b.effective_last_contact_at);
+    });
 
   document.getElementById('ct-due-count').textContent=ctDue.length;
   document.getElementById('ct-fresh-count').textContent=ctFresh.length;
