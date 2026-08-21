@@ -906,10 +906,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div id="cmd-leads" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
       <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Nowe leady</div>
     </div>
-    <div onclick="planFilter('call');go('s-planday')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
+    <div onclick="go('s-contact-today')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
       <div style="font-size:20px;">📞</div>
       <div id="cmd-contacts" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Kontakty na dziś</div>
+      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Kontakt dzisiaj</div>
     </div>
     <div onclick="loadOffers();go('s-offers')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;position:relative;">
       <div style="font-size:20px;">📄</div>
@@ -1075,6 +1075,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div style="font-size:10px;color:#8a9ab0;">"Last sync" = moment ostatniego udanego pobrania danych z bazy przez tę przeglądarkę, nie ciągła synchronizacja w tle.</div>
   <button onclick="renderSystemStatus()" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">🔄 Odśwież</button>
   <button class="btn ghost" onclick="go('s-onboarding')">🎭 Zobacz wersję Showcase (DEMO)</button>
+  <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
+</div>
+</div>
+
+<div class="screen" id="s-contact-today">
+<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📞 Kontakt dzisiaj</span><span id="ct-date" style="font-size:12px;color:#8a9ab0;"></span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+  <div id="ct-msg" style="display:none;font-size:12px;padding:10px 12px;border-radius:10px;"></div>
+
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:12px;font-weight:800;color:#e8601c;letter-spacing:.4px;">NA DZIŚ I ZALEGŁE</span>
+    <span id="ct-due-count" style="font-size:11px;font-weight:800;background:rgba(232,96,28,.18);color:#e8601c;padding:2px 8px;border-radius:20px;">0</span>
+  </div>
+  <div id="ct-due-list" style="display:flex;flex-direction:column;gap:8px;">
+    <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:16px 0;">Ładowanie…</div>
+  </div>
+
+  <div onclick="ctToggleFresh()" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px;">
+    <span style="font-size:12px;font-weight:800;color:#8a9bb0;letter-spacing:.4px;">NIGDY NIETKNIĘTE</span>
+    <span id="ct-fresh-count" style="font-size:11px;font-weight:800;background:rgba(138,155,176,.18);color:#8a9bb0;padding:2px 8px;border-radius:20px;">0</span>
+    <span id="ct-fresh-arrow" style="font-size:11px;color:#8a9bb0;margin-left:auto;">▼ pokaż</span>
+  </div>
+  <div id="ct-fresh-list" style="display:none;flex-direction:column;gap:8px;"></div>
+
+  <button class="btn ghost" onclick="renderContactToday()">🔄 Odśwież</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
 </div>
@@ -1775,7 +1800,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.40.0';
+var APP_VERSION = 'v0.41.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2078,6 +2103,7 @@ async function updateClientAssignment(userId){
 var currentClientRecord=null;
 var currentClientOffers=[];
 var currentClientDaysSinceContact=null;
+var currentClientLastContact=null;   // Sprint 0.41 — wiersz z v_client_last_contact
 var currentClientTasks=[];
 function renderClientState(){
   if(!currentClientRecord)return;
@@ -2092,6 +2118,7 @@ function renderClientState(){
   var data={
     pipelineStage:currentClientRecord.pipeline_stage||'Lead',
     daysSinceContact:currentClientDaysSinceContact,
+    lastContact:currentClientLastContact,   // Sprint 0.41 — z v_client_last_contact
     lastOffer:currentClientOffers.length?currentClientOffers[0]:null,
     tasks:currentClientTasks,
     activities:cdActivitiesCache,
@@ -2762,6 +2789,12 @@ async function loadClientActivities(clientId){
   var rows=res.data||[];
   cdActivitiesCache=rows;
   cdActivityActiveFilter='';
+  /* Sprint 0.41 — REALNY kontakt pochodzi z widoku, nie z ostatniej aktywności.
+     rows[0] to dowolna czynność (notatka, oferta, PDF), a to nie jest kontakt. */
+  try{
+    var lcRes=await sb.from('v_client_last_contact').select('*').eq('client_id',currentClientId).maybeSingle();
+    currentClientLastContact=lcRes&&lcRes.data?lcRes.data:null;
+  }catch(e){ currentClientLastContact=null; }
   var elLastContact=document.getElementById('cd-intel-lastcontact');
   var elDaysSince=document.getElementById('cd-intel-dayssince');
   var elLastActivity=document.getElementById('cd-last-activity');
@@ -3386,8 +3419,18 @@ var ClientStateEngine={
       if(days===1)return '1 dzień temu';
       return days+' dni temu';
     }
+    /* Sprint 0.41 — kafelek przepięty z buckets.call na v_client_last_contact.
+       Powód: buckets.call brał pierwszą aktywność mapowaną na 'call', czyli
+       także techniczne kliknięcie w dialer. Po zamrożeniu 'Telefon' pokazywałby
+       "brak" mimo historii. Teraz źródłem jest wyłącznie widok, z jawnym
+       rozróżnieniem verified / legacy_call / none. */
+    var lc=d.lastContact||null;
+    var lcVal, lcIcon;
+    if(!lc||lc.contact_source==='none'){ lcVal='brak kontaktu'; lcIcon='⚪'; }
+    else if(lc.contact_source==='verified'){ lcVal=fmt(lc.effective_last_contact_at); lcIcon='✅'; }
+    else { lcVal='próba: '+fmt(lc.effective_last_contact_at); lcIcon='⚠️'; }
     return [
-      {label:'Telefon',icon:'📞',value:fmt(buckets.call)},
+      {label:'Ostatni kontakt',icon:lcIcon,value:lcVal},
       {label:'E-mail',icon:'✉️',value:fmt(buckets.email)},
       {label:'Spotkanie',icon:'📍',value:fmt(buckets.meeting)},
       {label:'Oferta',icon:'📄',value:fmt(buckets.offer)},
@@ -5288,7 +5331,205 @@ async function logActivity(clientId,icon,type,desc){
 
 var OWNER_ONLY_SCREENS=['s-director','s-product','s-system-status-admin','s-deliveries-owner'];
 var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar','s-deliveries-owner'];
+/* ============================================================
+   MODUŁ "KONTAKT DZISIAJ"  (Sprint 0.41)
+   Jedyne źródło zapisu wyniku rozmowy: RPC log_call_result.
+   Frontend NIE pisze bezpośrednio do tasks ani activities —
+   inaczej stracilibyśmy atomowość i regułę jednego pending call.
+   ============================================================ */
+var ctDue=[], ctFresh=[], ctFreshOpen=false, ctBusy=false;
+
+function ctMsg(txt,ok){
+  var el=document.getElementById('ct-msg'); if(!el)return;
+  if(!txt){el.style.display='none';return;}
+  el.style.display='block';
+  el.style.background = ok?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
+  el.style.border     = '1px solid '+(ok?'rgba(34,197,94,.35)':'rgba(239,68,68,.35)');
+  el.style.color      = ok?'#22c55e':'#ef4444';
+  el.textContent=txt;
+  if(ok)setTimeout(function(){ if(el.textContent===txt) el.style.display='none'; },4000);
+}
+
+/* Oznaczenie jakości danych o kontakcie — sedno modelu verified/legacy.
+   Data z niepotwierdzonego kliknięcia NIGDY nie może wyglądać jak rozmowa. */
+function ctContactBadge(row){
+  var src=row.contact_source, d=row.effective_last_contact_at;
+  if(src==='none'||!d) return '<span style="color:#8a9bb0;">⚪ brak kontaktu</span>';
+  var days=Math.floor((new Date()-new Date(d))/86400000);
+  var txt=days===0?'dziś':(days===1?'1 dzień':days+' dni');
+  if(src==='verified')   return '<span style="color:#22c55e;">✅ ostatnio: '+txt+'</span>';
+  return '<span style="color:#f59e0b;">⚠️ próba: '+txt+'</span>';
+}
+
+function ctDaysLate(dateStr){
+  var d=Math.floor((new Date(todayStr())-new Date(dateStr))/86400000);
+  if(d>0) return '<span style="color:#ef4444;font-weight:800;">🔴 '+d+' dni po terminie</span>';
+  return '<span style="color:#e8601c;font-weight:800;">na dziś</span>';
+}
+
+function ctAddDays(n){
+  var d=new Date(); d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+
+async function renderContactToday(){
+  var dateEl=document.getElementById('ct-date');
+  if(dateEl)dateEl.textContent=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
+  var dueEl=document.getElementById('ct-due-list'), freshEl=document.getElementById('ct-fresh-list');
+  if(!sbEnabled){ dueEl.innerHTML='<div style="color:#8a9ab0;font-size:12px;">Brak połączenia z bazą.</div>'; return; }
+  dueEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:16px 0;">Ładowanie…</div>';
+
+  var both=await Promise.all([
+    sb.from('tasks').select('id,client_id,date,reason,clients(id,name,phone,next_action,pipeline_stage)')
+      .eq('category','call').eq('status','pending').is('deleted_at',null)
+      .lte('date',todayStr()).order('date',{ascending:true}),
+    sb.from('v_client_last_contact').select('*')
+  ]);
+  if(both[0].error){ dueEl.innerHTML='<div style="color:#ef4444;font-size:12px;">Błąd: '+both[0].error.message+'</div>'; return; }
+
+  var lastMap={};
+  (both[1].data||[]).forEach(function(r){ lastMap[r.client_id]=r; });
+
+  ctDue=(both[0].data||[]).filter(function(t){return t.clients;}).map(function(t){
+    var lc=lastMap[t.client_id]||{contact_source:'none'};
+    return {task_id:t.id, date:t.date, reason:t.reason, c:t.clients,
+            contact_source:lc.contact_source, effective_last_contact_at:lc.effective_last_contact_at};
+  });
+
+  // Kubełek 2: klienci BEZ aktywnego telefonu i bez potwierdzonego kontaktu.
+  var withCall={}; (both[0].data||[]).forEach(function(t){withCall[t.client_id]=1;});
+  var allPending=await sb.from('tasks').select('client_id')
+      .eq('category','call').eq('status','pending').is('deleted_at',null);
+  var anyCall={}; (allPending.data||[]).forEach(function(t){anyCall[t.client_id]=1;});
+
+  var clientsRes=await sb.from('clients').select('id,name,phone,next_action,pipeline_stage')
+      .is('deleted_at',null).order('created_at',{ascending:true}).limit(200);
+  ctFresh=(clientsRes.data||[]).filter(function(c){
+    if(anyCall[c.id])return false;
+    var lc=lastMap[c.id];
+    return !lc || lc.contact_source==='none';
+  }).map(function(c){ return {c:c, contact_source:'none'}; });
+
+  document.getElementById('ct-due-count').textContent=ctDue.length;
+  document.getElementById('ct-fresh-count').textContent=ctFresh.length;
+
+  dueEl.innerHTML = ctDue.length===0
+    ? '<div style="text-align:center;color:#22c55e;font-size:13px;font-weight:700;padding:18px 0;">✅ Nikt nie czeka na telefon</div>'
+    : ctDue.map(function(r,i){return ctRow(r,i,true);}).join('');
+  freshEl.innerHTML = ctFresh.map(function(r,i){return ctRow(r,i,false);}).join('');
+}
+
+function ctRow(r,idx,isDue){
+  var c=r.c, key=(isDue?'d':'f')+idx;
+  return '<div id="ct-row-'+key+'" class="card" style="padding:12px;">'
+    +'<div style="display:flex;align-items:flex-start;gap:8px;">'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div onclick="openClient(\''+c.id+'\')" style="font-size:14px;font-weight:800;color:#fff;cursor:pointer;">'+(c.name||'—')+'</div>'
+        +'<div style="font-size:10px;color:#8a9ab0;margin-top:2px;">'+(c.pipeline_stage||'Lead')+' · '+ctContactBadge(r)+'</div>'
+      +'</div>'
+      +(isDue?'<div style="font-size:10px;text-align:right;">'+ctDaysLate(r.date)+'</div>':'')
+    +'</div>'
+    +(c.next_action?'<div style="font-size:11px;color:#c7d0da;margin-top:6px;font-style:italic;">„'+c.next_action+'"</div>':'')
+    +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#e8601c;text-decoration:none;">📞 '+c.phone+'</a>':'<div style="font-size:11px;color:#ef4444;margin-top:8px;">Brak numeru telefonu</div>')
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;">'
+      +'<button onclick="ctAnswered(\''+key+'\',\''+c.id+'\')" style="padding:9px 4px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);border-radius:9px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;">Odebrał</button>'
+      +'<button onclick="ctNoAnswer(\''+key+'\',\''+c.id+'\')" style="padding:9px 4px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:9px;color:#ef4444;font-size:11px;font-weight:800;cursor:pointer;">Nie odebrał</button>'
+      +'<button onclick="ctLater(\''+key+'\',\''+c.id+'\')" style="padding:9px 4px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:9px;color:#f59e0b;font-size:11px;font-weight:800;cursor:pointer;">Później</button>'
+    +'</div>'
+    +'<div id="ct-panel-'+key+'" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);"></div>'
+  +'</div>';
+}
+
+function ctDateButtons(key,clientId,result){
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
+    +'<button onclick="ctSubmit(\''+key+'\',\''+clientId+'\',\''+result+'\',\''+ctAddDays(1)+'\')" style="padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Jutro</button>'
+    +'<button onclick="ctSubmit(\''+key+'\',\''+clientId+'\',\''+result+'\',\''+ctAddDays(7)+'\')" style="padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Za tydzień</button>'
+    +'<button onclick="ctSubmit(\''+key+'\',\''+clientId+'\',\''+result+'\',\''+ctAddDays(30)+'\')" style="padding:9px;background:rgba(232,96,28,.18);border:1px solid rgba(232,96,28,.4);border-radius:9px;color:#e8601c;font-size:11px;font-weight:800;cursor:pointer;">Za miesiąc</button>'
+    +'<button onclick="ctPickDate(\''+key+'\',\''+clientId+'\',\''+result+'\')" style="padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📅 Data</button>'
+  +'</div>';
+}
+
+/* "Nie odebrał" — jedno kliknięcie, bez pytań. Zdarza się najczęściej,
+   więc musi być błyskawiczne. */
+function ctNoAnswer(key,clientId){ ctSubmit(key,clientId,'no_answer',ctAddDays(2)); }
+
+/* "Później" — klient ODEBRAŁ i poprosił o kontakt później,
+   więc RPC dostanie 'not_now', które mapuje się na Rozmowa. */
+function ctLater(key,clientId){
+  var p=document.getElementById('ct-panel-'+key); if(!p)return;
+  if(p.style.display==='block'){p.style.display='none';return;}
+  p.style.display='block';
+  p.innerHTML='<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">Kiedy oddzwonić?</div>'
+    +ctDateButtons(key,clientId,'not_now');
+}
+
+/* "Odebrał" — notatka + następny krok w JEDNYM panelu.
+   Wybór końcowy woła RPC DOKŁADNIE RAZ (decyzja Oskara),
+   żeby jedna rozmowa nie tworzyła dwóch aktywności. */
+function ctAnswered(key,clientId){
+  var p=document.getElementById('ct-panel-'+key); if(!p)return;
+  if(p.style.display==='block'){p.style.display='none';return;}
+  p.style.display='block';
+  p.innerHTML='<input id="ct-note-'+key+'" placeholder="Notatka z rozmowy (opcjonalnie)" style="width:100%;box-sizing:border-box;padding:9px 11px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;margin-bottom:9px;">'
+    +'<div style="font-size:11px;color:#8a9ab0;margin-bottom:8px;">Następny krok:</div>'
+    +ctDateButtons(key,clientId,'answered')
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">'
+      +'<button onclick="ctSubmit(\''+key+'\',\''+clientId+'\',\'answered\',null)" style="padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#8a9bb0;font-size:11px;font-weight:700;cursor:pointer;">✓ Bez telefonu</button>'
+      +'<button onclick="ctSubmit(\''+key+'\',\''+clientId+'\',\'answered\',null,true)" style="padding:9px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);border-radius:9px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;">📄 Wysyłam ofertę</button>'
+    +'</div>';
+}
+
+function ctPickDate(key,clientId,result){
+  var d=prompt('Data następnego telefonu (RRRR-MM-DD):',ctAddDays(14));
+  if(!d)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.trim())){ ctMsg('Nieprawidłowy format daty. Użyj RRRR-MM-DD.',false); return; }
+  ctSubmit(key,clientId,result,d.trim());
+}
+
+/* JEDYNE miejsce wywołujące log_call_result. */
+async function ctSubmit(key,clientId,result,nextDate,goToOffer){
+  if(ctBusy)return; ctBusy=true;
+  var noteEl=document.getElementById('ct-note-'+key);
+  var note=noteEl?(noteEl.value||'').trim():'';
+  var rpc=await sb.rpc('log_call_result',{
+    p_client_id:clientId, p_result:result,
+    p_next_call_date:nextDate||null,
+    p_reason:note||null, p_pipeline_stage:null
+  });
+  ctBusy=false;
+
+  if(rpc.error){
+    var m=rpc.error.message||'';
+    ctMsg(m.indexOf('OSG3')>-1 ? m : 'Nie udało się zapisać wyniku: '+m, false);
+    return;   // Przy błędzie NIE przechodzimy dalej — także do oferty.
+  }
+
+  var row=document.getElementById('ct-row-'+key);
+  if(row){ row.style.transition='opacity .25s'; row.style.opacity='0';
+           setTimeout(function(){ if(row)row.style.display='none'; },250); }
+
+  if(goToOffer){
+    // Dopiero PO sukcesie RPC — rozmowa jest już zapisana w bazie.
+    // Przy błędzie RPC funkcja wróciła wyżej i tu nie dojdzie.
+    ctMsg('Zapisano rozmowę. Otwieram ofertę…',true);
+    var nm=(function(){ var r=ctDue.concat(ctFresh).find(function(x){return x.c.id===clientId;}); return r?r.c.name:''; })();
+    setTimeout(function(){ newOfferForClient(clientId,nm); },400);
+    return;
+  }
+  ctMsg(result==='no_answer' ? 'Zapisano próbę. Przypomnę za 2 dni.'
+        : (nextDate ? 'Zapisano rozmowę. Następny telefon: '+nextDate
+                    : 'Zapisano rozmowę. Bez kolejnego telefonu.'), true);
+  setTimeout(renderContactToday,600);
+}
+
+function ctToggleFresh(){
+  ctFreshOpen=!ctFreshOpen;
+  document.getElementById('ct-fresh-list').style.display=ctFreshOpen?'flex':'none';
+  document.getElementById('ct-fresh-arrow').textContent=ctFreshOpen?'▲ ukryj':'▼ pokaż';
+}
+
 function go(id){
+  if(id==='s-contact-today') setTimeout(renderContactToday,0);
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
     alert('🔒 Brak dostępu — ten ekran jest dostępny tylko dla właściciela/admina.');
     id='s-command';
