@@ -1807,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.43.0';
+var APP_VERSION = 'v0.44.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3299,7 +3299,10 @@ async function checkAndCreateFollowupTasks(){
   // Pobieramy WSZYSTKIE pending zadania powiązane z tymi ofertami — nie tylko żeby
   // sprawdzić czy istnieją (jak wcześniej), ale żeby móc je ESKALOWAĆ, jeśli już są.
   var offerIds=stale.map(function(o){return o.id;});
-  var existingRes=await sb.from('tasks').select('id,offer_id,priority,reason').eq('status','pending').in('offer_id',offerIds);
+  /* Sprint 0.43.1 — dodany filtr deleted_at. Bez niego miękko skasowane
+     zadanie liczyło się jako istniejące i blokowało utworzenie nowego. */
+  var existingRes=await sb.from('tasks').select('id,offer_id,priority,reason')
+    .eq('status','pending').eq('category','offer').is('deleted_at',null).in('offer_id',offerIds);
   if(existingRes.error)return;
   var existingByOffer={};
   (existingRes.data||[]).forEach(function(t){ existingByOffer[t.offer_id]=t; });
@@ -3336,7 +3339,13 @@ async function checkAndCreateFollowupTasks(){
 
   if(toCreate.length){
     var insertRes=await sb.from('tasks').insert(toCreate);
-    if(insertRes.error)console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);
+    if(insertRes.error){
+      /* 23505 = uq_tasks_one_pending_offer_followup. Oznacza, że równoległe
+         wywołanie zdążyło pierwsze — zadanie ISTNIEJE, więc to nie jest błąd,
+         tylko dowód, że gwarancja bazy zadziałała. Nie hałasujemy. */
+      if(insertRes.error.code!=='23505')
+        console.warn('Błąd tworzenia zadań follow-up:',insertRes.error);
+    }
   }
   for(var i=0;i<toUpdate.length;i++){
     var u=toUpdate[i];
@@ -4028,8 +4037,8 @@ async function generateOfferPdf(){
   btn.disabled=true; btn.textContent='Generowanie…';
   try{
     var both=await Promise.all([
-      sb.from('offers').select('*, clients(name), buildings(name,address)').eq('id',editingOfferId).maybeSingle(),
-      sb.from('offer_items').select('*').eq('offer_id',editingOfferId).order('created_at',{ascending:true})
+      sb.from('v_offers').select('*').eq('id',editingOfferId).maybeSingle(),   /* 3C: widok maskuje koszty dla sales */
+      sb.from('v_offer_items').select('*').eq('offer_id',editingOfferId).order('created_at',{ascending:true})   /* 3C */
     ]);
     var res=both[0], itemsRes=both[1];
     if(res.error||!res.data) throw new Error(res.error?res.error.message:'Nie znaleziono oferty w bazie.');
@@ -4038,9 +4047,9 @@ async function generateOfferPdf(){
     var items=itemsRes.data||[];
     if(items.length===0) throw new Error('Ta oferta nie ma żadnych zapisanych pozycji.');
 
-    var clientName=(o.clients&&o.clients.name)||'—';
-    var buildingName=(o.buildings&&o.buildings.name)||null;
-    var buildingAddr=(o.buildings&&o.buildings.address)||null;
+    var clientName=o.client_name||(o.clients&&o.clients.name)||'—';   /* 3C: widok zwraca plaskie client_name */
+    var buildingName=(o.building_name||(o.buildings&&o.buildings.name))||null;
+    var buildingAddr=(o.building_address||(o.buildings&&o.buildings.address))||null;
     var numDisplay=offerNumber(o);
     var createdDate=o.created_at?new Date(o.created_at):new Date();
     var validDays=(o.valid_days!=null?o.valid_days:7);
@@ -4327,7 +4336,7 @@ async function openOffer(id){
   loadRecentPurchases();
   go('s-offer-edit');
   if(!sbEnabled)return;
-  var res=await sb.from('offers').select('*').eq('id',id).maybeSingle();
+  var res=await sb.from('v_offers').select('*').eq('id',id).maybeSingle();   /* 3C */
   if(res.error||!res.data){alert('Błąd wczytywania oferty.');return;}
   var o=res.data;
   setOfferDocType(o.document_type||'oferta');
@@ -4339,7 +4348,7 @@ async function openOffer(id){
   document.getElementById('oe-delivery').value=o.delivery_terms||'';
   document.getElementById('oe-valid-days').value=(o.valid_days!=null?String(o.valid_days):'7');
   document.getElementById('oe-title').textContent='Edycja oferty — '+offerNumber(o);
-  var itemsPromise=sb.from('offer_items').select('*').eq('offer_id',id).order('created_at',{ascending:true});
+  var itemsPromise=sb.from('v_offer_items').select('*').eq('offer_id',id).order('created_at',{ascending:true});   /* 3C */
   await loadClientsForOfferForm(o.client_id,o.building_id);
   var itemsRes=await itemsPromise;
   document.getElementById('oe-items').innerHTML='';
@@ -4648,7 +4657,7 @@ async function loadOffers(){
     renderOffersList();
     return;
   }
-  var res=await sb.from('offers').select('*, clients(name), buildings(name)').is('deleted_at',null).order('created_at',{ascending:false});
+  var res=await sb.from('v_offers').select('*').order('created_at',{ascending:false});   /* 3C: widok sam filtruje deleted_at */
   if(res.error){
     if(statusEl)statusEl.textContent='Błąd wczytywania ofert: '+res.error.message;
     allOffersCache=[];
@@ -4672,8 +4681,8 @@ function renderOffersList(){
   listEl.innerHTML=rows.map(function(o){
     var dt=o.created_at?new Date(o.created_at):null;
     var dateStr=dt?dt.toLocaleDateString('pl-PL'):'';
-    var clientName=(o.clients&&o.clients.name)||'—';
-    var buildingName=(o.buildings&&o.buildings.name)?(' · 🏗️ '+o.buildings.name):'';
+    var clientName=o.client_name||(o.clients&&o.clients.name)||'—';   /* 3C: widok zwraca plaskie client_name */
+    var _bn=o.building_name||(o.buildings&&o.buildings.name); var buildingName=_bn?(' · 🏗️ '+_bn):'';
     var docType=o.document_type||'oferta';
     var docTypeLabel=DOCUMENT_TYPE_LABEL[docType]||'📄 Oferta';
     return '<div class="card" style="padding:12px 13px;cursor:pointer;" onclick="openOffer(\''+o.id+'\')">'
@@ -4694,7 +4703,7 @@ async function loadClientOffers(clientId){
   var el=document.getElementById('cd-offers-list');
   if(!el)return;
   if(!sbEnabled){el.innerHTML='';return;}
-  var res=await sb.from('offers').select('*').eq('client_id',clientId).is('deleted_at',null).order('created_at',{ascending:false});
+  var res=await sb.from('v_offers').select('*').eq('client_id',clientId).order('created_at',{ascending:false});   /* 3C */
   if(res.error){el.innerHTML='<div style="font-size:11px;color:#ef4444;">Błąd: '+res.error.message+'</div>';return;}
   var rows=res.data||[];
   currentClientOffers=rows;
