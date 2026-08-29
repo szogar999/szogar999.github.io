@@ -1807,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.44.0';
+var APP_VERSION = 'v0.44.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2369,8 +2369,8 @@ async function confirmCreatePurchasesOLD_UNUSED_FALLBACK(){
   if(!sbEnabled||!followupPromptOfferId||!followupPromptClientId){dismissFollowupPrompt();return;}
   var offerId=followupPromptOfferId, clientId=followupPromptClientId;
   var results=await Promise.all([
-    sb.from('offer_items').select('*').eq('offer_id',offerId),
-    sb.from('offers').select('building_id').eq('id',offerId).maybeSingle()
+    sb.from('v_offer_items').select('*').eq('offer_id',offerId),
+    sb.from('v_offers').select('building_id').eq('id',offerId).maybeSingle()
   ]);
   var itemsRes=results[0], offerRes=results[1];
   if(itemsRes.error){alert('Błąd pobierania pozycji oferty: '+itemsRes.error.message);dismissFollowupPrompt();return;}
@@ -2984,10 +2984,9 @@ async function fetchProductSuggestions(clientId,term,row,box){
      podpowiadała ceny: kasowanie ukrywało ją na liście, ale jej pozycje
      wciąż karmiły autocomplete. Join jest !inner, więc warunek na
      offers.deleted_at odsiewa pozycje po stronie bazy, nie w JS. */
-  var res=await sb.from('offer_items')
-    .select('name,description,unit,category,buy_price,sell_price,created_at,offers!inner(client_id,deleted_at)')
-    .eq('offers.client_id',clientId)
-    .is('offers.deleted_at',null)
+  var res=await sb.from('v_offer_items')
+    .select('name,description,unit,category,buy_price,sell_price,created_at,client_id')
+    .eq('client_id',clientId)
     .ilike('name','%'+term+'%')
     .order('created_at',{ascending:false})
     .limit(20);
@@ -3290,7 +3289,7 @@ async function checkAndCreateFollowupTasks(){
   var myIds=await getMyClientIds();
   var dummyId='00000000-0000-0000-0000-000000000000';
   var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
-  var offersQ=sb.from('offers').select('id,client_id,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null);
+  var offersQ=sb.from('v_offers').select('id,client_id,client_name,sent_at').eq('status','wysłana').lt('sent_at',cutoff.toISOString());
   if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:[dummyId]);
   var res=await offersQ;
   if(res.error||!res.data||res.data.length===0)return;
@@ -3531,7 +3530,7 @@ async function computeAiSignalsGlobal(){
   var clientsQ=sb.from('clients').select('id,name,pipeline_stage,created_at').is('deleted_at',null);
   if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
 
-  var offersQ=sb.from('offers').select('id,client_id,net_total,sent_at,clients(name)').eq('status','wysłana').lt('sent_at',offerCutoff.toISOString()).is('deleted_at',null);
+  var offersQ=sb.from('v_offers').select('id,client_id,client_name,net_total,sent_at').eq('status','wysłana').lt('sent_at',offerCutoff.toISOString());
   if(myIds!==null) offersQ=offersQ.in('client_id',myIds.length?myIds:[dummyId]);
 
   var stageActQ=sb.from('activities').select('client_id,description,created_at').eq('type','Etap lejka').order('created_at',{ascending:false}).limit(500);
@@ -3621,7 +3620,7 @@ async function loadCeoDashboard(){
   if(!isOwnerOrAdmin()||!sbEnabled)return;
   var today=todayStr();
   var results=await Promise.all([
-    sb.from('offers').select('id,client_id,status,net_total').eq('document_type','oferta').is('deleted_at',null),
+    sb.from('v_offers').select('id,client_id,status,net_total').eq('document_type','oferta'),
     sb.from('clients').select('id,name,pipeline_stage,assigned_to').is('deleted_at',null),
     sb.from('users').select('id,name,role'),
     sb.from('activities').select('type,author_id').in('type',['Telefon','Spotkanie']),
@@ -3869,7 +3868,7 @@ async function loadPipelineSummary(){
   if(myIds!==null) clientsQ=clientsQ.eq('assigned_to',currentUid);
   var both=await Promise.all([
     clientsQ,
-    sb.from('offers').select('client_id,net_total').is('deleted_at',null)
+    sb.from('v_offers').select('client_id,net_total')
   ]);
   var clientsRes=both[0], offersRes=both[1];
   if(clientsRes.error||!clientsRes.data){el.innerHTML='<div class="row"><div style="font-size:12px;color:#8a9ab0;">Błąd wczytywania.</div></div>';return;}
@@ -3995,7 +3994,7 @@ async function loadDaySummary(){
   var tomorrowStart=dateToYMD(tomorrow)+'T00:00:00.000Z';
   var dummyId='00000000-0000-0000-0000-000000000000';
   var activitiesQ=sb.from('activities').select('type,description,created_at').gte('created_at',todayStart).lt('created_at',tomorrowStart).limit(500);
-  var offersSentQ=sb.from('offers').select('id',{count:'exact',head:true}).gte('sent_at',todayStart).lt('sent_at',tomorrowStart);
+  var offersSentQ=sb.from('v_offers').select('id',{count:'exact',head:true}).gte('sent_at',todayStart).lt('sent_at',tomorrowStart);
   var newClientsQ=sb.from('clients').select('id',{count:'exact',head:true}).gte('created_at',todayStart).lt('created_at',tomorrowStart).is('deleted_at',null);
   var tasksDoneQ=sb.from('tasks').select('id',{count:'exact',head:true}).eq('status','done').gte('updated_at',todayStart).lt('updated_at',tomorrowStart);
   if(myIds!==null){
@@ -4736,8 +4735,8 @@ async function loadCommandStats(){
   // żeby zacząć następne. Promise.all realnie skraca czas ładowania Command.
   var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-2);
   var clientsCountQ=sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null);
-  var offersCountQ=sb.from('offers').select('id',{count:'exact',head:true}).is('deleted_at',null);
-  var followQ=sb.from('offers').select('*, clients(name)').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).is('deleted_at',null).order('sent_at',{ascending:true});
+  var offersCountQ=sb.from('v_offers').select('id',{count:'exact',head:true});
+  var followQ=sb.from('v_offers').select('*').eq('status','wysłana').lt('sent_at',cutoff.toISOString()).order('sent_at',{ascending:true});
   if(myIds!==null){
     clientsCountQ=sb.from('clients').select('id',{count:'exact',head:true}).is('deleted_at',null).eq('assigned_to',currentUid);
     offersCountQ=offersCountQ.in('client_id',myIds.length?myIds:['00000000-0000-0000-0000-000000000000']);
@@ -5072,7 +5071,7 @@ async function onDeliveryClientChange(prefill){
   if(!clientId){buildingSel.innerHTML='<option value="">— brak / ogólna —</option>';offerSel.innerHTML='<option value="">— brak —</option>';return;}
   var results=await Promise.all([
     sb.from('buildings').select('id,name').eq('client_id',clientId).is('deleted_at',null),
-    sb.from('offers').select('id,offer_seq,created_at,net_total').eq('client_id',clientId).eq('status','zaakceptowana').is('deleted_at',null).order('created_at',{ascending:false})
+    sb.from('v_offers').select('id,offer_seq,created_at,net_total').eq('client_id',clientId).eq('status','zaakceptowana').order('created_at',{ascending:false})
   ]);
   var buildingsRes=results[0], offersRes=results[1];
   var pf=(prefill&&prefill.clientId===clientId)?prefill:null;
