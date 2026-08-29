@@ -1807,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.41.2';
+var APP_VERSION = 'v0.42.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5554,19 +5554,36 @@ async function ctSubmit(key,clientId,result,nextDate,goToOffer){
   /* Wiersz NIE znika — zostaje wygaszony z potwierdzeniem, co dokładnie
      zapisano. Przy 40 telefonach dziennie znikający wiersz wygląda jak
      utrata danych i nie daje szansy wychwycić pomyłki. */
+  var actId=(rpc.data&&rpc.data.activity_id)?rpc.data.activity_id:null;
   var row=document.getElementById('ct-row-'+key);
   var potw = result==='no_answer' ? 'Nie odebrał — przypomnę '+nextDate
            : (nextDate ? 'Rozmowa zapisana — telefon '+nextDate
                        : 'Rozmowa zapisana — bez kolejnego telefonu');
   if(row){
     row.style.opacity='.45';
-    row.style.pointerEvents='none';
     row.innerHTML='<div style="display:flex;align-items:center;gap:8px;">'
       +'<span style="font-size:15px;">'+(result==='no_answer'?'📵':'✅')+'</span>'
       +'<div style="flex:1;min-width:0;">'
         +'<div style="font-size:13px;font-weight:700;color:#c7d0da;">'+(row.dataset.cname||'Zapisano')+'</div>'
         +'<div style="font-size:10px;color:#8a9ab0;">'+potw+'</div>'
-      +'</div></div>';
+      +'</div>'
+      +(actId?'<button id="ct-undo-'+key+'" onclick="ctUndo(\''+key+'\',\''+actId+'\')" style="padding:7px 11px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);border-radius:8px;color:#ef4444;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">↩ Cofnij <span id="ct-cd-'+key+'">10</span></button>':'')
+    +'</div>';
+    // Okno na wychwycenie pomyłki. Po nim przycisk znika i wpis jest historią.
+    if(actId){
+      var left=10;
+      var tick=setInterval(function(){
+        left--;
+        var cd=document.getElementById('ct-cd-'+key);
+        if(cd)cd.textContent=left;
+        if(left<=0){
+          clearInterval(tick);
+          var b=document.getElementById('ct-undo-'+key);
+          if(b)b.style.display='none';
+          row.style.pointerEvents='none';
+        }
+      },1000);
+    }else{ row.style.pointerEvents='none'; }
   }
 
   if(goToOffer){
@@ -5585,6 +5602,19 @@ async function ctSubmit(key,clientId,result,nextDate,goToOffer){
   // wejsciu na ekran — wtedy licznik "Zaplanowane dalej" pokaze nowe zadanie.
   var dc=document.getElementById('ct-due-count');
   if(dc){ var n=parseInt(dc.textContent,10)-1; if(n>=0)dc.textContent=n; }
+}
+
+async function ctUndo(key,activityId){
+  var b=document.getElementById('ct-undo-'+key);
+  if(b){b.disabled=true;b.textContent='…';}
+  var r=await sb.rpc('undo_call_result',{p_activity_id:activityId});
+  if(r.error){
+    ctMsg(r.error.message||'Nie udało się cofnąć.',false);
+    if(b){b.disabled=false;b.textContent='↩ Cofnij';}
+    return;
+  }
+  ctMsg('Cofnięto. Wpis usunięty z historii.',true);
+  renderContactToday();
 }
 
 function ctTogglePlanned(){
