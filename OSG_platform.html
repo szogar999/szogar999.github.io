@@ -1807,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.44.1';
+var APP_VERSION = 'v0.45.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2391,7 +2391,7 @@ async function confirmCreatePurchasesOLD_UNUSED_FALLBACK(){
   // zapisane pod tym zakupem, i wstawiamy WYŁĄCZNIE brakujące. Kliknięcie
   // przycisku 2, 5 czy 20 razy dla tej samej oferty zawsze kończy się tym
   // samym kompletem pozycji — ani jednej duplikowanej, ani jednej brakującej.
-  var existingItemsRes=await sb.from('purchase_items').select('offer_item_id').eq('purchase_id',purchaseId);
+  var existingItemsRes=await sb.from('v_purchase_items').select('offer_item_id').eq('purchase_id',purchaseId);
   if(existingItemsRes.error){alert('Błąd odczytu istniejących pozycji: '+existingItemsRes.error.message);dismissFollowupPrompt();return;}
   var existingOfferItemIds={};
   (existingItemsRes.data||[]).forEach(function(r){if(r.offer_item_id)existingOfferItemIds[r.offer_item_id]=true;});
