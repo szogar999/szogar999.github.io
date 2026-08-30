@@ -1807,7 +1807,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.45.0';
+var APP_VERSION = 'v0.45.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5735,7 +5735,7 @@ async function renderPurchasing(){
   listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
   if(!sbEnabled){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Supabase niepodłączony.</div>';return;}
   var statusFilter=document.getElementById('pur-status-filter').value;
-  var q=sb.from('purchases').select('*, clients(name), buildings(name), purchase_items(*, offer_items(category))').is('deleted_at',null).order('created_at',{ascending:false});
+  var q=sb.from('purchases').select('*, clients(name), buildings(name), v_purchase_items(*)').is('deleted_at',null).order('created_at',{ascending:false});   /* 3D: widok zamiast tabel po REVOKE */
   if(statusFilter) q=q.eq('status',statusFilter);
   var res=await q;
   if(res.error){listEl.innerHTML='<div style="text-align:center;color:#ef4444;font-size:12px;padding:20px 0;">Błąd ładowania: '+res.error.message+'</div>';return;}
@@ -5754,7 +5754,7 @@ function purCardHtml(p){
   var canEdit=isOwnerOrAdmin();
   var clientName=(p.clients&&p.clients.name)||'—';
   var buildingName=(p.buildings&&p.buildings.name)||null;
-  var items=p.purchase_items||[];
+  var items=(p.v_purchase_items||p.purchase_items||[]);
   var isComputedStatus=(p.status==='częściowo odebrane'||p.status==='odebrane');
   var statusControl;
   if(isComputedStatus){
@@ -5774,7 +5774,7 @@ function purCardHtml(p){
   // akceptuje (lustro OSG21 — nie pokazujemy formularza, który i tak zostanie odrzucony)
   var canReceive=canEdit&&['zamówione','częściowo odebrane','odebrane'].indexOf(p.status)>-1;
   var itemsHtml=items.map(function(it){
-    var itemCat=(it.offer_items&&it.offer_items.category)||p.category||'—';
+    var itemCat=it.category||(it.offer_items&&it.offer_items.category)||p.category||'—';   /* 3D: plaska kolumna z widoku */
     var canReserve=(p.status==='odebrane'||p.status==='częściowo odebrane')&&it.product_id;
     var reserveBtn=canReserve?'<button onclick="openReserveForm(\''+it.id+'\',\''+it.product_id+'\',\''+p.client_id+'\',\''+(it.product_name||'').replace(/'/g,"\\'")+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;color:#8a9ab0;font-size:10px;cursor:pointer;white-space:nowrap;">📦 Zarezerwuj</button>':'';
     var ordered=it.quantity!=null?it.quantity:0;
@@ -5833,7 +5833,7 @@ function mapReceiptError(err){
 async function submitPurchaseReceipt(purchaseId){
   var p=purLastLoaded.find(function(x){return x.id===purchaseId;});
   if(!p)return;
-  var items=(p.purchase_items||[]).map(function(it){
+  var items=((p.v_purchase_items||p.purchase_items||[])).map(function(it){
     var inp=document.getElementById('receipt-qty-'+it.id);
     var val=inp?parseFloat(inp.value):null;
     if(inp&&(isNaN(val)||val===null)) val=it.received_qty||0;
