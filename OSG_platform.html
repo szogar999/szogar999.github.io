@@ -220,13 +220,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <body>
 <div class="screen active" id="s-login">
 <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;">
-  <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;">
-    <img id="logo-login" style="width:64px;height:64px;object-fit:contain;object-position:left center;flex-shrink:0;" alt="OSG">
-    <div style="text-align:left;">
-      <div style="font-size:27px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.05;">OSG Platform</div>
-      <div style="font-size:12px;font-weight:800;color:#e8601c;letter-spacing:5.5px;margin-top:3px;">COMMAND</div>
-    </div>
-  </div>
+  <img id="logo-login" style="max-width:230px;width:80%;height:auto;margin-bottom:22px;" alt="OSG Platform">
   <div style="font-size:13px;color:#8a9ab0;margin-bottom:28px;">Zaloguj się na swoje konto firmowe</div>
   <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;">
     <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" style="width:100%;padding:13px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
@@ -1078,13 +1072,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div class="sb-scrim" id="sb-scrim" onclick="sbToggle(false)"></div>
   <aside class="sidebar" id="osg-sidebar">
     <div class="sb-logo">
-      <div style="display:flex;align-items:center;gap:11px;">
-        <img id="logo-sidebar" style="width:38px;height:38px;object-fit:contain;object-position:left center;flex-shrink:0;filter:brightness(0) invert(1);" alt="OSG">
-        <div>
-          <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px;line-height:1.05;">OSG Platform</div>
-          <div style="font-size:9px;font-weight:800;color:var(--osg-orange);letter-spacing:3.4px;margin-top:2px;">COMMAND</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <!-- Symbol wycięty z ORYGINALNEGO pliku logo (LOGO_LOCKUP_SRC).
+             Nic nie przerysowuję: kadruję przez overflow + przesunięcie,
+             filter zamienia granat na biel dla ciemnego tła. -->
+        <div style="width:42px;height:42px;overflow:hidden;flex-shrink:0;position:relative;">
+          <img id="logo-sidebar" alt="OSG"
+               style="position:absolute;width:158px;height:158px;max-width:none;
+                      left:-16px;top:-45px;filter:brightness(0) invert(1);">
+        </div>
+        <div style="line-height:1.05;">
+          <div style="font-size:21px;font-weight:800;color:#fff;letter-spacing:-.4px;">OSG</div>
+          <div style="font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px;">Platform</div>
         </div>
       </div>
+      <div style="font-size:11px;font-weight:800;color:var(--osg-orange);
+                  letter-spacing:4.5px;text-align:center;margin-top:11px;">COMMAND</div>
     </div>
 
     <nav class="sb-nav">
@@ -2081,7 +2084,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.48.1-redesign';
+var APP_VERSION = 'v0.48.3-redesign';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
