@@ -1966,47 +1966,57 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-purchasing">
-<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🛒 Do zakupu</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
-  <div style="display:flex;gap:6px;">
-    <select id="pur-status-filter" onchange="renderPurchasing()" style="flex:1;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:11px;padding:9px 6px;">
-      <option value="">Wszystkie statusy</option>
-      <option value="do zamówienia">Do zamówienia</option>
-      <option value="zamówione">Zamówione</option>
-      <option value="częściowo odebrane">Częściowo odebrane</option>
-      <option value="odebrane">Odebrane</option>
-      <option value="wydane na budowę">Wydane na budowę</option>
-      <option value="anulowane">Anulowane</option>
-    </select>
-    <button onclick="togglePurManualForm()" style="background:#e8601c;border:none;border-radius:9px;padding:9px 12px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">+ Ręcznie</button>
-  </div>
-  <div id="pur-manual-form" style="display:none;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;flex-direction:column;gap:8px;">
-    <div style="font-size:12px;font-weight:800;">Ręcznie dodany zakup</div>
-    <select id="pur-m-client" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;"><option value="">— wybierz klienta —</option></select>
-    <input id="pur-m-product" placeholder="Nazwa produktu" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-      <input id="pur-m-qty" type="number" step="0.01" placeholder="Ilość" style="padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
-      <input id="pur-m-unit" placeholder="Jednostka (szt)" style="padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div class="h1">Zakupy</div>
+        <div id="pur-count" class="sub"></div>
+      </div>
+      <button class="b b-pri" onclick="togglePurManualForm()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Dodaj ręcznie</button>
+    </header>
+
+    <div class="main-body">
+      <div class="c" style="padding:var(--s4);margin-bottom:var(--s4);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;">
+        <span class="lbl">Status</span>
+        <select id="pur-status-filter" onchange="renderPurchasing()" class="in" style="max-width:260px;cursor:pointer;">
+          <option value="">Wszystkie statusy</option>
+          <option value="do zamówienia">Do zamówienia</option>
+          <option value="zamówione">Zamówione</option>
+          <option value="częściowo odebrane">Częściowo odebrane</option>
+          <option value="odebrane">Odebrane</option>
+          <option value="wydane na budowę">Wydane na budowę</option>
+          <option value="anulowane">Anulowane</option>
+        </select>
+      </div>
+
+      <div id="pur-manual-form" class="c" style="display:none;padding:var(--s5);margin-bottom:var(--s4);flex-direction:column;gap:var(--s3);">
+        <div class="h2">Nowy zakup ręczny</div>
+        <select id="pur-m-client" class="in"><option value="">— wybierz klienta —</option></select>
+        <input id="pur-m-product" class="in" placeholder="Nazwa produktu">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);">
+          <input id="pur-m-qty" type="number" step="0.01" class="in" placeholder="Ilość">
+          <input id="pur-m-unit" class="in" placeholder="Jednostka (szt)">
+        </div>
+        <select id="pur-m-category" class="in"><option value="">— kategoria (opcjonalnie) —</option></select>
+        <select id="pur-m-priority" class="in">
+          <option value="normalny">Priorytet: normalny</option><option value="niski">Priorytet: niski</option>
+          <option value="wysoki">Priorytet: wysoki</option><option value="pilny">Priorytet: pilny</option>
+        </select>
+        <input id="pur-m-needed" type="date" class="in">
+        <div style="display:flex;gap:var(--s2);">
+          <button class="b b-pri" style="flex:1;" onclick="submitManualPurchase()">Dodaj zakup</button>
+          <button class="b b-sec" onclick="togglePurManualForm()">Anuluj</button>
+        </div>
+      </div>
+
+      <div id="pur-list" style="display:flex;flex-direction:column;gap:var(--s4);">
+        <div class="c c-pad" style="color:var(--text-3);">Ładowanie…</div>
+      </div>
     </div>
-    <select id="pur-m-category" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;"><option value="">— kategoria (opcjonalnie) —</option></select>
-    <select id="pur-m-priority" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
-      <option value="normalny">Priorytet: normalny</option><option value="niski">Priorytet: niski</option><option value="wysoki">Priorytet: wysoki</option><option value="pilny">Priorytet: pilny</option>
-    </select>
-    <input id="pur-m-needed" type="date" style="width:100%;padding:9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;">
-    <div style="display:flex;gap:6px;">
-      <button onclick="submitManualPurchase()" style="flex:1;background:#22c55e;border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;">Dodaj zakup</button>
-      <button onclick="togglePurManualForm()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px;color:#8a9ab0;font-size:12px;cursor:pointer;">Anuluj</button>
-    </div>
   </div>
-  <div id="pur-count" style="font-size:10px;color:#8a9ab0;"></div>
-  <div id="pur-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-</div>
-<div class="nav">
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-  <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
-  <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
-  <button class="nb on" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
 
@@ -2139,7 +2149,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.53.0-docs';
+var APP_VERSION = 'v0.54.0-zakupy';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2250,7 +2260,7 @@ async function loadClients(){
     if(listEl)listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak połączenia z bazą.</div>';
     return;
   }
-  if(listEl)listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
+  if(listEl)listEl.innerHTML='<div class="c c-pad" style="color:var(--text-3);">Ładowanie…</div>';
   var clientsQuery=sb.from('clients').select('*').order('created_at',{ascending:false});
   if(!isOwnerOrAdmin()) clientsQuery=clientsQuery.eq('assigned_to',currentUid);
   var both=await Promise.all([
@@ -6330,15 +6340,15 @@ var purLastLoaded=[];
 async function renderPurchasing(){
   var listEl=document.getElementById('pur-list');
   listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>';
-  if(!sbEnabled){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Supabase niepodłączony.</div>';return;}
+  if(!sbEnabled){listEl.innerHTML='<div class="c c-pad" style="color:var(--text-3);">Supabase niepodłączony.</div>';return;}
   var statusFilter=document.getElementById('pur-status-filter').value;
   var q=sb.from('purchases').select('*, clients(name), buildings(name), v_purchase_items(*)').is('deleted_at',null).order('created_at',{ascending:false});   /* 3D: widok zamiast tabel po REVOKE */
   if(statusFilter) q=q.eq('status',statusFilter);
   var res=await q;
-  if(res.error){listEl.innerHTML='<div style="text-align:center;color:#ef4444;font-size:12px;padding:20px 0;">Błąd ładowania: '+res.error.message+'</div>';return;}
+  if(res.error){listEl.innerHTML='<div class="c c-pad" style="color:var(--err);">Błąd ładowania: '+res.error.message+'</div>';return;}
   purLastLoaded=res.data||[];
   document.getElementById('pur-count').textContent=purLastLoaded.length+' '+plZakupy(purLastLoaded.length);
-  if(!purLastLoaded.length){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak zakupów do pokazania.</div>';return;}
+  if(!purLastLoaded.length){listEl.innerHTML='<div class="c c-pad" style="text-align:center;color:var(--text-3);">Brak zakupów do pokazania.</div>';return;}
   listEl.innerHTML=purLastLoaded.map(purCardHtml).join('');
 }
 function plZakupy(n){
@@ -6348,72 +6358,113 @@ function plZakupy(n){
   return 'zakupów';
 }
 function purCardHtml(p){
+  /* Szablon przepisany na design system (Sprint Redesign).
+     BEZ ZMIAN: isOwnerOrAdmin, statusy wyliczane, SALES_ALLOWED_NEXT_STATUSES,
+     updatePurchaseStatus/Field, submitPurchaseReceipt, openReserveForm
+     oraz dynamiczne ID: receipt-qty-{id}, receipt-save-btn-{id}, reserve-form-{id}. */
   var canEdit=isOwnerOrAdmin();
   var clientName=(p.clients&&p.clients.name)||'—';
   var buildingName=(p.buildings&&p.buildings.name)||null;
   var items=(p.v_purchase_items||p.purchase_items||[]);
   var isComputedStatus=(p.status==='częściowo odebrane'||p.status==='odebrane');
+  var col=PURCHASE_STATUS_COLOR[p.status]||'#6b7280';
+
+  var svgLock='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
+  var svgBuild='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>';
+  var svgBox='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg>';
+  var svgStore='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M4 9v11h16V9M4 9h16"/></svg>';
+  var svgSave='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>';
+
   var statusControl;
   if(isComputedStatus){
-    // Sprint 0.37: nieedytowalny badge — ten status wynika z received_qty,
-    // nie da się go nadpisać ręcznie. Poprawka idzie przez sekcję przyjęcia niżej.
-    statusControl='<span title="Status wyliczony automatycznie z przyjętych ilości — niemożliwy do zmiany ręcznie" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'+PURCHASE_STATUS_LABEL[p.status]+' 🔒</span>';
+    // Sprint 0.37: status wynika z received_qty — nieedytowalny. Poprawka przez sekcję przyjęcia.
+    statusControl='<span title="Status wyliczany automatycznie z przyjętych ilości — nie można go zmienić ręcznie" '
+      +'class="bd" style="background:'+col+'18;color:'+col+';gap:5px;padding:6px 11px;">'
+      +PURCHASE_STATUS_LABEL[p.status]+svgLock+'</span>';
   }else{
     var statusOptions=MANUAL_PURCHASE_STATUSES;
     if(!canEdit) statusOptions=SALES_ALLOWED_NEXT_STATUSES.indexOf(p.status)>-1?SALES_ALLOWED_NEXT_STATUSES.filter(function(s){return MANUAL_PURCHASE_STATUSES.indexOf(s)>-1;}):[p.status];
-    statusControl='<select onchange="updatePurchaseStatus(\''+p.id+'\',this.value,\''+p.client_id+'\')" style="background:'+PURCHASE_STATUS_COLOR[p.status]+'22;border:1px solid '+PURCHASE_STATUS_COLOR[p.status]+';color:'+PURCHASE_STATUS_COLOR[p.status]+';border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700;">'
+    statusControl='<select onchange="updatePurchaseStatus(\'' + p.id + '\',this.value,\'' + p.client_id + '\')" '
+      +'style="background:'+col+'18;border:1px solid '+col+'55;color:'+col+';border-radius:var(--r-full);'
+      +'padding:6px 11px;font-size:var(--f-sm);font-weight:700;cursor:pointer;outline:none;">'
       +statusOptions.map(function(s){return '<option value="'+s+'"'+(s===p.status?' selected':'')+'>'+PURCHASE_STATUS_LABEL[s]+'</option>';}).join('')
       +'</select>';
   }
-  var priorityBadge=p.priority?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">⚡ '+p.priority+'</span>':'';
-  var neededBadge=p.needed_by?'<span style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;font-size:10px;">📅 '+p.needed_by+'</span>':'';
-  // Sprint 0.37: przyjęcie dozwolone tylko gdy zakup jest w stanie, który RPC
-  // akceptuje (lustro OSG21 — nie pokazujemy formularza, który i tak zostanie odrzucony)
+
+  var priorityBadge=p.priority?'<span class="bd bd-neutral">'+p.priority+'</span>':'';
+  var neededBadge=p.needed_by?'<span class="bd bd-neutral">na '+p.needed_by+'</span>':'';
   var canReceive=canEdit&&['zamówione','częściowo odebrane','odebrane'].indexOf(p.status)>-1;
+
   var itemsHtml=items.map(function(it){
-    var itemCat=it.category||(it.offer_items&&it.offer_items.category)||p.category||'—';   /* 3D: plaska kolumna z widoku */
+    var itemCat=it.category||(it.offer_items&&it.offer_items.category)||p.category||'—';
     var canReserve=(p.status==='odebrane'||p.status==='częściowo odebrane')&&it.product_id;
-    var reserveBtn=canReserve?'<button onclick="openReserveForm(\''+it.id+'\',\''+it.product_id+'\',\''+p.client_id+'\',\''+(it.product_name||'').replace(/'/g,"\\'")+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;color:#8a9ab0;font-size:10px;cursor:pointer;white-space:nowrap;">📦 Zarezerwuj</button>':'';
+    var reserveBtn=canReserve?('<button class="b b-sec b-sm" style="gap:5px;white-space:nowrap;" onclick="openReserveForm(\'' + it.id + '\',\'' + it.product_id + '\',\'' + p.client_id + '\',\'' + (it.product_name||'').replace(/'/g,"\\'") + '\')">'+svgBox+'Zarezerwuj</button>'):'';
     var ordered=it.quantity!=null?it.quantity:0;
     var received=it.received_qty!=null?it.received_qty:0;
     var missing=ordered-received;
+    /* CENA ZAKUPU: wyłącznie z v_purchase_items. Widok maskuje ją dla roli
+       sales zwracając null — wtedy NIE pokazujemy nic. Zero fallbacku. */
+    var cena=it.unit_price_net;
+    var cenaHtml=(cena!==null&&cena!==undefined)
+      ? '<span style="color:var(--text-3);"> · '+Number(cena).toFixed(2)+' zł/szt netto</span>' : '';
     var receiptBlock=canReceive?(
-      '<div style="display:flex;gap:9px;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;">'
-      +'<div style="font-size:9px;color:#8a9ab0;">Zamówiono: <b style="color:#fff;">'+ordered+'</b></div>'
-      +'<div style="font-size:9px;color:#8a9ab0;">Przyjęto: <b style="color:#22c55e;">'+received+'</b></div>'
-      +'<div style="font-size:9px;color:'+(missing>0?'#f59e0b':'#8a9ab0')+';">Brakuje: <b>'+missing+'</b></div>'
-      +'<input type="number" id="receipt-qty-'+it.id+'" value="'+received+'" min="0" max="'+ordered+'" step="any" style="width:70px;padding:5px 7px;background:#0f1923;border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:11px;">'
+      '<div style="display:flex;gap:var(--s4);align-items:center;margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--border);flex-wrap:wrap;">'
+      +'<div style="font-size:var(--f-sm);color:var(--text-3);">Zamówiono <b style="color:var(--text);">'+ordered+'</b></div>'
+      +'<div style="font-size:var(--f-sm);color:var(--text-3);">Przyjęto <b style="color:var(--ok);">'+received+'</b></div>'
+      +(missing>0?'<div style="font-size:var(--f-sm);color:var(--warn);">Brakuje <b>'+missing+'</b></div>':'')
+      +'<input type="number" id="receipt-qty-'+it.id+'" value="'+received+'" min="0" max="'+ordered+'" step="any" '
+        +'class="in" style="width:92px;margin-left:auto;padding:7px 10px;font-size:var(--f-sm);">'
       +'</div>'
     ):'';
-    return '<div class="row" style="padding:7px 0;gap:8px;flex-direction:column;align-items:stretch;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">'
-      +'<div><div style="font-size:12px;font-weight:700;">'+(it.product_name||'—')+'</div><div style="font-size:10px;color:#8a9ab0;">'+itemCat+'</div></div>'
-      +'<div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</div>'+reserveBtn+'</div>'
+    return '<div style="padding:var(--s3) 0;border-bottom:1px solid var(--border);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s3);">'
+        +'<div style="min-width:0;flex:1;">'
+          +'<div style="font-size:var(--f-base);font-weight:600;color:var(--text);">'+(it.product_name||'—')+'</div>'
+          +'<div style="font-size:var(--f-sm);color:var(--text-3);margin-top:2px;">'+itemCat+cenaHtml+'</div>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:var(--s3);flex-shrink:0;">'
+          +'<span style="font-size:var(--f-base);font-weight:600;color:var(--text-2);white-space:nowrap;">'+(it.quantity!=null?it.quantity:'')+' '+(it.unit||'')+'</span>'
+          +reserveBtn
+        +'</div>'
       +'</div>'
       +receiptBlock
       +'</div>'
       +'<div id="reserve-form-'+it.id+'" style="display:none;"></div>';
   }).join('');
-  var receiptSaveBtn=canReceive&&items.length?('<button id="receipt-save-btn-'+p.id+'" onclick="submitPurchaseReceipt(\''+p.id+'\')" style="width:100%;margin-top:6px;background:#22c55e;border:none;border-radius:8px;padding:9px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">💾 Zapisz przyjęcie</button>'):'';
+
+  var receiptSaveBtn=canReceive&&items.length?('<button id="receipt-save-btn-'+p.id+'" class="b b-pri" style="width:100%;margin-top:var(--s3);gap:7px;" onclick="submitPurchaseReceipt(\'' + p.id + '\')">'+svgSave+'Zapisz przyjęcie</button>'):'';
+
   var supplierBlock;
   if(canEdit){
-    supplierBlock=''
-      +'<input value="'+(p.supplier_name||'')+'" placeholder="Dostawca" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_name\',this.value)" style="width:100%;padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;margin-bottom:5px;">'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px;">'
-      +'<input value="'+(p.supplier_order_number||'')+'" placeholder="Nr zamówienia" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_order_number\',this.value)" style="padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">'
-      +'<input value="'+(p.supplier_contact||'')+'" placeholder="Kontakt" onchange="updatePurchaseField(\''+p.id+'\',\'supplier_contact\',this.value)" style="padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">'
+    supplierBlock='<div style="margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--border);">'
+      +'<div class="lbl" style="margin-bottom:var(--s2);">Dostawca</div>'
+      +'<input class="in" value="'+(p.supplier_name||'')+'" placeholder="Nazwa dostawcy" onchange="updatePurchaseField(\'' + p.id + '\',\'supplier_name\',this.value)" style="margin-bottom:var(--s2);">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin-bottom:var(--s2);">'
+        +'<input class="in" value="'+(p.supplier_order_number||'')+'" placeholder="Nr zamówienia" onchange="updatePurchaseField(\'' + p.id + '\',\'supplier_order_number\',this.value)">'
+        +'<input class="in" value="'+(p.supplier_contact||'')+'" placeholder="Kontakt" onchange="updatePurchaseField(\'' + p.id + '\',\'supplier_contact\',this.value)">'
       +'</div>'
-      +'<input type="date" value="'+(p.planned_pickup_date||'')+'" onchange="updatePurchaseField(\''+p.id+'\',\'planned_pickup_date\',this.value)" style="width:100%;padding:7px 9px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#fff;font-size:11px;">';
+      +'<input class="in" type="date" value="'+(p.planned_pickup_date||'')+'" onchange="updatePurchaseField(\'' + p.id + '\',\'planned_pickup_date\',this.value)">'
+      +'</div>';
   }else{
-    supplierBlock='<div style="font-size:11px;color:#8a9ab0;">🏪 '+(p.supplier_name||'brak dostawcy')+(p.supplier_order_number?' · nr '+p.supplier_order_number:'')+(p.planned_pickup_date?' · odbiór '+p.planned_pickup_date:'')+'</div>';
+    supplierBlock='<div style="margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:var(--f-sm);color:var(--text-3);">'
+      +svgStore+(p.supplier_name||'brak dostawcy')
+      +(p.supplier_order_number?' · nr '+p.supplier_order_number:'')
+      +(p.planned_pickup_date?' · odbiór '+p.planned_pickup_date:'')+'</div>';
   }
-  return '<div class="card" style="padding:12px 13px;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
-      +'<div><div style="font-size:13px;font-weight:800;">👷 '+clientName+'</div>'+(buildingName?'<div style="font-size:10px;color:#8a9ab0;margin-top:1px;">🏗️ '+buildingName+'</div>':'')+'</div>'
+
+  return '<div class="c" style="padding:var(--s5);">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s3);">'
+      +'<div style="min-width:0;">'
+        +'<div style="font-size:var(--f-md);font-weight:700;color:var(--text);">'+clientName+'</div>'
+        +(buildingName?'<div style="display:flex;align-items:center;gap:5px;font-size:var(--f-sm);color:var(--text-3);margin-top:3px;">'+svgBuild+buildingName+'</div>':'')
+      +'</div>'
       +statusControl
     +'</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'+priorityBadge+neededBadge+'</div>'
-    +'<div style="background:rgba(0,0,0,.15);border-radius:8px;padding:2px 9px;margin-bottom:8px;">'+(itemsHtml||'<div style="padding:7px 0;font-size:11px;color:#8a9ab0;">Brak pozycji.</div>')+receiptSaveBtn+'</div>'
+    +((priorityBadge||neededBadge)?'<div style="display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s3);">'+priorityBadge+neededBadge+'</div>':'')
+    +'<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:var(--s2) var(--s4);">'
+      +(itemsHtml||'<div style="padding:var(--s3) 0;font-size:var(--f-sm);color:var(--text-3);">Brak pozycji.</div>')
+      +receiptSaveBtn
+    +'</div>'
     +supplierBlock
   +'</div>';
 }
