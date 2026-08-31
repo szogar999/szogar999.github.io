@@ -2240,7 +2240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.56.0-p0-shell';
+var APP_VERSION = 'v0.56.1-p0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3988,7 +3988,7 @@ var ClientStateEngine={
     return {
       recommendation:this._recommend(d),
       relationshipStatus:this._relationship(d),
-      activityBar:this._activityBar(d.activities||[]),
+      activityBar:this._activityBar(d.activities||[], d.lastContact||null),
       warnings:this._warnings(d)
     };
   },
@@ -4031,7 +4031,7 @@ var ClientStateEngine={
     if(score>=25) return {icon:'🟠',label:'Ryzyko utraty',color:'#f97316',score:score};
     return {icon:'🔴',label:'Utracony kontakt',color:'#ef4444',score:score};
   },
-  _activityBar:function(activities){
+  _activityBar:function(activities, lastContact){
     var buckets={call:null,email:null,meeting:null,offer:null,note:null};
     activities.forEach(function(a){
       var b=activityBucket(a.type);
@@ -4050,7 +4050,7 @@ var ClientStateEngine={
        także techniczne kliknięcie w dialer. Po zamrożeniu 'Telefon' pokazywałby
        "brak" mimo historii. Teraz źródłem jest wyłącznie widok, z jawnym
        rozróżnieniem verified / legacy_call / none. */
-    var lc=d.lastContact||null;
+    var lc=lastContact||null;   /* P0 fix: bylo d.lastContact — `d` poza zakresem */
     var lcVal, lcIcon;
     if(!lc||lc.contact_source==='none'){ lcVal='brak kontaktu'; lcIcon='⚪'; }
     else if(lc.contact_source==='verified'){ lcVal=fmt(lc.effective_last_contact_at); lcIcon='✅'; }
