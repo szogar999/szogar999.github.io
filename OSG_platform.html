@@ -147,6 +147,12 @@
 .b-ico{width:38px;height:38px;padding:0;border-radius:var(--r);
   background:var(--surface);border:1px solid var(--border);color:var(--text-2);}
 
+
+.sb-item .ic svg{display:block;}
+.kpi-ic svg{display:block;}
+.b svg{display:block;}
+.b-ico svg{display:block;margin:auto;}
+.main-head .b-ico{display:flex;align-items:center;justify-content:center;}
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -213,6 +219,36 @@
 
 /* Dolna nawigacja: zbedna na desktopie, gdzie jest sidebar */
 @media(min-width:1025px){ #s-command .nav{display:none!important;} }
+
+
+/* ---------- NORMALIZACJA TRESCI ZE STARYCH FUNKCJI ----------
+   Funkcje renderCeo*/renderAttentionList wstrzykuja HTML z kolorami
+   wpisanymi inline (motyw ciemny). Nadpisujemy je warstwa CSS —
+   HTML i logika pozostaja NIETKNIETE. */
+.main-body [style*="background:#0f1923"],
+.main-body [style*="background:#162130"],
+.main-body [style*="background:#1a2634"],
+.main-body [style*="background:#1e2f42"]{
+  background:var(--surface-2)!important;border-color:var(--border)!important;
+  border-radius:var(--r)!important;}
+.main-body [style*="color:#fff"]{color:var(--text)!important;}
+.main-body [style*="color:#8a9ab0"],
+.main-body [style*="color:#8a9bb0"],
+.main-body [style*="color:#c7d0da"]{color:var(--text-2)!important;}
+.main-body [style*="rgba(255,255,255,.06)"],
+.main-body [style*="rgba(255,255,255,.07)"],
+.main-body [style*="rgba(255,255,255,.08)"],
+.main-body [style*="rgba(255,255,255,.1)"],
+.main-body [style*="rgba(255,255,255,.12)"]{border-color:var(--border)!important;}
+.main-body .card{background:var(--surface-2)!important;border:1px solid var(--border)!important;
+  border-radius:var(--r)!important;box-shadow:none!important;color:var(--text)!important;}
+.main-body .btn{border-radius:var(--r)!important;}
+.main-body .btn.ghost{background:var(--surface)!important;border:1px solid var(--border-strong)!important;
+  color:var(--text)!important;}
+
+@media(max-width:1100px){
+  #osg-legacy-panels > div:first-child{grid-template-columns:1fr!important;}
+}
 
 @media(max-width:1024px){
   :root{--sidebar-w:0px;}
@@ -1110,25 +1146,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
     <nav class="sb-nav">
       <button class="sb-item on" onclick="sbGo('s-command',this)">
-        <span class="ic">▣</span> Dashboard</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span> Dashboard</button>
       <button class="sb-item" onclick="loadClients();sbGo('s-crm',this)">
-        <span class="ic">◷</span> Klienci</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></span> Klienci</button>
       <button class="sb-item" onclick="go('s-contact-today');sbToggle(false)">
-        <span class="ic">◎</span> Kontakt dzisiaj</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg></span> Kontakt dzisiaj</button>
       <button class="sb-item" onclick="loadOffers();sbGo('s-offers',this)">
-        <span class="ic">▤</span> Dokumenty</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span> Dokumenty</button>
       <button class="sb-item" onclick="planFilter('');sbGo('s-planday',this)">
-        <span class="ic">☑</span> Zadania</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span> Zadania</button>
       <button class="sb-item" onclick="loadPurchasing();sbGo('s-purchasing',this)">
-        <span class="ic">▦</span> Zakupy</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg></span> Zakupy</button>
       <button class="sb-item" onclick="loadDeliveries();sbGo('s-deliveries',this)">
-        <span class="ic">▷</span> Dostawy</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span> Dostawy</button>
       <button class="sb-item" onclick="openCalendar();sbToggle(false)">
-        <span class="ic">▥</span> Kalendarz</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span> Kalendarz</button>
       <button class="sb-item" onclick="openNotificationCenter();sbToggle(false)">
-        <span class="ic">◔</span> Powiadomienia</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span> Powiadomienia</button>
       <button class="sb-item" onclick="renderSystemStatus();sbGo('s-system-status',this)">
-        <span class="ic">◍</span> System</button>
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.7 1.7 0 007 19.4a1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H1a2 2 0 110-4h.1A1.7 1.7 0 002.6 7a1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H7a1.7 1.7 0 001-1.5V1a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V7a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></span> System</button>
     </nav>
 
     <div class="sb-foot">
@@ -1141,7 +1177,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           <div id="cmd-role-badge" style="font-size:10px;color:var(--sb-text);">—</div>
         </div>
         <button onclick="doLogout()" title="Wyloguj"
-          style="background:none;border:none;color:var(--sb-text);font-size:15px;cursor:pointer;padding:5px;">⏻</button>
+          style="background:none;border:none;color:var(--sb-text);cursor:pointer;padding:5px;display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M18.4 6.6a9 9 0 11-12.7 0"/><path d="M12 2v10"/></svg></button>
       </div>
     </div>
   </aside>
@@ -1150,7 +1186,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div class="main">
 
     <header class="main-head">
-      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;">☰</button>
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
       <div style="flex:1;min-width:0;">
         <div id="cmd-greeting" class="h1">Dzień dobry</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:2px;">
@@ -1159,12 +1195,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         </div>
       </div>
       <button class="b b-ico" onclick="openNotificationCenter()" style="position:relative;">
-        <span>◔</span>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
         <span id="cmd-notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;
           background:var(--err);color:#fff;font-size:9px;font-weight:800;border-radius:9px;
           min-width:17px;height:17px;align-items:center;justify-content:center;padding:0 4px;">0</span>
       </button>
-      <button class="b b-pri" onclick="planFilter('');go('s-planday')">Rozpocznij dzień</button>
+      <button class="b b-pri" onclick="planFilter('');go('s-planday')"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M12 5v14M5 12h14"/></svg>Rozpocznij dzień</button>
     </header>
 
     <div class="main-body">
@@ -1172,7 +1208,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <!-- KPI -->
       <div class="grid g-kpi" style="margin-bottom:var(--s6);">
         <div class="kpi" onclick="planFilter('lead');go('s-planday')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:var(--osg-orange-soft);color:var(--osg-orange);font-size:19px;">◈</div>
+          <div class="kpi-ic" style="background:var(--osg-orange-soft);color:var(--osg-orange);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.4-.5-2-1-3-1.1-2.1-.8-4.3 1-6 .5 2.5 2 4.6 4 6 1.5 1.1 2 2.5 2 4a6 6 0 11-12 0c0-1 .2-1.7.5-2.5z"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Nowe leady</div>
             <div id="cmd-leads" class="kpi-val">0</div>
@@ -1180,7 +1216,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           </div>
         </div>
         <div class="kpi" onclick="go('s-contact-today')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:var(--ok-bg);color:var(--ok);font-size:19px;">◎</div>
+          <div class="kpi-ic" style="background:var(--ok-bg);color:var(--ok);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Kontakt dzisiaj</div>
             <div id="cmd-contacts" class="kpi-val">0</div>
@@ -1188,7 +1224,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           </div>
         </div>
         <div class="kpi" onclick="loadOffers();go('s-offers')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:var(--info-bg);color:var(--info);font-size:19px;">▤</div>
+          <div class="kpi-ic" style="background:var(--info-bg);color:var(--info);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Oferty</div>
             <div id="cmd-offers" class="kpi-val">0</div>
@@ -1196,7 +1232,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           </div>
         </div>
         <div class="kpi" onclick="loadDeliveries();go('s-deliveries')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:var(--violet-bg);color:var(--violet);font-size:19px;">▷</div>
+          <div class="kpi-ic" style="background:var(--violet-bg);color:var(--violet);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Dostawy</div>
             <div id="cmd-deliveries" class="kpi-val">0</div>
@@ -1204,7 +1240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           </div>
         </div>
         <div class="kpi" onclick="loadClients();go('s-crm')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:#f3f4f6;color:var(--text-2);font-size:19px;">◷</div>
+          <div class="kpi-ic" style="background:#f3f4f6;color:var(--text-2);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Klienci</div>
             <div id="cmd-clients" class="kpi-val">0</div>
@@ -1212,7 +1248,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           </div>
         </div>
         <div class="kpi" onclick="planFilter('');go('s-planday')" style="cursor:pointer;">
-          <div class="kpi-ic" style="background:var(--warn-bg);color:var(--warn);font-size:19px;">⚠</div>
+          <div class="kpi-ic" style="background:var(--warn-bg);color:var(--warn);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Zaległe zadania</div>
             <div id="cmd-tasks" class="kpi-val">0</div>
@@ -1222,131 +1258,110 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       </div>
 
       <!-- sekcje analityczne (logika bez zmian) -->
-      <div id="osg-legacy-panels" class="legacy-light">
-<div id="cmd-ceo-wrap" style="display:none;flex-direction:column;gap:14px;">
-    <div style="font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px;">📊 Dashboard CEO</div>
+      <div id="osg-legacy-panels">
 
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">1. Sprzedaż</div>
-      <div id="ceo-sales" style="display:grid;grid-template-columns:1fr 1fr;gap:11px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
+  <!-- ===== GLOWNY UKLAD: 2/3 + 1/3 ===== -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:var(--s4);align-items:start;margin-bottom:var(--s4);">
 
-    <div class="card" style="padding:0;overflow:hidden;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;padding:13px 13px 0;">2. Lejek sprzedaży</div>
-      <div id="ceo-pipeline" style="padding-bottom:4px;"><div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div></div>
-    </div>
+    <!-- LEWA: sprzedaz + lejek -->
+    <div style="display:flex;flex-direction:column;gap:var(--s4);min-width:0;">
 
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">3. Handlowcy</div>
-      <div id="ceo-salespeople" style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
-
-    <div class="card" style="padding:0;overflow:hidden;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;padding:13px 13px 0;">4. Ryzyka</div>
-      <div id="ceo-risks" style="padding-bottom:4px;"><div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div></div>
-    </div>
-
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">5. Prognoza</div>
-      <div id="ceo-forecast" style="display:flex;flex-direction:column;gap:10px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Wszystkie liczby to sumy i zliczenia z realnych danych — żadna nie jest szacunkiem ani przewidywaniem modelu.</div>
-    </div>
-
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">6. 📦 Zakupy</div>
-      <div id="ceo-purchasing" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-      <div onclick="renderPurchasing();go('s-purchasing')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:10px;">🛒 Zobacz w Do zakupu →</div>
-    </div>
-
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">7. 📦 Magazyn</div>
-      <div id="ceo-magazyn" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-      <div id="ceo-magazyn-braki" style="margin-top:9px;"></div>
-      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Stany liczone bezpośrednio z widoku v_product_stock — bez żadnej logiki dublowanej w aplikacji.</div>
-    </div>
-
-    <div class="card" style="padding:13px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:9px;">8. 📦 Centrum uwagi — Zaopatrzenie <span id="ac-count"></span></div>
-      <div id="ac-list" style="display:flex;flex-direction:column;gap:7px;"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-      <div id="ac-showall-wrap" style="display:none;margin-top:8px;text-align:center;">
-        <span onclick="acShowAll()" style="font-size:11px;color:#e8601c;font-weight:700;cursor:pointer;">Pokaż wszystkie →</span>
+      <div class="c">
+        <div class="c-head"><div class="h2">Sprzedaż</div>
+          <button class="b b-ghost b-sm" onclick="loadOffers();go('s-offers')">Zobacz oferty →</button></div>
+        <div class="c-body"><div id="ceo-sales"></div></div>
       </div>
-      <div style="font-size:9px;color:#8a9ab0;margin-top:9px;line-height:1.5;">Reguły oparte wyłącznie na danych — bez AI, bez rekomendacji.</div>
-    </div>
 
-    <button onclick="loadOwnerDeliveries();go('s-deliveries-owner')" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">🚚 Dostawy →</button>
-  </div>
-
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧠 Dzisiaj AI uważa, że powinieneś zrobić przede wszystkim</div>
-    <div class="card" id="cmd-ai-top5" style="padding:0;overflow:hidden;border:1px solid rgba(168,85,247,.3);">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Analizuję dane…</div></div>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">⚠️ AI wykryło</div>
-    <div class="card" id="cmd-ai-alerts" style="padding:0;overflow:hidden;">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Analizuję dane…</div></div>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🎯 Dzisiaj musisz zrobić</div>
-    <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:12px;">
-
-      <div>
-        <div style="font-size:10px;font-weight:700;color:#ef4444;margin-bottom:5px;">⚠️ ZALEGŁE ZADANIA</div>
-        <div id="cmd-todo-overdue" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+      <div class="c">
+        <div class="c-head"><div class="h2">Lejek sprzedaży</div>
+          <button class="b b-ghost b-sm" onclick="loadClients();go('s-crm')">Klienci →</button></div>
+        <div class="c-body"><div id="ceo-pipeline"></div></div>
       </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:#f59e0b;margin-bottom:5px;">📤 OFERTY CZEKAJĄCE NA ODPOWIEDŹ</div>
-        <div id="cmd-todo-offers" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+
+      <div class="c">
+        <div class="c-head"><div class="h2">Prognoza i ryzyka</div></div>
+        <div class="c-body">
+          <div id="ceo-forecast" style="margin-bottom:var(--s4);"></div>
+          <div id="ceo-risks"></div>
+        </div>
       </div>
-      <div>
-        <div style="font-size:10px;font-weight:700;color:#a855f7;margin-bottom:5px;">🔕 KLIENCI BEZ KONTAKTU</div>
-        <div id="cmd-todo-stale" style="display:flex;flex-direction:column;gap:6px;"><div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div></div>
+
+      <div class="grid g-2">
+        <div class="c">
+          <div class="c-head"><div class="h2">Zaopatrzenie</div>
+            <button class="b b-ghost b-sm" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')">Zakupy →</button></div>
+          <div class="c-body"><div id="ceo-purchasing"></div></div>
+        </div>
+        <div class="c">
+          <div class="c-head"><div class="h2">Magazyn</div></div>
+          <div class="c-body">
+            <div id="ceo-magazyn" style="margin-bottom:var(--s3);"></div>
+            <div id="ceo-magazyn-braki"></div>
+          </div>
+        </div>
       </div>
-      <div onclick="openCalendar();go('s-calendar')" style="font-size:11px;color:#e8601c;font-weight:700;text-align:center;cursor:pointer;padding-top:2px;">🗓️ Zobacz w Kalendarzu →</div>
+
+      <div class="c">
+        <div class="c-head"><div class="h2">Handlowcy</div></div>
+        <div class="c-body"><div id="ceo-salespeople"></div></div>
+      </div>
+    </div>
+
+    <!-- PRAWA: priorytety, uwaga, dzien -->
+    <div style="display:flex;flex-direction:column;gap:var(--s4);min-width:0;">
+
+      <div class="c">
+        <div class="c-head">
+          <div class="h2">Priorytety</div>
+          <span class="bd bd-osg">AI</span>
+        </div>
+        <div class="c-body">
+          <div id="cmd-ai-top5"></div>
+          <div id="cmd-ai-alerts" style="margin-top:var(--s3);"></div>
+        </div>
+      </div>
+
+      <div class="c">
+        <div class="c-head">
+          <div class="h2">Wymaga uwagi</div>
+          <span id="ac-count" class="bd bd-warn">0</span>
+        </div>
+        <div class="c-body">
+          <div id="ac-list"></div>
+          <div id="ac-showall-wrap" style="margin-top:var(--s3);"></div>
+        </div>
+      </div>
+
+      <div class="c">
+        <div class="c-head"><div class="h2">Mój dzień</div>
+          <button class="b b-ghost b-sm" onclick="planFilter('');go('s-planday')">Plan →</button></div>
+        <div class="c-body">
+          <div id="cmd-day-summary" style="margin-bottom:var(--s3);"></div>
+          <div id="cmd-my-day"></div>
+        </div>
+      </div>
+
+      <div class="c">
+        <div class="c-head"><div class="h2">Do zrobienia</div></div>
+        <div class="c-body">
+          <div id="cmd-todo-overdue"></div>
+          <div id="cmd-todo-offers"></div>
+          <div id="cmd-todo-stale"></div>
+        </div>
+      </div>
+
+      <div class="c">
+        <div class="c-head"><div class="h2">Ostatnia aktywność</div></div>
+        <div class="c-body"><div id="cmd-activity"></div></div>
+      </div>
+
+      <div id="cmd-pipeline-summary"></div>
     </div>
   </div>
 
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">📅 Mój dzień</div>
-    <div class="card" id="cmd-my-day" style="padding:0;overflow:hidden;">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">📊 Wynik dnia</div>
-    <div class="card" id="cmd-day-summary" style="padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:11px;">
-      <div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:15px;font-weight:800;margin-bottom:8px;">🧭 Lejek sprzedaży</div>
-    <div class="card" id="cmd-pipeline-summary" style="padding:0;overflow:hidden;">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
-  </div>
-
-  <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">📋 Aktywność (wszyscy klienci)</div>
-    <div class="card" id="cmd-activity">
-      <div class="row"><div style="font-size:12px;color:#8a9ab0;">Ładowanie…</div></div>
-    </div>
-  </div>
-</div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-  <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
-  <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
-  <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
-</div>
-      </div><!-- /legacy-panels -->
+  <div id="cmd-ceo-wrap" style="display:none;"></div>
+</div><!-- /osg-legacy-panels -->
+</div><!-- /legacy-panels -->
     </div><!-- /main-body -->
   </div><!-- /main -->
 </div><!-- /app-shell -->
@@ -2102,7 +2117,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.49.0-redesign';
+var APP_VERSION = 'v0.50.1-redesign';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
