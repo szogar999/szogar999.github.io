@@ -153,6 +153,18 @@
 .b svg{display:block;}
 .b-ico svg{display:block;margin:auto;}
 .main-head .b-ico{display:flex;align-items:center;justify-content:center;}
+
+.of-pill{font-size:var(--f-sm);font-weight:700;padding:6px 13px;border-radius:var(--r-full);
+  cursor:pointer;user-select:none;transition:filter .15s;white-space:nowrap;}
+.of-pill:hover{filter:brightness(1.1);}
+
+.of-pill[style*="background:#1e2f42"],
+.of-pill[style*="background: rgb(30, 47, 66)"]{
+  background:var(--surface-2)!important;color:var(--text-2)!important;
+  border:1px solid var(--border);}
+.of-pill[style*="background:#e8601c"],
+.of-pill[style*="background: rgb(232, 96, 28)"]{
+  background:var(--osg-orange)!important;color:#fff!important;border:1px solid transparent;}
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -1660,39 +1672,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-offers">
-<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📄 Dokumenty</span></div>
-<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-  <button onclick="newOffer()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">+ Nowy dokument</button>
-  <div>
-    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:5px;">Typ</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <div onclick="offersFilterType('')" id="of-type-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystkie</div>
-      <div onclick="offersFilterType('oferta')" id="of-type-oferta" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
-      <div onclick="offersFilterType('proforma')" id="of-type-proforma" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Pro Forma</div>
-      <div onclick="offersFilterType('faktura_vat')" id="of-type-faktura_vat" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Faktury VAT</div>
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div class="h1">Dokumenty</div>
+        <div id="of-status-line" class="sub"></div>
+      </div>
+      <button class="b b-pri" onclick="newOffer()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Nowy dokument</button>
+    </header>
+
+    <div class="main-body">
+      <div class="c" style="padding:var(--s4);margin-bottom:var(--s4);display:flex;flex-direction:column;gap:var(--s3);">
+        <div style="display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;">
+          <span class="lbl" style="min-width:46px;">Typ</span>
+          <div onclick="offersFilterType('')" id="of-type-all" class="of-pill" style="background:#e8601c;color:#fff;">Wszystkie</div>
+          <div onclick="offersFilterType('oferta')" id="of-type-oferta" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Oferty</div>
+          <div onclick="offersFilterType('proforma')" id="of-type-proforma" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Pro Forma</div>
+          <div onclick="offersFilterType('faktura_vat')" id="of-type-faktura_vat" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Faktury VAT</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;">
+          <span class="lbl" style="min-width:46px;">Status</span>
+          <div id="of-status-pills" style="display:flex;gap:var(--s2);flex-wrap:wrap;">
+            <div onclick="offersFilter('')" id="of-all" class="of-pill" style="background:#e8601c;color:#fff;">Wszystkie</div>
+            <div onclick="offersFilter('draft')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Robocze</div>
+            <div onclick="offersFilter('wysłana')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Wysłane</div>
+            <div onclick="offersFilter('zaakceptowana')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Zaakceptowane</div>
+            <div onclick="offersFilter('odrzucona')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Odrzucone</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="of-list" style="display:flex;flex-direction:column;gap:var(--s3);">
+        <div class="c c-pad" style="color:var(--text-3);">Ładowanie…</div>
+      </div>
     </div>
   </div>
-  <div>
-    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:5px;">Status</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="of-status-pills">
-      <div onclick="offersFilter('')" id="of-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystkie</div>
-      <div onclick="offersFilter('draft')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Robocze</div>
-      <div onclick="offersFilter('wysłana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📤 Wysłane</div>
-      <div onclick="offersFilter('zaakceptowana')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">✅ Zaakceptowane</div>
-      <div onclick="offersFilter('odrzucona')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">❌ Odrzucone</div>
-    </div>
-  </div>
-  <div id="of-status-line" style="font-size:11px;color:#8a9ab0;"></div>
-  <div id="of-list" style="display:flex;flex-direction:column;gap:8px;">
-    <div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Ładowanie…</div>
-  </div>
-</div>
-<div class="nav">
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-  <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
-  <button class="nb on" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Dokumenty</button>
-  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
-  <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
 </div>
 
@@ -2122,7 +2139,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.52.0-crm';
+var APP_VERSION = 'v0.53.0-docs';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5167,25 +5184,43 @@ function renderOffersList(){
     var typeOk=offersActiveTypeFilter===''||((o.document_type||'oferta')===offersActiveTypeFilter);
     return statusOk&&typeOk;
   });
-  if(rows.length===0){listEl.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 12px;">Brak dokumentów w tej kategorii.</div>';return;}
+  if(rows.length===0){listEl.innerHTML='<div class="c c-pad" style="text-align:center;color:var(--text-3);">Brak dokumentów w tej kategorii.</div>';return;}
+  /* Szablon wiersza przepisany na design system (Sprint Redesign).
+     Logika filtrowania, allOffersCache, offersActiveFilter,
+     offersActiveTypeFilter, openOffer() i stale — BEZ ZMIAN. */
   listEl.innerHTML=rows.map(function(o){
     var dt=o.created_at?new Date(o.created_at):null;
     var dateStr=dt?dt.toLocaleDateString('pl-PL'):'';
-    var clientName=o.client_name||(o.clients&&o.clients.name)||'—';   /* 3C: widok zwraca plaskie client_name */
-    var _bn=o.building_name||(o.buildings&&o.buildings.name); var buildingName=_bn?(' · 🏗️ '+_bn):'';
+    var clientName=o.client_name||(o.clients&&o.clients.name)||'—';
+    var _bn=o.building_name||(o.buildings&&o.buildings.name);
     var docType=o.document_type||'oferta';
-    var docTypeLabel=DOCUMENT_TYPE_LABEL[docType]||'📄 Oferta';
-    return '<div class="card" style="padding:12px 13px;cursor:pointer;" onclick="openOffer(\''+o.id+'\')">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
-        +'<div style="font-size:14px;font-weight:800;">'+clientName+'</div>'
-        +'<span style="font-size:9px;font-weight:700;color:'+(OFFER_STATUS_COLOR[o.status]||'#8a9ab0')+';background:rgba(255,255,255,.06);padding:3px 8px;border-radius:8px;">'+(OFFER_STATUS_LABEL[o.status]||o.status)+'</span>'
+    var typLabel={'oferta':'Oferta','proforma':'Pro Forma','faktura_vat':'Faktura VAT'}[docType]||'Oferta';
+    var stCol=OFFER_STATUS_COLOR[o.status]||'#6b7280';
+    var stLab=OFFER_STATUS_LABEL[o.status]||o.status;
+    /* MARZA: v_offers maskuje ja dla roli sales (null).
+       Nie pokazujemy wtedy "0 zl (0.0%)" — ukrywamy caly blok. */
+    var maRaw=o.margin_pct, maAmt=o.margin_amount;
+    var maVis=(maRaw!==null&&maRaw!==undefined);
+    var svgBuild='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>';
+    var svgArrow='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+    return '<div class="c" style="padding:var(--s4) var(--s5);cursor:pointer;display:flex;align-items:center;gap:var(--s4);" onclick="openOffer(\'' + o.id + '\')">'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;">'
+          +'<span style="font-size:var(--f-md);font-weight:700;color:var(--text);">'+clientName+'</span>'
+          +'<span class="bd bd-neutral">'+typLabel+'</span>'
+          +'<span class="bd" style="background:'+stCol+'18;color:'+stCol+';">'+stLab+'</span>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-top:5px;font-size:var(--f-sm);color:var(--text-3);flex-wrap:wrap;">'
+          +'<span>'+offerNumber(o)+'</span><span>·</span><span>'+dateStr+'</span>'
+          +(_bn?('<span>·</span><span style="display:inline-flex;align-items:center;gap:4px;">'+svgBuild+_bn+'</span>'):'')
+        +'</div>'
       +'</div>'
-      +'<div style="font-size:9px;font-weight:700;color:#a855f7;margin-top:3px;">'+docTypeLabel+'</div>'
-      +'<div style="font-size:11px;color:#8a9ab0;margin-top:2px;">'+offerNumber(o)+' · '+dateStr+buildingName+'</div>'
-      +'<div style="display:flex;gap:14px;margin-top:6px;font-size:12px;">'
-        +'<span>💰 '+Number(o.net_total||0).toFixed(0)+' zł netto</span>'
-        +'<span style="color:#22c55e;">zysk '+Number(o.margin_amount||0).toFixed(0)+' zł ('+Number(o.margin_pct||0).toFixed(1)+'%)</span>'
+      +'<div style="text-align:right;flex-shrink:0;">'
+        +'<div style="font-size:var(--f-md);font-weight:700;color:var(--text);white-space:nowrap;">'+Number(o.net_total||0).toFixed(0)+' zł</div>'
+        +'<div style="font-size:var(--f-xs);color:var(--text-3);">netto</div>'
+        +(maVis?('<div style="font-size:var(--f-sm);color:var(--ok);font-weight:600;margin-top:3px;white-space:nowrap;">+'+Number(maAmt||0).toFixed(0)+' zł · '+Number(maRaw).toFixed(1)+'%</div>'):'')
       +'</div>'
+      +'<span style="color:var(--text-3);display:flex;flex-shrink:0;">'+svgArrow+'</span>'
     +'</div>';
   }).join('');
 }
