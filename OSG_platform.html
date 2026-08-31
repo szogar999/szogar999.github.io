@@ -1321,7 +1321,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
     </div>
     <div id="cd-ai-note-panel" style="display:none;margin:0 0 10px;padding:12px;background:#162130;border:1px solid rgba(232,96,28,.35);border-radius:12px;"></div>
-    <button id="cd-prep-btn" onclick="aiPrepareMe(currentClientId,'cd-prep-panel')" style="width:100%;margin-bottom:8px;padding:11px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.45);border-radius:11px;color:#a78bfa;font-size:12px;font-weight:800;cursor:pointer;">🧠 Przygotuj mnie do rozmowy</button>
+    <button id="cd-prep-btn" onclick="aiPrepareMe(currentClientId,'cd-prep-panel',(currentClientRecord&&currentClientRecord.phone)||'')" style="width:100%;margin-bottom:8px;padding:11px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.45);border-radius:11px;color:#a78bfa;font-size:12px;font-weight:800;cursor:pointer;">🧠 Przygotuj mnie do rozmowy</button>
     <div id="cd-prep-panel" style="display:none;margin-bottom:10px;"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;">
       <div onclick="cdActivityFilter('')" id="cd-af-all" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
@@ -1811,7 +1811,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.47.0';
+var APP_VERSION = 'v0.47.1';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
