@@ -1,0 +1,46 @@
+name: Deploy Edge Functions
+
+# Uruchamiany WYŁĄCZNIE ręcznie — bez automatycznego deployu przy push.
+on:
+  workflow_dispatch:
+    inputs:
+      function_name:
+        description: "Nazwa funkcji do wdrożenia"
+        required: true
+        default: "ai-gateway"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobierz repozytorium
+        uses: actions/checkout@v4
+
+      - name: Zainstaluj Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Sprawdź, czy funkcja istnieje w repo
+        run: |
+          set -e
+          FN="${{ github.event.inputs.function_name }}"
+          if [ ! -f "supabase/functions/$FN/index.ts" ]; then
+            echo "BŁĄD: brak pliku supabase/functions/$FN/index.ts"
+            exit 1
+          fi
+          echo "Znaleziono funkcję: $FN"
+
+      # Wdrażamy TYLKO Edge Function.
+      # Żadnych migracji SQL, żadnego db push, zero dotykania bazy.
+      - name: Wdróż Edge Function
+        run: |
+          set -e
+          supabase functions deploy "${{ github.event.inputs.function_name }}" \
+            --project-ref "$SUPABASE_PROJECT_REF"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
+      - name: Podsumowanie
+        run: echo "Wdrożono ${{ github.event.inputs.function_name }}"
