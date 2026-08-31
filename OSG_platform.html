@@ -1321,6 +1321,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
     </div>
     <div id="cd-ai-note-panel" style="display:none;margin:0 0 10px;padding:12px;background:#162130;border:1px solid rgba(232,96,28,.35);border-radius:12px;"></div>
+    <button id="cd-prep-btn" onclick="aiPrepareMe(currentClientId,'cd-prep-panel')" style="width:100%;margin-bottom:8px;padding:11px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.45);border-radius:11px;color:#a78bfa;font-size:12px;font-weight:800;cursor:pointer;">🧠 Przygotuj mnie do rozmowy</button>
+    <div id="cd-prep-panel" style="display:none;margin-bottom:10px;"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;">
       <div onclick="cdActivityFilter('')" id="cd-af-all" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
       <div onclick="cdActivityFilter('call')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
@@ -1809,7 +1811,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.46.0';
+var APP_VERSION = 'v0.47.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2836,6 +2838,66 @@ async function archiveClientNote(id){
   if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
   loadClientActivities(currentClientId);
 }
+
+/* ============================================================
+   AI CLIENT SUMMARY — "Przygotuj mnie do rozmowy"
+   Wywolywane WYLACZNIE na kliknięcie. Nigdy automatycznie dla
+   calej listy — decyzja Oskara (koszt + bezuzyteczne podsumowania
+   dla klientow, do ktorych i tak nie zadzwoni).
+   ============================================================ */
+var aiPrepBusy=false;
+
+async function aiPrepareMe(clientId, panelId, phone){
+  if(aiPrepBusy||!clientId)return;
+  var p=document.getElementById(panelId);
+  if(!p)return;
+  aiPrepBusy=true;
+  p.style.display='block';
+  p.innerHTML='<div style="padding:12px;background:#162130;border:1px solid rgba(139,92,246,.35);border-radius:11px;font-size:12px;color:#8a9ab0;">🧠 Analizuję historię klienta…</div>';
+
+  var res;
+  try{
+    res=await sb.functions.invoke('ai-gateway',{body:{action:'client_summary',params:{client_id:clientId}}});
+  }catch(e){ res={error:{message:String(e)}}; }
+  aiPrepBusy=false;
+
+  var body=res&&res.data, err=null;
+  if(!body&&res&&res.error&&res.error.context&&typeof res.error.context.json==='function'){
+    try{ body=await res.error.context.json(); }catch(e){}
+  }
+  if(!body||body.ok!==true){
+    err=(body&&body.error&&body.error.message)||'Nie udało się połączyć z AI.';
+    p.innerHTML='<div style="padding:12px;background:#162130;border:1px solid rgba(239,68,68,.4);border-radius:11px;font-size:12px;color:#ef4444;">'+err
+      +'</div><button onclick="aiClosePrep(\''+panelId+'\')" style="margin-top:6px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 12px;color:#8a9ab0;font-size:11px;cursor:pointer;">Zamknij</button>';
+    return;
+  }
+
+  var d=body.data, m=body.meta||{};
+  var tematy=(d.do_poruszenia||[]).map(function(t){
+    return '<div style="font-size:12px;color:#c7d0da;margin:3px 0;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:#a78bfa;">•</span>'+t+'</div>';
+  }).join('');
+  var uwaga=d.uwaga?'<div style="margin-top:8px;padding:8px 10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:8px;font-size:11px;color:#f59e0b;">⚠️ '+d.uwaga+'</div>':'';
+  var zrodlo=m.cached?'z pamięci':'świeże';
+  var tel=phone?'<a href="tel:'+String(phone).replace(/[^0-9+]/g,'')+'" style="flex:1;text-align:center;padding:10px;background:#e8601c;border-radius:9px;color:#fff;font-size:12px;font-weight:800;text-decoration:none;">📞 Zadzwoń</a>':'';
+
+  p.innerHTML='<div style="padding:12px;background:#162130;border:1px solid rgba(139,92,246,.4);border-radius:11px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<span style="font-size:11px;font-weight:800;color:#a78bfa;">🧠 PRZYGOTOWANIE DO ROZMOWY</span>'
+      +'<span style="font-size:9px;color:#8a9ab0;">'+zrodlo+'</span></div>'
+    +'<div style="font-size:12px;color:#fff;line-height:1.5;">'+(d.sytuacja||'')+'</div>'
+    +(tematy?'<div style="font-size:10px;color:#8a9bb0;margin:9px 0 3px;font-weight:700;">DO PORUSZENIA</div>'+tematy:'')
+    +uwaga
+    +'<div style="display:flex;gap:6px;margin-top:10px;">'
+      +'<button onclick="aiClosePrep(\''+panelId+'\')" style="'+(tel?'':'flex:1;')+'padding:10px 14px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#8a9bb0;font-size:12px;font-weight:700;cursor:pointer;">Zamknij</button>'
+      +tel
+    +'</div></div>';
+}
+
+function aiClosePrep(panelId){
+  var p=document.getElementById(panelId);
+  if(p){ p.style.display='none'; p.innerHTML=''; }
+}
+
 /* ============================================================
    AI NOTES ASSISTANT (Sprint AI)
    ZASADA: AI PROPONUJE, UŻYTKOWNIK ZATWIERDZA.
@@ -5503,6 +5565,8 @@ function ctRow(r,idx,isDue){
     +'</div>'
     +(c.next_action?'<div style="font-size:11px;color:#c7d0da;margin-top:6px;font-style:italic;">„'+c.next_action+'"</div>':'')
     +(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#e8601c;text-decoration:none;">📞 '+c.phone+'</a>':'<div style="font-size:11px;color:#ef4444;margin-top:8px;">Brak numeru telefonu</div>')
+    +'<button onclick="aiPrepareMe(\''+c.id+'\',\'ct-prep-'+key+'\',\''+(c.phone||'').replace(/'/g,'')+'\')" style="width:100%;margin-top:8px;padding:8px;background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.4);border-radius:9px;color:#a78bfa;font-size:11px;font-weight:800;cursor:pointer;">🧠 Przygotuj mnie</button>'
+    +'<div id="ct-prep-'+key+'" style="display:none;margin-top:8px;"></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;">'
       +'<button onclick="ctAnswered(\''+key+'\',\''+c.id+'\')" style="padding:9px 4px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);border-radius:9px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;">Odebrał</button>'
       +'<button onclick="ctNoAnswer(\''+key+'\',\''+c.id+'\')" style="padding:9px 4px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:9px;color:#ef4444;font-size:11px;font-weight:800;cursor:pointer;">Nie odebrał</button>'
