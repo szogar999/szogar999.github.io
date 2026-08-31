@@ -245,7 +245,12 @@
 .legacy-light [style*="color:#f59e0b"]{color:var(--warn)!important;}
 
 /* Dolna nawigacja: zbedna na desktopie, gdzie jest sidebar */
-@media(min-width:1025px){ #s-command .nav{display:none!important;} }
+@media(min-width:1025px){
+  /* P0: dolna nawigacja dubluje sidebar na desktopie */
+  .app-shell .nav{display:none!important;}
+  /* stary naglowek ekranu wewnatrz shellu — sticky psulby uklad */
+  .app-shell .hdr{position:static;}
+}
 
 
 /* ---------- NORMALIZACJA TRESCI ZE STARYCH FUNKCJI ----------
@@ -317,7 +322,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="screen active" id="s-login">
 <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;">
   <img id="logo-login" style="max-width:230px;width:80%;height:auto;margin-bottom:22px;" alt="OSG Platform">
-  <div style="font-size:13px;color:#8a9ab0;margin-bottom:28px;">Zaloguj się na swoje konto firmowe</div>
+  <div style="font-size:13px;color:#8a9ab0;margin-bottom:6px;">Zaloguj się na swoje konto firmowe</div>
+  <div id="login-version" style="font-size:10px;color:#5a6a80;margin-bottom:24px;"></div>
   <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;">
     <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" style="width:100%;padding:13px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
     <input id="login-pass" type="password" placeholder="Hasło" autocomplete="current-password" style="width:100%;padding:13px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
@@ -1176,19 +1182,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span> Dashboard</button>
       <button class="sb-item" onclick="loadClients();sbGo('s-crm',this)" data-sb="crm">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></span> Klienci</button>
-      <button class="sb-item" onclick="go('s-contact-today');sbToggle(false)" data-sb="contact">
+      <button class="sb-item" onclick="sbGo('s-contact-today')" data-sb="contact">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg></span> Kontakt dzisiaj</button>
       <button class="sb-item" onclick="loadOffers();sbGo('s-offers',this)" data-sb="docs">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span> Dokumenty</button>
       <button class="sb-item" onclick="planFilter('');sbGo('s-planday',this)" data-sb="tasks">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span> Zadania</button>
-      <button class="sb-item" onclick="loadPurchasing();sbGo('s-purchasing',this)" data-sb="purchases">
+      <button class="sb-item" onclick="renderPurchasing();sbGo('s-purchasing',this)" data-sb="purchases">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg></span> Zakupy</button>
-      <button class="sb-item" onclick="loadDeliveries();sbGo('s-deliveries',this)" data-sb="deliveries">
+      <button class="sb-item" onclick="sbOpenDeliveries()" data-sb="deliveries">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span> Dostawy</button>
-      <button class="sb-item" onclick="openCalendar();sbToggle(false)" data-sb="calendar">
+      <button class="sb-item" onclick="openCalendar();sbGo('s-calendar')" data-sb="calendar">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span> Kalendarz</button>
-      <button class="sb-item" onclick="openNotificationCenter();sbToggle(false)" data-sb="notifications">
+      <button class="sb-item" onclick="openNotificationCenter();sbGo('s-notifications')" data-sb="notifications">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span> Powiadomienia</button>
       <button class="sb-item" onclick="renderSystemStatus();sbGo('s-system-status',this)" data-sb="system">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.7 1.7 0 007 19.4a1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H1a2 2 0 110-4h.1A1.7 1.7 0 002.6 7a1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H7a1.7 1.7 0 001-1.5V1a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V7a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></span> System</button>
@@ -1388,6 +1394,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div><!-- /app-shell -->
 
 <div class="screen" id="s-system-status">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">⚙️ System status</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <div class="card" style="padding:0;overflow:hidden;">
@@ -1404,9 +1414,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="btn ghost" onclick="go('s-onboarding')">🎭 Zobacz wersję Showcase (DEMO)</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-contact-today">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📞 Kontakt dzisiaj</span><span id="ct-date" style="font-size:12px;color:#8a9ab0;"></span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
   <div id="ct-msg" style="display:none;font-size:12px;padding:10px 12px;border-radius:10px;"></div>
@@ -1436,9 +1453,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="btn ghost" onclick="renderContactToday()">🔄 Odśwież</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-notifications">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🔔 Centrum powiadomień</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <div style="font-size:11px;color:#8a9ab0;">Przypomnienia zaplanowane na dziś. Otwarcie tego ekranu oznacza je jako przeczytane.</div>
@@ -1447,6 +1471,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-crm">
@@ -1485,6 +1512,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-client-add">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span style="font-size:18px;font-weight:800;flex:1;">+ Dodaj klienta</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <div style="font-size:11px;color:#8a9ab0;">Nazwa firmy jest wymagana, reszta pól opcjonalna.</div>
@@ -1497,9 +1528,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button id="ca-save-btn" onclick="saveClient()" class="btn" style="margin-top:4px;">💾 Zapisz klienta</button>
   <button class="btn ghost" onclick="go('s-crm')">Anuluj</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-driver-deliveries">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><span style="font-size:18px;font-weight:800;flex:1;">🚚 Moje dostawy</span><button onclick="doLogout()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8a9ab0;font-size:11px;padding:6px 10px;cursor:pointer;">🚪 Wyloguj</button></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
   <div id="dd-status-line" style="font-size:11px;color:#8a9ab0;"></div>
@@ -1531,9 +1569,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <button onclick="saveDeliveryConfirm()" style="flex:2;background:#22c55e;border:none;border-radius:10px;padding:12px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">✅ Potwierdź</button>
     </div>
   </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-client-detail">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span id="cd-title" style="font-size:18px;font-weight:800;flex:1;">Klient</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
 
@@ -1684,6 +1729,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <button class="btn ghost" onclick="go('s-crm')">← Wróć do listy klientów</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-offers">
@@ -1729,6 +1777,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-offer-edit">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-offers')">←</button><span id="oe-title" style="font-size:18px;font-weight:800;flex:1;">Nowa oferta</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
 
@@ -1804,9 +1856,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button id="oe-pdf-btn" onclick="generateOfferPdf()" style="width:100%;padding:13px;border:1px solid rgba(255,255,255,.15);border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;background:#1e2f42;color:#fff;">📄 Generuj PDF</button>
   <button class="btn ghost" onclick="go('s-offers')">Anuluj</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-calendar">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🗓️ Kalendarz</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
 
@@ -1891,9 +1950,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div id="cev-error" style="display:none;color:#ef4444;font-size:12px;"></div>
     <button onclick="saveCalendarEvent()" style="width:100%;background:#e8601c;border:none;border-radius:10px;padding:13px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;">💾 Zapisz wydarzenie</button>
   </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-planday">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📋 Plan Dnia</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
   <div id="plan-summary" style="font-size:11px;color:#8a9ab0;"></div>
@@ -1915,9 +1981,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-deliveries-owner">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">🚚 Dostawy</span></div>
 <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
   <button onclick="openDeliveryForm()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;padding:12px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">+ Nowa dostawa</button>
@@ -1978,6 +2051,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div id="dv-error" style="display:none;color:#ef4444;font-size:12px;"></div>
     <button onclick="saveDelivery()" style="width:100%;background:#e8601c;border:none;border-radius:10px;padding:13px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;">💾 Zapisz dostawę</button>
   </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-purchasing">
@@ -2164,7 +2240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.55.0-czytelnosc';
+var APP_VERSION = 'v0.56.0-p0-shell';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2262,6 +2338,7 @@ function renderSystemStatus(){
   setEl('ss-activities', actEl&&actEl.textContent ? actEl.textContent.replace(' aktywności dziś','') : (sbEnabled?'—':'niedostępne w trybie demo'));
   setEl('ss-sync', lastSyncTime ? lastSyncTime.toLocaleDateString('pl-PL')+' '+lastSyncTime.toLocaleTimeString('pl-PL') : 'jeszcze nie synchronizowano');
   setEl('ss-version', APP_VERSION);
+  setEl('login-version', APP_VERSION);
   var connEl=document.getElementById('ss-connected');
   if(connEl)connEl.style.color=sbEnabled?'#22c55e':'#ef4444';
 }
@@ -6134,6 +6211,17 @@ function sbMountAll(){
   });
   sbSync();
 }
+/* P0.4: jedno zrodlo wersji — APP_VERSION. Wyswietlana na logowaniu
+   i w System status. Ustawiana raz przy starcie. */
+(function(){
+  function setV(){
+    var e=document.getElementById('login-version');
+    if(e) e.textContent=APP_VERSION;
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setV);
+  else setV();
+})();
+
 function sbToggle(open){
   document.querySelectorAll('.sidebar').forEach(function(sb){
     sb.classList.toggle('open', !!open);
@@ -6145,12 +6233,11 @@ function sbToggle(open){
 /* Mapa ekranow na pozycje sidebara. Ekrany spoza mapy nie zmieniaja
    podswietlenia (np. karta klienta zostawia aktywne "Klienci"). */
 var SB_MAP={
-  's-command':'dashboard', 's-crm':'crm', 's-client-detail':'crm',
+  's-command':'dashboard', 's-crm':'crm', 's-client-detail':'crm', 's-client-add':'crm',
   's-contact-today':'contact', 's-offers':'docs', 's-offer-edit':'docs',
-  's-planday':'tasks', 's-purchasing':'purchases', 's-deliveries-owner':'deliveries',
-  's-driver-deliveries':'deliveries',
-  's-delivery':'deliveries', 's-calendar':'calendar',
-  's-notifications':'notifications', 's-system-status':'system'
+  's-planday':'tasks', 's-purchasing':'purchases',
+  's-deliveries-owner':'deliveries', 's-driver-deliveries':'deliveries', 's-delivery':'deliveries',
+  's-calendar':'calendar', 's-notifications':'notifications', 's-system-status':'system'
 };
 /* Podswietla wlasciwa pozycje na podstawie AKTYWNEGO ekranu.
    Dziala niezaleznie od tego, czy wejscie bylo z sidebara, kafelka KPI,
@@ -6162,6 +6249,21 @@ function sbSync(){
   document.querySelectorAll('.sb-item').forEach(function(b){
     b.classList.toggle('on', b.getAttribute('data-sb')===key);
   });
+}
+
+/* P0: sidebar wskazywal nieistniejacy ekran 's-deliveries'.
+   Wlasciciel/admin ma 's-deliveries-owner' (loadOwnerDeliveries),
+   kierowca 's-driver-deliveries' (loadDeliveries). Rozdzielamy wg roli.
+   Zero zmian w logice statusow i danych dostaw. */
+function sbOpenDeliveries(){
+  sbToggle(false);
+  if(typeof isOwnerOrAdmin==='function' && isOwnerOrAdmin()){
+    if(typeof loadOwnerDeliveries==='function') loadOwnerDeliveries();
+    go('s-deliveries-owner');
+  }else{
+    if(typeof loadDeliveries==='function') loadDeliveries();
+    go('s-driver-deliveries');
+  }
 }
 function sbGo(id,el){ sbToggle(false); go(id); }
 /* Uzupelnia stopke sidebara. Wywolywane po zalogowaniu. */
