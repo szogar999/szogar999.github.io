@@ -11,6 +11,188 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
+/* ============================================================
+   OSG DESIGN SYSTEM v1 — Sprint Redesign, Etap 1
+   Zmienne + komponenty. ŻADNEJ logiki, żadnych zmian w ID.
+   Stare ekrany zachowują ciemny wygląd (.legacy-dark),
+   nowe używają jasnego motywu SaaS.
+   ============================================================ */
+:root{
+  /* MARKA */
+  --osg-navy:#152a4a;          /* granat z logo */
+  --osg-navy-700:#0f1f38;
+  --osg-orange:#e8601c;
+  --osg-orange-600:#d4541521;
+  --osg-orange-soft:rgba(232,96,28,.10);
+
+  /* SIDEBAR (ciemny) */
+  --sb-bg:#111827;
+  --sb-bg-2:#0b111d;
+  --sb-text:#9ca3af;
+  --sb-text-active:#ffffff;
+  --sb-hover:rgba(255,255,255,.06);
+  --sb-active:var(--osg-orange);
+  --sb-border:rgba(255,255,255,.07);
+
+  /* POWIERZCHNIE (jasne) */
+  --bg:#f4f5f7;
+  --surface:#ffffff;
+  --surface-2:#fafbfc;
+  --border:#e5e7eb;
+  --border-strong:#d1d5db;
+
+  /* TEKST */
+  --text:#111827;
+  --text-2:#4b5563;
+  --text-3:#9ca3af;
+
+  /* STATUSY */
+  --ok:#059669;    --ok-bg:#ecfdf5;
+  --warn:#d97706;  --warn-bg:#fffbeb;
+  --err:#dc2626;   --err-bg:#fef2f2;
+  --info:#2563eb;  --info-bg:#eff6ff;
+  --violet:#7c3aed; --violet-bg:#f5f3ff;
+
+  /* SPACING */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px; --s10:40px;
+
+  /* RADIUS */
+  --r-sm:6px; --r:10px; --r-lg:14px; --r-xl:18px; --r-full:999px;
+
+  /* SHADOWS — subtelne, nie rysunkowe */
+  --sh-xs:0 1px 2px rgba(16,24,40,.05);
+  --sh:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04);
+  --sh-md:0 4px 12px rgba(16,24,40,.07);
+  --sh-lg:0 12px 28px rgba(16,24,40,.10);
+
+  /* TYPOGRAFIA */
+  --f-xs:11px; --f-sm:12px; --f-base:14px; --f-md:16px;
+  --f-lg:20px; --f-xl:26px; --f-2xl:32px;
+
+  --sidebar-w:240px;
+}
+
+/* ---------- LAYOUT z sidebarem ---------- */
+.app-shell{display:flex;min-height:100vh;background:var(--bg);}
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--sb-bg);
+  display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:200;
+  border-right:1px solid var(--sb-border);
+}
+.sb-logo{padding:var(--s6) var(--s5) var(--s5);border-bottom:1px solid var(--sb-border);}
+.sb-nav{flex:1;overflow-y:auto;padding:var(--s3) var(--s3);}
+.sb-item{
+  display:flex;align-items:center;gap:var(--s3);width:100%;
+  padding:11px var(--s3);margin-bottom:2px;border:none;background:none;
+  border-radius:var(--r);color:var(--sb-text);font-size:var(--f-base);
+  font-weight:600;cursor:pointer;text-align:left;transition:background .15s,color .15s;
+}
+.sb-item:hover{background:var(--sb-hover);color:#e5e7eb;}
+.sb-item.on{background:var(--sb-active);color:#fff;}
+.sb-item .ic{width:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.sb-badge{margin-left:auto;background:var(--osg-orange);color:#fff;font-size:var(--f-xs);
+  font-weight:800;padding:2px 8px;border-radius:var(--r-full);}
+.sb-item.on .sb-badge{background:rgba(255,255,255,.25);}
+.sb-foot{padding:var(--s4);border-top:1px solid var(--sb-border);}
+
+.main{flex:1;margin-left:var(--sidebar-w);min-width:0;}
+.main-head{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:var(--s5) var(--s8);display:flex;align-items:center;gap:var(--s4);
+  position:sticky;top:0;z-index:100;
+}
+.main-body{padding:var(--s6) var(--s8);}
+
+/* ---------- TYPOGRAFIA ---------- */
+.h1{font-size:var(--f-xl);font-weight:800;color:var(--text);letter-spacing:-.5px;}
+.h2{font-size:var(--f-md);font-weight:700;color:var(--text);}
+.sub{font-size:var(--f-base);color:var(--text-2);}
+.lbl{font-size:var(--f-xs);font-weight:700;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.4px;}
+
+/* ---------- KARTY ---------- */
+.c{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);box-shadow:var(--sh);}
+.c-head{padding:var(--s5) var(--s5) var(--s3);display:flex;
+  align-items:center;justify-content:space-between;gap:var(--s3);}
+.c-body{padding:0 var(--s5) var(--s5);}
+.c-pad{padding:var(--s5);}
+
+/* KPI */
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:var(--s5);box-shadow:var(--sh);display:flex;gap:var(--s4);align-items:flex-start;}
+.kpi-ic{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;}
+.kpi-val{font-size:var(--f-2xl);font-weight:800;color:var(--text);
+  line-height:1.1;letter-spacing:-1px;}
+.kpi-lbl{font-size:var(--f-sm);color:var(--text-2);font-weight:600;margin-bottom:2px;}
+.kpi-note{font-size:var(--f-xs);color:var(--text-3);margin-top:3px;}
+
+.grid{display:grid;gap:var(--s4);}
+.g-kpi{grid-template-columns:repeat(auto-fit,minmax(215px,1fr));}
+.g-3{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+.g-2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr));}
+
+/* ---------- PRZYCISKI ---------- */
+.b{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+  padding:10px var(--s4);border-radius:var(--r);font-size:var(--f-base);
+  font-weight:700;cursor:pointer;border:1px solid transparent;transition:.15s;}
+.b-pri{background:var(--osg-orange);color:#fff;box-shadow:var(--sh-xs);}
+.b-pri:hover{filter:brightness(1.06);}
+.b-sec{background:var(--surface);color:var(--text);border-color:var(--border-strong);}
+.b-sec:hover{background:var(--surface-2);}
+.b-ghost{background:transparent;color:var(--text-2);}
+.b-ghost:hover{background:var(--surface-2);color:var(--text);}
+.b-sm{padding:6px var(--s3);font-size:var(--f-sm);}
+.b-ico{width:38px;height:38px;padding:0;border-radius:var(--r);
+  background:var(--surface);border:1px solid var(--border);color:var(--text-2);}
+
+/* ---------- BADGE ---------- */
+.bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
+  border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
+.bd-ok{background:var(--ok-bg);color:var(--ok);}
+.bd-warn{background:var(--warn-bg);color:var(--warn);}
+.bd-err{background:var(--err-bg);color:var(--err);}
+.bd-info{background:var(--info-bg);color:var(--info);}
+.bd-neutral{background:#f3f4f6;color:var(--text-2);}
+.bd-osg{background:var(--osg-orange-soft);color:var(--osg-orange);}
+
+/* ---------- LISTY / WIERSZE ---------- */
+.row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;
+  border-bottom:1px solid var(--border);}
+.row:last-child{border-bottom:none;}
+.row-ic{width:36px;height:36px;border-radius:var(--r-sm);display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;}
+.row-main{flex:1;min-width:0;}
+.row-t{font-size:var(--f-base);font-weight:600;color:var(--text);}
+.row-s{font-size:var(--f-sm);color:var(--text-3);margin-top:1px;}
+
+/* ---------- INPUTY ---------- */
+.in{width:100%;padding:10px var(--s3);background:var(--surface);
+  border:1px solid var(--border-strong);border-radius:var(--r);
+  color:var(--text);font-size:var(--f-base);outline:none;transition:.15s;}
+.in:focus{border-color:var(--osg-orange);box-shadow:0 0 0 3px var(--osg-orange-soft);}
+.in::placeholder{color:var(--text-3);}
+
+/* ---------- RESPONSYWNOŚĆ ---------- */
+/* Stare sekcje (Dashboard CEO, Centrum uwagi, AI) zachowuja ciemny wyglad
+   do czasu migracji ekran po ekranie. Bez tego bialy tekst na bialym tle. */
+.legacy-dark{background:var(--osg-navy-700);border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r-lg);padding:var(--s5);color:#fff;box-shadow:var(--sh-md);}
+.legacy-dark .card{background:#162130;border-color:rgba(255,255,255,.07);}
+
+@media(max-width:1024px){
+  :root{--sidebar-w:0px;}
+  .sidebar{transform:translateX(-100%);transition:transform .25s;width:240px;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .main-head{padding:var(--s4);}
+  .main-body{padding:var(--s4);}
+  .sb-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;display:none;}
+  .sb-scrim.on{display:block;}
+}
+@media(min-width:1025px){ .sb-burger{display:none;} .sb-scrim{display:none!important;} }
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f1923;color:#fff;}
 ::-webkit-scrollbar{display:none;}
@@ -884,58 +1066,140 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <div class="screen" id="s-command">
-<div class="hdr"><button class="back" onclick="go('s-onboarding')" title="Showcase / Demo">🎭</button><span style="font-size:18px;font-weight:800;flex:1;">🎛️ OSG Command</span><div id="cmd-role-badge" style="background:rgba(232,96,28,.15);color:#e8601c;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;">BETA</div></div>
-<div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
+<div class="app-shell">
 
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-    <div>
-      <div id="cmd-greeting" style="font-size:22px;font-weight:800;">Dzień dobry 👋</div>
-      <div id="cmd-date" style="font-size:12px;color:#8a9ab0;margin-top:2px;"></div>
-      <div id="cmd-activities-today" style="font-size:11px;color:#8a9ab0;margin-top:2px;"></div>
+  <!-- ============ SIDEBAR ============ -->
+  <div class="sb-scrim" id="sb-scrim" onclick="sbToggle(false)"></div>
+  <aside class="sidebar" id="osg-sidebar">
+    <div class="sb-logo">
+      <div style="display:flex;align-items:center;gap:11px;">
+        <svg width="34" height="34" viewBox="0 0 100 100" fill="none" style="flex-shrink:0;">
+          <path d="M28 8h44l20 20v44l-20 20H28L8 72V28L28 8z" stroke="#fff" stroke-width="9" stroke-linejoin="round"/>
+          <path d="M66 34H42a8 8 0 000 16h16a8 8 0 010 16H34" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:1px;line-height:1;">OSG</div>
+          <div style="font-size:9px;font-weight:700;color:var(--osg-orange);letter-spacing:2.6px;margin-top:2px;">COMMAND</div>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;gap:6px;align-items:flex-start;flex-shrink:0;">
-      <button onclick="openNotificationCenter()" style="position:relative;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:14px;padding:6px 10px;cursor:pointer;">🔔<span id="cmd-notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;border-radius:9px;min-width:16px;height:16px;align-items:center;justify-content:center;padding:0 3px;">0</span></button>
-      <button onclick="doLogout()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8a9ab0;font-size:11px;padding:6px 10px;cursor:pointer;">🚪 Wyloguj</button>
-    </div>
-  </div>
-  <div onclick="renderSystemStatus();go('s-system-status')" style="font-size:11px;color:#8a9ab0;cursor:pointer;text-align:right;margin-top:-6px;">⚙️ System status →</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-    <div onclick="planFilter('lead');go('s-planday')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
-      <div style="font-size:20px;">🔥</div>
-      <div id="cmd-leads" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Nowe leady</div>
-    </div>
-    <div onclick="go('s-contact-today')" style="background:#162130;border:1px solid rgba(232,96,28,.25);border-radius:13px;padding:13px;cursor:pointer;">
-      <div style="font-size:20px;">📞</div>
-      <div id="cmd-contacts" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Kontakt dzisiaj</div>
-    </div>
-    <div onclick="loadOffers();go('s-offers')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;position:relative;">
-      <div style="font-size:20px;">📄</div>
-      <div id="cmd-offers" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Oferty</div>
-    </div>
-    <div onclick="planFilter('delivery');go('s-planday')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;cursor:pointer;">
-      <div style="font-size:20px;">🚚</div>
-      <div id="cmd-deliveries" style="font-size:24px;font-weight:800;margin-top:6px;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Dostawy</div>
-    </div>
-    <div onclick="loadClients();go('s-crm')" style="background:#162130;border:1px solid rgba(34,197,94,.25);border-radius:13px;padding:13px;cursor:pointer;position:relative;">
-      <div style="font-size:20px;">👷</div>
-      <div id="cmd-clients" style="font-size:24px;font-weight:800;margin-top:6px;color:#22c55e;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Klienci</div>
-    </div>
-    <div onclick="planFilter('overdue');go('s-planday')" style="background:#162130;border:1px solid rgba(245,158,11,.25);border-radius:13px;padding:13px;cursor:pointer;">
-      <div style="font-size:20px;">⚠️</div>
-      <div id="cmd-tasks" style="font-size:24px;font-weight:800;margin-top:6px;color:#f59e0b;">0</div>
-      <div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Zaległe zadania</div>
-    </div>
-  </div>
+    <nav class="sb-nav">
+      <button class="sb-item on" onclick="sbGo('s-command',this)">
+        <span class="ic">▣</span> Dashboard</button>
+      <button class="sb-item" onclick="loadClients();sbGo('s-crm',this)">
+        <span class="ic">◷</span> Klienci</button>
+      <button class="sb-item" onclick="go('s-contact-today');sbToggle(false)">
+        <span class="ic">◎</span> Kontakt dzisiaj</button>
+      <button class="sb-item" onclick="loadOffers();sbGo('s-offers',this)">
+        <span class="ic">▤</span> Dokumenty</button>
+      <button class="sb-item" onclick="planFilter('');sbGo('s-planday',this)">
+        <span class="ic">☑</span> Zadania</button>
+      <button class="sb-item" onclick="loadPurchasing();sbGo('s-purchasing',this)">
+        <span class="ic">▦</span> Zakupy</button>
+      <button class="sb-item" onclick="loadDeliveries();sbGo('s-deliveries',this)">
+        <span class="ic">▷</span> Dostawy</button>
+      <button class="sb-item" onclick="openCalendar();sbToggle(false)">
+        <span class="ic">▥</span> Kalendarz</button>
+      <button class="sb-item" onclick="openNotificationCenter();sbToggle(false)">
+        <span class="ic">◔</span> Powiadomienia</button>
+      <button class="sb-item" onclick="renderSystemStatus();sbGo('s-system-status',this)">
+        <span class="ic">◍</span> System</button>
+    </nav>
 
-  <button onclick="cmdStartDay()" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(232,96,28,.4);">▶️ Rozpocznij dzień</button>
+    <div class="sb-foot">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:var(--r-full);background:var(--osg-orange);
+                    display:flex;align-items:center;justify-content:center;color:#fff;
+                    font-weight:800;font-size:14px;flex-shrink:0;">O</div>
+        <div style="flex:1;min-width:0;">
+          <div id="sb-user" style="font-size:12px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+          <div id="cmd-role-badge" style="font-size:10px;color:var(--sb-text);">—</div>
+        </div>
+        <button onclick="doLogout()" title="Wyloguj"
+          style="background:none;border:none;color:var(--sb-text);font-size:15px;cursor:pointer;padding:5px;">⏻</button>
+      </div>
+    </div>
+  </aside>
 
-  <div id="cmd-ceo-wrap" style="display:none;flex-direction:column;gap:14px;">
+  <!-- ============ GŁÓWNA ============ -->
+  <div class="main">
+
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;">☰</button>
+      <div style="flex:1;min-width:0;">
+        <div id="cmd-greeting" class="h1">Dzień dobry</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:2px;">
+          <span id="cmd-date" class="sub"></span>
+          <span id="cmd-activities-today" class="sub" style="color:var(--text-3);"></span>
+        </div>
+      </div>
+      <button class="b b-ico" onclick="openNotificationCenter()" style="position:relative;">
+        <span>◔</span>
+        <span id="cmd-notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;
+          background:var(--err);color:#fff;font-size:9px;font-weight:800;border-radius:9px;
+          min-width:17px;height:17px;align-items:center;justify-content:center;padding:0 4px;">0</span>
+      </button>
+      <button class="b b-pri" onclick="planFilter('');go('s-planday')">Rozpocznij dzień</button>
+    </header>
+
+    <div class="main-body">
+
+      <!-- KPI -->
+      <div class="grid g-kpi" style="margin-bottom:var(--s6);">
+        <div class="kpi" onclick="planFilter('lead');go('s-planday')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:var(--osg-orange-soft);color:var(--osg-orange);font-size:19px;">◈</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Nowe leady</div>
+            <div id="cmd-leads" class="kpi-val">0</div>
+            <div class="kpi-note">do pierwszego kontaktu</div>
+          </div>
+        </div>
+        <div class="kpi" onclick="go('s-contact-today')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:var(--ok-bg);color:var(--ok);font-size:19px;">◎</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Kontakt dzisiaj</div>
+            <div id="cmd-contacts" class="kpi-val">0</div>
+            <div class="kpi-note">zaplanowane telefony</div>
+          </div>
+        </div>
+        <div class="kpi" onclick="loadOffers();go('s-offers')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:var(--info-bg);color:var(--info);font-size:19px;">▤</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Oferty</div>
+            <div id="cmd-offers" class="kpi-val">0</div>
+            <div class="kpi-note">w obiegu</div>
+          </div>
+        </div>
+        <div class="kpi" onclick="loadDeliveries();go('s-deliveries')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:var(--violet-bg);color:var(--violet);font-size:19px;">▷</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Dostawy</div>
+            <div id="cmd-deliveries" class="kpi-val">0</div>
+            <div class="kpi-note">zaplanowane</div>
+          </div>
+        </div>
+        <div class="kpi" onclick="loadClients();go('s-crm')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:#f3f4f6;color:var(--text-2);font-size:19px;">◷</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Klienci</div>
+            <div id="cmd-clients" class="kpi-val">0</div>
+            <div class="kpi-note">w bazie</div>
+          </div>
+        </div>
+        <div class="kpi" onclick="planFilter('');go('s-planday')" style="cursor:pointer;">
+          <div class="kpi-ic" style="background:var(--warn-bg);color:var(--warn);font-size:19px;">⚠</div>
+          <div style="min-width:0;">
+            <div class="kpi-lbl">Zaległe zadania</div>
+            <div id="cmd-tasks" class="kpi-val">0</div>
+            <div class="kpi-note">wymagają uwagi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- sekcje analityczne (logika bez zmian) -->
+      <div id="osg-legacy-panels" class="legacy-dark">
+<div id="cmd-ceo-wrap" style="display:none;flex-direction:column;gap:14px;">
     <div style="font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px;">📊 Dashboard CEO</div>
 
     <div class="card" style="padding:13px;">
@@ -1058,7 +1322,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
   <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
 </div>
-</div>
+      </div><!-- /legacy-panels -->
+    </div><!-- /main-body -->
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 
 <div class="screen" id="s-system-status">
 <div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">⚙️ System status</span></div>
@@ -1811,7 +2078,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.47.1';
+var APP_VERSION = 'v0.48.0-redesign';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5288,6 +5555,7 @@ function afterAuthReady(){
   var b=document.getElementById('cmd-role-badge');
   if(b)b.textContent=ROLE_LABEL[currentRole]||currentRole;
   applyRoleUI();
+  sbFillUser();
   if(currentRole==='driver'){
     go('s-driver-deliveries');
     loadDeliveries();
@@ -5717,6 +5985,37 @@ function ctToggleFresh(){
   document.getElementById('ct-fresh-list').style.display=ctFreshOpen?'flex':'none';
   document.getElementById('ct-fresh-arrow').textContent=ctFreshOpen?'▲ ukryj':'▼ pokaż';
 }
+
+
+/* ============================================================
+   SIDEBAR — Sprint Redesign. Wylacznie nawigacja i wyglad.
+   Nie dotyka zadnej logiki biznesowej ani zapytan.
+   ============================================================ */
+function sbToggle(open){
+  var sb=document.getElementById('osg-sidebar'), sc=document.getElementById('sb-scrim');
+  if(!sb)return;
+  if(open){ sb.classList.add('open'); if(sc)sc.classList.add('on'); }
+  else { sb.classList.remove('open'); if(sc)sc.classList.remove('on'); }
+}
+function sbGo(id,el){
+  document.querySelectorAll('.sb-item').forEach(function(b){b.classList.remove('on');});
+  if(el)el.classList.add('on');
+  sbToggle(false);
+  go(id);
+}
+/* Uzupelnia stopke sidebara. Wywolywane po zalogowaniu. */
+function sbFillUser(){
+  var u=document.getElementById('sb-user');
+  if(u && typeof currentName!=='undefined') u.textContent=currentName||'—';
+  var r=document.getElementById('cmd-role-badge');
+  if(r && typeof currentRole!=='undefined') r.textContent=(ROLE_LABEL&&ROLE_LABEL[currentRole])||currentRole||'—';
+  var burger=document.querySelector('.sb-burger');
+  if(burger) burger.style.display = window.innerWidth<=1024 ? 'flex' : 'none';
+}
+window.addEventListener('resize',function(){
+  var b=document.querySelector('.sb-burger');
+  if(b) b.style.display = window.innerWidth<=1024 ? 'flex' : 'none';
+});
 
 function go(id){
   if(id==='s-contact-today') setTimeout(renderContactToday,0);
