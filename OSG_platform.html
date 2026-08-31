@@ -165,6 +165,21 @@
 .of-pill[style*="background:#e8601c"],
 .of-pill[style*="background: rgb(232, 96, 28)"]{
   background:var(--osg-orange)!important;color:#fff!important;border:1px solid transparent;}
+
+/* Czytelnosc: tresc ze starych render* nie moze byc jasnoszara na jasnym tle */
+.main-body [style*="color:#8a9ab0"],
+.main-body [style*="color:#8a9bb0"],
+.main-body [style*="color:#c7d0da"],
+.main-body [style*="color: rgb(138, 154, 176)"]{color:var(--text-2)!important;}
+.main-body [style*="font-size:9px"]{font-size:var(--f-xs)!important;}
+.main-body [style*="font-size:10px"]{font-size:var(--f-sm)!important;}
+.main-body [style*="font-size:11px"]{font-size:var(--f-sm)!important;}
+.main-body [style*="font-size:12px"]{font-size:var(--f-base)!important;}
+.main-body [style*="background:rgba(0,0,0,.15)"],
+.main-body [style*="background:rgba(0,0,0,.2)"],
+.main-body [style*="background: rgba(0, 0, 0, 0.2)"]{
+  background:var(--surface-2)!important;border:1px solid var(--border)!important;}
+.main-body .c-body > div:empty{display:none;}
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -2149,7 +2164,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.54.0-zakupy';
+var APP_VERSION = 'v0.55.0-czytelnosc';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4167,11 +4182,11 @@ function renderCeoMagazyn(stock){
   var naStanie=stock.filter(function(s){return Number(s.physical_stock)>0;}).length;
   var zarezerwowane=stock.filter(function(s){return Number(s.reserved_qty)>0;}).length;
   var braki=stock.filter(function(s){return s.is_shortage;});
-  var tile=function(label,val,color){return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;'+(color?'color:'+color+';':'')+'">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+label+'</div></div>';};
+  var tile=function(label,val,color){return '<div style="display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:var(--f-base);color:var(--text-2);">'+label+'</span><span style="font-size:var(--f-lg);font-weight:800;'+(color?'color:'+color+';':'color:var(--text);')+'">'+val+'</span></div>';};
   tileEl.innerHTML=tile('Produktów na stanie',naStanie,'#22c55e')+tile('Z rezerwacją',zarezerwowane,'#3b82f6')+tile('Braki',braki.length,braki.length?'#ef4444':'#8a9ab0')+tile('Wszystkich produktów',stock.length);
   if(braki.length){
-    brakiEl.innerHTML='<div style="font-size:9px;color:#ef4444;font-weight:700;margin-bottom:5px;">⚠️ BRAKI (zarezerwowano więcej niż jest fizycznie):</div>'
-      +braki.map(function(s){return '<div style="font-size:11px;color:#fff;padding:4px 0;border-top:1px solid rgba(255,255,255,.06);">'+s.product_name+' — brakuje '+Math.abs(Number(s.available_for_sale))+'</div>';}).join('');
+    brakiEl.innerHTML='<div style="margin-top:var(--s3);padding:var(--s3);background:var(--err-bg);border-radius:var(--r);"><div style="font-size:var(--f-sm);color:var(--err);font-weight:700;margin-bottom:5px;">Braki — zarezerwowano więcej niż jest fizycznie</div>'
+      +braki.map(function(s){return '<div style="font-size:var(--f-base);color:var(--text);padding:4px 0;">'+s.product_name+' — brakuje '+Math.abs(Number(s.available_for_sale))+'</div>';}).join('')+'</div>';
   }else{
     brakiEl.innerHTML='';
   }
@@ -4281,9 +4296,11 @@ function renderCeoSales(offers){
   var lost=offers.filter(function(o){return o.status==='odrzucona';}).reduce(function(s,o){return s+Number(o.net_total||0);},0);
   var pending=offers.filter(function(o){return o.status==='draft'||o.status==='wysłana';}).reduce(function(s,o){return s+Number(o.net_total||0);},0);
   function box(label,val,color){
-    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:16px;font-weight:800;margin-top:2px;color:'+color+';">'+val.toFixed(0)+' zł</div></div>';
+    return '<div><div class="lbl">'+label+'</div><div style="font-size:var(--f-xl);font-weight:800;margin-top:3px;letter-spacing:-.5px;color:'+(color==='#fff'?'var(--text)':color)+';">'+val.toFixed(0)+' zł</div></div>';
   }
-  el.innerHTML=box('Wszystkie oferty',all,'#fff')+box('Wygrane',won,'#22c55e')+box('Przegrane',lost,'#ef4444')+box('Oczekujące',pending,'#f59e0b');
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s5) var(--s4);">'
+    +box('Wszystkie oferty',all,'#fff')+box('Wygrane',won,'#22c55e')
+    +box('Przegrane',lost,'#ef4444')+box('Oczekujące',pending,'#f59e0b')+'</div>';
 }
 
 function renderCeoPipeline(clients,offers){
@@ -4302,9 +4319,11 @@ function renderCeoPipeline(clients,offers){
   });
   el.innerHTML=PIPELINE_STAGES.map(function(s){
     var color=PIPELINE_COLORS[s]||'#8a9ab0';
-    return '<div class="row" onclick="pipelineFilterCrm(\''+s+'\')" style="cursor:pointer;">'
-      +'<div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:'+color+';display:inline-block;flex-shrink:0;"></span><span style="font-size:12px;font-weight:700;">'+s+'</span></div>'
-      +'<div style="text-align:right;"><div style="font-size:12px;font-weight:800;">'+counts[s]+' '+(counts[s]===1?'klient':'klientów')+'</div><div style="font-size:10px;color:#8a9ab0;">'+values[s].toFixed(0)+' zł</div></div>'
+    return '<div onclick="pipelineFilterCrm(\''+s+'\')" style="cursor:pointer;display:flex;align-items:center;gap:var(--s3);padding:11px 0;border-bottom:1px solid var(--border);">'
+      +'<span style="width:9px;height:9px;border-radius:50%;background:'+color+';flex-shrink:0;"></span>'
+      +'<span style="flex:1;font-size:var(--f-base);font-weight:600;color:var(--text);">'+s+'</span>'
+      +'<span style="font-size:var(--f-base);font-weight:700;color:var(--text);min-width:74px;text-align:right;">'+counts[s]+'</span>'
+      +'<span style="font-size:var(--f-sm);color:var(--text-2);min-width:82px;text-align:right;">'+values[s].toFixed(0)+' zł</span>'
       +'</div>';
   }).join('');
 }
@@ -4371,11 +4390,12 @@ function renderCeoForecast(clients,offers){
   var activeClients=clients.filter(function(c){return c.pipeline_stage!=='Wygrana'&&c.pipeline_stage!=='Przegrana';}).length;
 
   function box(label,val,note){
-    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:18px;font-weight:800;margin-top:2px;">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+note+'</div></div>';
+    return '<div><div class="lbl">'+label+'</div><div style="font-size:var(--f-lg);font-weight:800;margin-top:3px;color:var(--text);">'+val+'</div><div style="font-size:var(--f-sm);color:var(--text-2);margin-top:3px;line-height:1.4;">'+note+'</div></div>';
   }
-  el.innerHTML=box('Potencjalna wartość sprzedaży',potentialValue.toFixed(0)+' zł','suma ofert w toku (robocze + wysłane)')
-    +box('Przychód blisko domknięcia',predictedRevenue.toFixed(0)+' zł','oferty klientów w etapach: Oferta wysłana, Negocjacje')
-    +box('Aktywni klienci',String(activeClients),'klienci poza etapami Wygrana / Przegrana');
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--s5) var(--s4);">'
+    +box('Potencjalna wartość sprzedaży',potentialValue.toFixed(0)+' zł','suma ofert w toku (robocze + wysłane)')
+    +box('Przychód blisko domknięcia',predictedRevenue.toFixed(0)+' zł','oferty w etapach: Oferta wysłana, Negocjacje')
+    +box('Aktywni klienci',String(activeClients),'poza etapami Wygrana / Przegrana')+'</div>';
 }
 
 async function loadPipelineSummary(){
