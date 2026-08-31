@@ -1145,25 +1145,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
 
     <nav class="sb-nav">
-      <button class="sb-item on" onclick="sbGo('s-command',this)">
+      <button class="sb-item on" onclick="sbGo('s-command',this)" data-sb="dashboard">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span> Dashboard</button>
-      <button class="sb-item" onclick="loadClients();sbGo('s-crm',this)">
+      <button class="sb-item" onclick="loadClients();sbGo('s-crm',this)" data-sb="crm">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></span> Klienci</button>
-      <button class="sb-item" onclick="go('s-contact-today');sbToggle(false)">
+      <button class="sb-item" onclick="go('s-contact-today');sbToggle(false)" data-sb="contact">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg></span> Kontakt dzisiaj</button>
-      <button class="sb-item" onclick="loadOffers();sbGo('s-offers',this)">
+      <button class="sb-item" onclick="loadOffers();sbGo('s-offers',this)" data-sb="docs">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span> Dokumenty</button>
-      <button class="sb-item" onclick="planFilter('');sbGo('s-planday',this)">
+      <button class="sb-item" onclick="planFilter('');sbGo('s-planday',this)" data-sb="tasks">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span> Zadania</button>
-      <button class="sb-item" onclick="loadPurchasing();sbGo('s-purchasing',this)">
+      <button class="sb-item" onclick="loadPurchasing();sbGo('s-purchasing',this)" data-sb="purchases">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg></span> Zakupy</button>
-      <button class="sb-item" onclick="loadDeliveries();sbGo('s-deliveries',this)">
+      <button class="sb-item" onclick="loadDeliveries();sbGo('s-deliveries',this)" data-sb="deliveries">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span> Dostawy</button>
-      <button class="sb-item" onclick="openCalendar();sbToggle(false)">
+      <button class="sb-item" onclick="openCalendar();sbToggle(false)" data-sb="calendar">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span> Kalendarz</button>
-      <button class="sb-item" onclick="openNotificationCenter();sbToggle(false)">
+      <button class="sb-item" onclick="openNotificationCenter();sbToggle(false)" data-sb="notifications">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span> Powiadomienia</button>
-      <button class="sb-item" onclick="renderSystemStatus();sbGo('s-system-status',this)">
+      <button class="sb-item" onclick="renderSystemStatus();sbGo('s-system-status',this)" data-sb="system">
         <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.7 1.7 0 007 19.4a1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H1a2 2 0 110-4h.1A1.7 1.7 0 002.6 7a1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H7a1.7 1.7 0 001-1.5V1a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V7a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></span> System</button>
     </nav>
 
@@ -1338,12 +1338,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         <div class="c-body">
           <div id="cmd-day-summary" style="margin-bottom:var(--s3);"></div>
           <div id="cmd-my-day"></div>
-        </div>
-      </div>
-
-      <div class="c">
-        <div class="c-head"><div class="h2">Do zrobienia</div></div>
-        <div class="c-body">
           <div id="cmd-todo-overdue"></div>
           <div id="cmd-todo-offers"></div>
           <div id="cmd-todo-stale"></div>
@@ -2117,7 +2111,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.50.1-redesign';
+var APP_VERSION = 'v0.51.0-redesign';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -6036,12 +6030,28 @@ function sbToggle(open){
   if(open){ sb.classList.add('open'); if(sc)sc.classList.add('on'); }
   else { sb.classList.remove('open'); if(sc)sc.classList.remove('on'); }
 }
-function sbGo(id,el){
-  document.querySelectorAll('.sb-item').forEach(function(b){b.classList.remove('on');});
-  if(el)el.classList.add('on');
-  sbToggle(false);
-  go(id);
+/* Mapa ekranow na pozycje sidebara. Ekrany spoza mapy nie zmieniaja
+   podswietlenia (np. karta klienta zostawia aktywne "Klienci"). */
+var SB_MAP={
+  's-command':'dashboard', 's-crm':'crm', 's-client-detail':'crm',
+  's-contact-today':'contact', 's-offers':'docs', 's-offer-edit':'docs',
+  's-planday':'tasks', 's-purchasing':'purchases', 's-deliveries-owner':'deliveries',
+  's-driver-deliveries':'deliveries',
+  's-delivery':'deliveries', 's-calendar':'calendar',
+  's-notifications':'notifications', 's-system-status':'system'
+};
+/* Podswietla wlasciwa pozycje na podstawie AKTYWNEGO ekranu.
+   Dziala niezaleznie od tego, czy wejscie bylo z sidebara, kafelka KPI,
+   Centrum uwagi czy dowolnego innego linku. */
+function sbSync(){
+  var akt=document.querySelector('.screen.active');
+  var key=akt?SB_MAP[akt.id]:null;
+  if(!key)return;
+  document.querySelectorAll('.sb-item').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-sb')===key);
+  });
 }
+function sbGo(id,el){ sbToggle(false); go(id); }
 /* Uzupelnia stopke sidebara. Wywolywane po zalogowaniu. */
 function sbFillUser(){
   var u=document.getElementById('sb-user');
@@ -6069,6 +6079,7 @@ function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var el=document.getElementById(id);
   if(el){el.classList.add('active');window.scrollTo(0,0);}
+  if(typeof sbSync==='function') sbSync();
 }
 function setUrg(v){
   document.getElementById('u0').style.background=v===0?'#e8601c':'#1e2f42';
