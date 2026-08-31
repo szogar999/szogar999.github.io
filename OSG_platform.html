@@ -1317,8 +1317,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
     <div style="display:flex;gap:6px;margin:8px 0;">
       <input id="cd-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
+      <button id="cd-ai-note-btn" onclick="aiTidyNote()" title="Uporządkuj z AI" style="background:rgba(232,96,28,.15);color:#e8601c;border:1px solid rgba(232,96,28,.4);border-radius:10px;padding:0 12px;font-size:13px;font-weight:700;cursor:pointer;">✨</button>
       <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
     </div>
+    <div id="cd-ai-note-panel" style="display:none;margin:0 0 10px;padding:12px;background:#162130;border:1px solid rgba(232,96,28,.35);border-radius:12px;"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;">
       <div onclick="cdActivityFilter('')" id="cd-af-all" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
       <div onclick="cdActivityFilter('call')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
@@ -1807,7 +1809,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.45.1';
+var APP_VERSION = 'v0.46.0';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2834,6 +2836,106 @@ async function archiveClientNote(id){
   if(res.error){alert('Błąd archiwizacji: '+res.error.message);return;}
   loadClientActivities(currentClientId);
 }
+/* ============================================================
+   AI NOTES ASSISTANT (Sprint AI)
+   ZASADA: AI PROPONUJE, UŻYTKOWNIK ZATWIERDZA.
+   Gateway niczego nie zapisuje. Zapis następuje dopiero po
+   kliknięciu "Zatwierdź" i idzie przez ISTNIEJĄCE mechanizmy
+   aplikacji — żadnych nowych ścieżek zapisu.
+   ============================================================ */
+var aiNoteBusy=false;
+
+async function aiTidyNote(){
+  if(aiNoteBusy)return;
+  var input=document.getElementById('cd-new-note');
+  var panel=document.getElementById('cd-ai-note-panel');
+  var btn=document.getElementById('cd-ai-note-btn');
+  var txt=(input.value||'').trim();
+
+  if(!currentClientId){ alert('Najpierw otwórz klienta.'); return; }
+  if(txt.length<10){ alert('Napisz najpierw notatkę (minimum 10 znaków) — AI ją uporządkuje.'); return; }
+
+  aiNoteBusy=true; btn.textContent='…'; btn.disabled=true;
+  panel.style.display='block';
+  panel.innerHTML='<div style="font-size:12px;color:#8a9ab0;">✨ Porządkuję notatkę…</div>';
+
+  var res;
+  try{
+    res=await sb.functions.invoke('ai-gateway',{
+      body:{ action:'notes_assistant', params:{ client_id:currentClientId, text:txt } }
+    });
+  }catch(e){
+    res={ error:{ message:String(e) } };
+  }
+  aiNoteBusy=false; btn.textContent='✨'; btn.disabled=false;
+
+  var body=res&&res.data;
+  if(!body||body.ok!==true){
+    var msg=(body&&body.error&&body.error.message)||(res&&res.error&&res.error.message)||'Nie udało się połączyć z AI.';
+    panel.innerHTML='<div style="font-size:12px;color:#ef4444;">'+msg+'</div>'
+      +'<button onclick="aiCloseNotePanel()" style="margin-top:8px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 12px;color:#8a9ab0;font-size:11px;cursor:pointer;">Zamknij</button>';
+    return;
+  }
+
+  var d=body.data, m=body.meta||{};
+  var red=(m.redacted&&m.redacted.length)
+    ? '<div style="font-size:10px;color:#f59e0b;margin-bottom:8px;">🔒 Przed wysłaniem usunięto: '+m.redacted.join(', ')+'</div>' : '';
+  var cache=m.cached?' · z pamięci':'';
+
+  panel.innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<span style="font-size:11px;font-weight:800;color:#e8601c;">✨ PROPOZYCJA AI</span>'
+      +'<span style="font-size:9px;color:#8a9ab0;">Haiku'+cache+'</span></div>'
+    +red
+    +'<div style="font-size:10px;color:#8a9bb0;margin-bottom:3px;">NOTATKA (możesz poprawić)</div>'
+    +'<textarea id="ai-n-note" rows="3" style="width:100%;box-sizing:border-box;padding:9px 11px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;resize:vertical;">'+(d.clean_note||'').replace(/</g,'&lt;')+'</textarea>'
+    +'<div style="font-size:10px;color:#8a9bb0;margin:8px 0 3px;">NASTĘPNY KROK</div>'
+    +'<input id="ai-n-action" value="'+((d.next_action||'').replace(/"/g,'&quot;'))+'" placeholder="brak — możesz wpisać" style="width:100%;box-sizing:border-box;padding:9px 11px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;">'
+    +'<div style="font-size:10px;color:#8a9bb0;margin:8px 0 3px;">TERMIN KONTAKTU'
+      +(d.suggested_date?' <span style="color:#e8601c;">· AI sugeruje '+d.suggested_date+'</span>':' · AI nie znalazła terminu')+'</div>'
+    +'<input id="ai-n-date" type="date" value="'+(d.suggested_date||'')+'" style="width:100%;box-sizing:border-box;padding:9px 11px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;">'
+      +'<button onclick="aiCloseNotePanel()" style="padding:10px;background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#8a9bb0;font-size:12px;font-weight:700;cursor:pointer;">Odrzuć</button>'
+      +'<button onclick="aiApplyNote()" style="padding:10px;background:#e8601c;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;">✓ Zatwierdź</button>'
+    +'</div>';
+}
+
+/* Zamknięcie = NIC nie zapisujemy. Wymóg Oskara. */
+function aiCloseNotePanel(){
+  var p=document.getElementById('cd-ai-note-panel');
+  if(p){ p.style.display='none'; p.innerHTML=''; }
+}
+
+async function aiApplyNote(){
+  var note=(document.getElementById('ai-n-note').value||'').trim();
+  var act =(document.getElementById('ai-n-action').value||'').trim();
+  var date=(document.getElementById('ai-n-date').value||'').trim();
+  if(!note){ alert('Notatka nie może być pusta.'); return; }
+
+  // 1. Notatka — przez istniejący mechanizm
+  document.getElementById('cd-new-note').value=note;
+  await addClientNote();
+
+  // 2. next_action — istniejąca kolumna
+  if(act && sbEnabled){
+    await sb.from('clients').update({next_action:act}).eq('id',currentClientId);
+  }
+
+  // 3. Termin — TYLKO jeśli użytkownik go zostawił.
+  //    Idzie przez log_call_result, żeby zachować regułę
+  //    "jeden aktywny telefon na klienta".
+  if(date && sbEnabled){
+    var r=await sb.rpc('log_call_result',{
+      p_client_id:currentClientId, p_result:'answered',
+      p_next_call_date:date, p_reason:act||'Kontakt z klientem', p_pipeline_stage:null
+    });
+    if(r.error) console.warn('Nie udało się ustawić terminu:',r.error.message);
+  }
+
+  aiCloseNotePanel();
+  if(currentClientId) openClient(currentClientId);
+}
+
 async function addClientNote(){
   var input=document.getElementById('cd-new-note');
   var txt=(input.value||'').trim();
