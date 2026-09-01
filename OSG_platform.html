@@ -180,6 +180,14 @@
 .main-body [style*="background: rgba(0, 0, 0, 0.2)"]{
   background:var(--surface-2)!important;border:1px solid var(--border)!important;}
 .main-body .c-body > div:empty{display:none;}
+
+.pf-pill{font-size:var(--f-sm);font-weight:700;padding:7px 14px;border-radius:var(--r-full);
+  cursor:pointer;user-select:none;white-space:nowrap;transition:filter .15s;}
+.pf-pill:hover{filter:brightness(1.08);}
+.pf-pill[style*="background:#1e2f42"],.pf-pill[style*="background: rgb(30, 47, 66)"]{
+  background:var(--surface-2)!important;color:var(--text-2)!important;border:1px solid var(--border);}
+.pf-pill[style*="background:#e8601c"],.pf-pill[style*="background: rgb(232, 96, 28)"]{
+  background:var(--osg-orange)!important;color:#fff!important;border:1px solid transparent;}
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -1962,31 +1970,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="app-shell">
   <div class="sb-mount"></div>
   <div class="main">
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div class="h1">Zadania</div>
+        <div id="plan-summary" class="sub"></div>
+      </div>
+    </header>
 
-<div class="hdr"><button class="back" onclick="go('s-command')">←</button><span style="font-size:18px;font-weight:800;flex:1;">📋 Plan Dnia</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:10px;">
-  <div id="plan-summary" style="font-size:11px;color:#8a9ab0;"></div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;">
-    <div onclick="planFilter('')" id="pf-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
-    <div onclick="planFilter('overdue')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">⏰ Zaległe</div>
-    <div onclick="planFilter('call')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
-    <div onclick="planFilter('offer')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
-    <div onclick="planFilter('delivery')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🚚 Dostawy</div>
-    <div onclick="planFilter('lead')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">💎 Leady</div>
+    <div class="main-body" style="max-width:960px;">
+      <div class="c" style="padding:var(--s4);margin-bottom:var(--s4);display:flex;gap:var(--s2);flex-wrap:wrap;">
+        <div onclick="planFilter('',this)" id="pf-all" class="pf-pill" data-filter="" style="background:#e8601c;color:#fff;">Wszystko</div>
+        <div onclick="planFilter('overdue',this)" class="pf-pill" data-filter="overdue" style="background:#1e2f42;color:#8a9ab0;">Zaległe</div>
+        <div onclick="planFilter('call',this)" class="pf-pill" data-filter="call" style="background:#1e2f42;color:#8a9ab0;">Telefony</div>
+        <div onclick="planFilter('offer',this)" class="pf-pill" data-filter="offer" style="background:#1e2f42;color:#8a9ab0;">Oferty</div>
+        <div onclick="planFilter('delivery',this)" class="pf-pill" data-filter="delivery" style="background:#1e2f42;color:#8a9ab0;">Dostawy</div>
+        <div onclick="planFilter('lead',this)" class="pf-pill" data-filter="lead" style="background:#1e2f42;color:#8a9ab0;">Leady</div>
+      </div>
+      <div id="plan-list" style="display:flex;flex-direction:column;gap:var(--s3);"></div>
+    </div>
   </div>
-  <div id="plan-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-  <button class="btn ghost" onclick="go('s-command')">← Wróć do Command</button>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-  <button class="nb" onclick="loadClients();go('s-crm')"><span class="ic">👷</span>Klienci</button>
-  <button class="nb" onclick="loadOffers();go('s-offers')"><span class="ic">📄</span>Oferty</button>
-  <button class="nb" onclick="openCalendar();go('s-calendar')"><span class="ic">🗓️</span>Kalendarz</button>
-  <button class="nb" id="nav-op-zakupy" onclick="renderPurchasing();go('s-purchasing')"><span class="ic">🛒</span>Zakupy</button>
-</div>
-
-  </div><!-- /main -->
-</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-deliveries-owner">
@@ -2243,7 +2247,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.57.0-kontakt';
+var APP_VERSION = 'v0.58.0-zadania';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -7178,11 +7182,17 @@ async function saveCalendarEvent(){
   if(currentClientId===clientId)loadClientActivities(currentClientId);
 }
 
-function planFilter(cat){
+function planFilter(cat,el){
+  /* Naprawa krucha zaleznosc UI (P1): filtry maja stabilny data-filter.
+     Wczesniej selektor szukal ich po strukturze rodzicow i po tekscie
+     'flex-wrap' w atrybucie style, a klikniety element bral z globalnego
+     event.target. Logika filtrowania i planActiveFilter — BEZ ZMIAN. */
   planActiveFilter=cat;
-  document.querySelectorAll('#s-planday > div > div[style*="flex-wrap"] > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
-  var target=cat===''?document.getElementById('pf-all'):event.target;
-  target.style.background='#e8601c';target.style.color='#fff';
+  var pills=document.querySelectorAll('#s-planday .pf-pill');
+  pills.forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
+  var target=el||document.querySelector('#s-planday .pf-pill[data-filter="'+cat+'"]')
+             ||document.getElementById('pf-all');
+  if(target){target.style.background='#e8601c';target.style.color='#fff';}
   renderPlanDay();
 }
 function planAction(id,action,sourceArr){
@@ -7248,24 +7258,44 @@ function renderPlanDay(){
   var overdueCount=pending.filter(function(t){return t.overdue;}).length;
   document.getElementById('plan-summary').textContent=pending.length+' zadań do zrobienia · '+urgent+' pilnych'+(overdueCount?' · '+overdueCount+' zaległych':'');
   var html=list.map(function(t){
+    /* Redesign P1 — TYLKO warstwa HTML.
+       Bez zmian: filtrowanie, sortowanie, planAction(), zapis do tasks,
+       synchronizacja z calendarTasks, odswiezanie widokow.
+       t.icon NIE jest renderowane (TASK_CATEGORY_ICONS wspoldzielone
+       z Kalendarzem i Moim dniem — nie ruszamy). planPrioLabel czyszczony
+       z emoji dopiero tutaj, sama stala zostaje nietknieta. */
     var done=t.status==='done',postponed=t.status==='postponed';
-    var opacity=done||postponed?'.5':'1';
-    var statusTag=done?'<span style="font-size:9px;color:#22c55e;font-weight:700;">✅ WYKONANE</span>':postponed?'<span style="font-size:9px;color:#f59e0b;font-weight:700;">⏭️ PRZEŁOŻONE</span>':(t.overdue?'<span style="font-size:9px;color:#ef4444;font-weight:700;background:rgba(239,68,68,.12);padding:2px 6px;border-radius:6px;">⏰ ZALEGŁE</span>':'');
-    return '<div class="card" style="padding:12px 13px;opacity:'+opacity+';border-left:3px solid '+planPrioColor[t.priority]+';">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">'
-        +'<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:15px;">'+t.icon+'</span><div><div style="font-size:13px;font-weight:800;">'+t.client+'</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">'+planPrioLabel[t.priority]+' · 🕐 '+t.time+'</div></div></div>'
+    var prioTxt=String(planPrioLabel[t.priority]||t.priority||'').replace(/[^\p{L}\s]/gu,'').trim();
+    var statusTag='';
+    if(done)      statusTag='<span class="bd bd-ok">Wykonane</span>';
+    else if(postponed) statusTag='<span class="bd bd-warn">Przełożone</span>';
+    else if(t.overdue) statusTag='<span class="bd bd-err">Zaległe</span>';
+    var svgTask='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>';
+    var svgClock='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+    return '<div class="c" style="padding:var(--s5);border-left:3px solid '+planPrioColor[t.priority]+';'+((done||postponed)?'opacity:.55;':'')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s3);">'
+        +'<div style="display:flex;align-items:flex-start;gap:var(--s3);min-width:0;">'
+          +'<span style="width:34px;height:34px;border-radius:var(--r-sm);background:var(--surface-2);color:var(--text-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+svgTask+'</span>'
+          +'<div style="min-width:0;">'
+            +'<div style="font-size:var(--f-md);font-weight:700;color:var(--text);line-height:1.3;">'+(t.client||'—')+'</div>'
+            +'<div style="display:flex;align-items:center;gap:7px;margin-top:4px;font-size:var(--f-sm);color:var(--text-2);flex-wrap:wrap;">'
+              +'<span style="color:'+planPrioColor[t.priority]+';font-weight:600;">'+prioTxt+'</span>'
+              +'<span style="display:inline-flex;align-items:center;gap:4px;color:var(--text-3);">'+svgClock+(t.time||'')+'</span>'
+            +'</div>'
+          +'</div>'
+        +'</div>'
         +statusTag
       +'</div>'
-      +'<div style="font-size:12px;color:#c7d0da;line-height:1.5;margin-bottom:9px;">'+t.reason+'</div>'
+      +(t.reason?'<div style="font-size:var(--f-base);color:var(--text-2);line-height:1.5;margin-top:var(--s3);">'+t.reason+'</div>':'')
       +(done||postponed?'':
-        '<div style="display:flex;gap:6px;">'
-        +'<button onclick="planAction(\''+t.id+'\',\'done\')" style="flex:1;background:#22c55e;color:#fff;border:none;border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;">✅ Wykonane</button>'
-        +'<button onclick="planAction(\''+t.id+'\',\'postpone\')" style="flex:1;background:#1e2f42;color:#8a9ab0;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;">⏭️ Przełóż</button>'
-        +'<button onclick="planAction(\''+t.id+'\',\'call\')" style="flex:1;background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;">📞 Zadzwoń</button>'
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s2);margin-top:var(--s4);">'
+        +'<button class="b b-sm" style="background:var(--ok-bg);color:var(--ok);gap:5px;" onclick="planAction(\'' + t.id + '\',\'done\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Wykonane</button>'
+        +'<button class="b b-sec b-sm" style="gap:5px;" onclick="planAction(\'' + t.id + '\',\'postpone\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>Przełóż</button>'
+        +'<button class="b b-pri b-sm" style="gap:5px;" onclick="planAction(\'' + t.id + '\',\'call\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg>Zadzwoń</button>'
         +'</div>')
     +'</div>';
   }).join('');
-  document.getElementById('plan-list').innerHTML=html||'<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:20px 0;">Brak zadań w tej kategorii.</div>';
+  document.getElementById('plan-list').innerHTML=html||'<div class="c c-pad" style="text-align:center;color:var(--text-3);">Brak zadań w tej kategorii.</div>';
 }
 function addMsg(role,txt){
   var msgs=document.getElementById('ai-msgs');var d=document.createElement('div');
