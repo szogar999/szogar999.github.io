@@ -188,6 +188,26 @@
   background:var(--surface-2)!important;color:var(--text-2)!important;border:1px solid var(--border);}
 .pf-pill[style*="background:#e8601c"],.pf-pill[style*="background: rgb(232, 96, 28)"]{
   background:var(--osg-orange)!important;color:#fff!important;border:1px solid transparent;}
+
+/* Szczegoly klienta: 2/3 + 1/3 na desktopie, jedna kolumna na mobile
+   z prawa kolumna (dane/stan/akcje) NAD historia. */
+.cd-cols{display:grid;grid-template-columns:1fr 380px;gap:var(--s4);align-items:start;}
+.qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  padding:12px 4px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text-2);font-size:var(--f-xs);font-weight:700;cursor:pointer;transition:.15s;}
+.qa-btn:hover{background:var(--surface);border-color:var(--border-strong);color:var(--text);}
+.qt-type{border:1px solid var(--border);border-radius:var(--r);padding:9px;font-size:var(--f-sm);
+  font-weight:700;cursor:pointer;}
+.cdaf-pill{font-size:var(--f-sm);font-weight:700;padding:6px 12px;border-radius:var(--r-full);
+  cursor:pointer;user-select:none;white-space:nowrap;}
+.cdaf-pill[style*="background:#1e2f42"],.cdaf-pill[style*="background: rgb(30, 47, 66)"]{
+  background:var(--surface-2)!important;color:var(--text-2)!important;border:1px solid var(--border);}
+.cdaf-pill[style*="background:#e8601c"],.cdaf-pill[style*="background: rgb(232, 96, 28)"]{
+  background:var(--osg-orange)!important;color:#fff!important;border:1px solid transparent;}
+@media(max-width:1100px){
+  .cd-cols{grid-template-columns:1fr;}
+  .cd-side{order:-1;}
+}
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -1589,160 +1609,171 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="app-shell">
   <div class="sb-mount"></div>
   <div class="main">
-
-<div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span id="cd-title" style="font-size:18px;font-weight:800;flex:1;">Klient</span></div>
-<div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;">
-
-  <div class="card" id="cd-info" style="padding:13px;">Ładowanie…</div>
-
-  <div class="card" style="padding:14px;border:1px solid rgba(168,85,247,.35);background:rgba(168,85,247,.06);display:flex;flex-direction:column;gap:11px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:11px;color:#a855f7;text-transform:uppercase;font-weight:800;">🧠 Stan klienta</div>
-      <div id="cs-relationship" style="font-size:11px;font-weight:800;">—</div>
-    </div>
-
-    <div>
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:3px;">Co zrobić dalej</div>
-      <div id="cs-recommendation" style="font-size:15px;font-weight:800;">Analizuję…</div>
-    </div>
-
-    <div>
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:3px;">👉 Twoja notatka (edytowalna)</div>
-      <input id="cd-next-action" placeholder="np. Zadzwonić jutro, Czekam na decyzję…"
-        onblur="saveNextAction(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}"
-        style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 10px;outline:none;">
-    </div>
-
-    <div id="cs-activity-bar" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;"></div>
-
-    <div id="cs-warnings" style="display:flex;flex-direction:column;gap:5px;"></div>
-  </div>
-
-  <div>
-    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Etap w lejku sprzedaży</div>
-    <div id="cd-pipeline-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
-  </div>
-
-  <div id="cd-qa-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-    <button id="cd-qa-call" onclick="quickActionCall()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📞<br>Zadzwoń</button>
-    <button id="cd-qa-email" onclick="quickActionEmail()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">✉️<br>Email</button>
-    <button onclick="newOfferForClient(currentClientId)" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📄<br>Oferta</button>
-    <button onclick="quickActionFocusNote()" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📝<br>Notatka</button>
-    <button onclick="toggleForm('cd-task-form')" style="background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">📅<br>Zadanie</button>
-    <button id="cd-qa-delivery" onclick="openDeliveryForm({clientId:currentClientId})" style="display:none;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 4px;color:#fff;font-size:9px;font-weight:700;cursor:pointer;">🚚<br>Dostawa</button>
-  </div>
-
-  <div id="cd-task-form" style="display:none;flex-direction:column;gap:8px;">
-    <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:8px;">
-      <div style="font-size:12px;font-weight:800;">Nowe zadanie dla tego klienta</div>
-      <div style="display:flex;gap:8px;">
-        <button type="button" id="ct-type-call" onclick="setQuickTaskType('call')" style="flex:1;background:#e8601c;border:none;border-radius:8px;padding:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📞 Telefon</button>
-        <button type="button" id="ct-type-meeting" onclick="setQuickTaskType('meeting')" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📍 Spotkanie</button>
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <button class="b b-ico" onclick="go('s-crm')" title="Wróć do klientów"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div id="cd-title" class="h1">Klient</div>
       </div>
-      <input id="ct-reason" placeholder="Co trzeba zrobić? (np. zadzwonić ws. dostawy)" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-      <input id="ct-address" placeholder="📍 Adres spotkania" style="display:none;width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-      <div style="display:flex;gap:8px;">
-        <input id="ct-date" type="date" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-        <input id="ct-time" type="time" value="09:00" style="flex:1;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
+      <button class="b b-pri" onclick="newOfferForClient(currentClientId)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Nowa oferta</button>
+    </header>
+
+    <div class="main-body">
+      <div class="cd-cols">
+
+        <!-- ============ LEWA: historia i sekcje operacyjne ============ -->
+        <div style="display:flex;flex-direction:column;gap:var(--s4);min-width:0;">
+
+          <div class="c">
+            <div class="c-head">
+              <div class="h2">Historia współpracy</div>
+              <div id="cd-last-activity" style="font-size:var(--f-sm);color:var(--text-3);"></div>
+            </div>
+            <div class="c-body">
+              <div style="display:flex;gap:var(--s2);margin-bottom:var(--s3);">
+                <input id="cd-new-note" class="in" placeholder="Dodaj szybką notatkę…" style="flex:1;">
+                <button id="cd-ai-note-btn" onclick="aiTidyNote()" title="Uporządkuj z AI"
+                  class="b b-sec" style="color:var(--osg-orange);border-color:var(--osg-orange);background:var(--osg-orange-soft);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17l-1.9-5.1L4.5 10l5.6-1.4L12 3z"/></svg></button>
+                <button onclick="addClientNote()" class="b b-pri">Dodaj</button>
+              </div>
+              <div id="cd-ai-note-panel" style="display:none;margin-bottom:var(--s3);"></div>
+              <button id="cd-prep-btn" class="b b-sec" style="width:100%;margin-bottom:var(--s3);gap:7px;color:var(--violet);border-color:var(--violet);background:var(--violet-bg);"
+                onclick="aiPrepareMe(currentClientId,'cd-prep-panel',(currentClientRecord&&currentClientRecord.phone)||'')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 00-3 3v1a3 3 0 00-3 3 3 3 0 003 3v1a3 3 0 003 3 3 3 0 003-3v-1a3 3 0 003-3 3 3 0 00-3-3V8a3 3 0 00-3-3z"/></svg> Przygotuj mnie do rozmowy</button>
+              <div id="cd-prep-panel" style="display:none;margin-bottom:var(--s3);"></div>
+              <div style="display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s3);">
+                <div onclick="cdActivityFilter('',this)" id="cd-af-all" class="cdaf-pill" data-filter="" style="background:#e8601c;color:#fff;">Wszystko</div><div onclick="cdActivityFilter('call',this)" class="cdaf-pill" data-filter="call" style="background:#1e2f42;color:#8a9ab0;">Telefony</div><div onclick="cdActivityFilter('meeting',this)" class="cdaf-pill" data-filter="meeting" style="background:#1e2f42;color:#8a9ab0;">Spotkania</div><div onclick="cdActivityFilter('offer',this)" class="cdaf-pill" data-filter="offer" style="background:#1e2f42;color:#8a9ab0;">Oferty</div><div onclick="cdActivityFilter('delivery',this)" class="cdaf-pill" data-filter="delivery" style="background:#1e2f42;color:#8a9ab0;">Dostawy</div><div onclick="cdActivityFilter('note',this)" class="cdaf-pill" data-filter="note" style="background:#1e2f42;color:#8a9ab0;">Notatki</div><div onclick="cdActivityFilter('task',this)" class="cdaf-pill" data-filter="task" style="background:#1e2f42;color:#8a9ab0;">Zadania</div><div onclick="cdActivityFilter('contact',this)" class="cdaf-pill" data-filter="contact" style="background:#1e2f42;color:#8a9ab0;">Kontakty</div><div onclick="cdActivityFilter('building',this)" class="cdaf-pill" data-filter="building" style="background:#1e2f42;color:#8a9ab0;">Budowy</div>
+              </div>
+              <div id="cd-activities-list"></div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Oferty</div>
+              <button class="b b-sec b-sm" onclick="newOfferForClient(currentClientId)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Nowa</button></div>
+            <div class="c-body">
+              <div style="display:flex;justify-content:space-between;gap:var(--s4);padding:var(--s3);background:var(--surface-2);border-radius:var(--r);margin-bottom:var(--s3);">
+                <div><div class="lbl">Zamówienia (zaakcept.)</div><div id="cd-intel-orders" style="font-size:var(--f-lg);font-weight:800;color:var(--text);margin-top:3px;">—</div></div>
+                <div style="text-align:right;"><div class="lbl">Wartość wszystkich ofert</div><div id="cd-intel-value" style="font-size:var(--f-lg);font-weight:800;color:var(--ok);margin-top:3px;">—</div></div>
+              </div>
+              <div id="cd-offers-list" style="display:flex;flex-direction:column;gap:var(--s2);"></div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Zadania</div>
+              <button class="b b-sec b-sm" onclick="toggleForm('cd-task-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Nowe zadanie</button></div>
+            <div class="c-body">
+              <div id="cd-task-form" style="display:none;flex-direction:column;gap:var(--s3);margin-bottom:var(--s3);padding:var(--s4);background:var(--surface-2);border-radius:var(--r);">
+                <div style="display:flex;gap:var(--s2);">
+                  <button type="button" id="ct-type-call" onclick="setQuickTaskType('call')" class="qt-type" style="flex:1;background:#e8601c;color:#fff;">Telefon</button>
+                  <button type="button" id="ct-type-meeting" onclick="setQuickTaskType('meeting')" class="qt-type" style="flex:1;background:#1e2f42;color:#fff;">Spotkanie</button>
+                </div>
+                <input id="ct-reason" class="in" placeholder="Co trzeba zrobić?">
+                <input id="ct-address" class="in" placeholder="Adres spotkania" style="display:none;">
+                <div style="display:flex;gap:var(--s2);">
+                  <input id="ct-date" type="date" class="in" style="flex:1;">
+                  <input id="ct-time" type="time" value="09:00" class="in" style="flex:1;">
+                </div>
+                <select id="ct-priority" class="in">
+                  <option value="yellow">Normalne</option><option value="red">Pilne</option><option value="green">Niski priorytet</option>
+                </select>
+                <div id="ct-error" style="display:none;font-size:var(--f-sm);color:var(--err);"></div>
+                <button onclick="saveQuickTask()" class="b b-pri" style="gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Zapisz zadanie</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:var(--f-sm);color:var(--text-3);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Zadania widoczne w module Zadania</div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Automatyzacje</div></div>
+            <div class="c-body"><div id="cd-automations-list" style="display:flex;flex-direction:column;gap:var(--s2);">
+              <div style="font-size:var(--f-sm);color:var(--text-3);">Ładowanie…</div></div></div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Budowy</div>
+              <button class="b b-sec b-sm" onclick="resetBuildingForm();toggleForm('cd-building-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Dodaj</button></div>
+            <div class="c-body">
+              <div id="cd-building-form" style="display:none;flex-direction:column;gap:var(--s3);margin-bottom:var(--s3);padding:var(--s4);background:var(--surface-2);border-radius:var(--r);">
+                <input id="cb-name" class="in" placeholder="Nazwa budowy *">
+                <input id="cb-address" class="in" placeholder="Adres">
+                <div id="cb-error" style="display:none;font-size:var(--f-sm);color:var(--err);"></div>
+                <button onclick="addBuilding()" class="b b-pri">Zapisz budowę</button>
+              </div>
+              <div id="cd-buildings-list" style="display:flex;flex-direction:column;gap:var(--s2);"></div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Kontakty</div>
+              <button class="b b-sec b-sm" onclick="resetContactForm();toggleForm('cd-contact-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Dodaj</button></div>
+            <div class="c-body">
+              <div id="cd-contact-form" style="display:none;flex-direction:column;gap:var(--s3);margin-bottom:var(--s3);padding:var(--s4);background:var(--surface-2);border-radius:var(--r);">
+                <input id="cc-name" class="in" placeholder="Imię i nazwisko *">
+                <input id="cc-role" class="in" placeholder="Stanowisko">
+                <input id="cc-phone" class="in" placeholder="Telefon">
+                <input id="cc-email" class="in" placeholder="E-mail">
+                <div id="cc-error" style="display:none;font-size:var(--f-sm);color:var(--err);"></div>
+                <button onclick="addContact()" class="b b-pri">Zapisz kontakt</button>
+              </div>
+              <div id="cd-contacts-list" style="display:flex;flex-direction:column;gap:var(--s2);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ PRAWA: dane, stan, akcje ============ -->
+        <div class="cd-side" style="display:flex;flex-direction:column;gap:var(--s4);min-width:0;">
+
+          <div class="c c-pad" id="cd-info">Ładowanie…</div>
+
+          <div class="c" style="border-color:rgba(124,58,237,.3);">
+            <div class="c-head">
+              <div style="display:flex;align-items:center;gap:7px;color:var(--violet);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 00-3 3v1a3 3 0 00-3 3 3 3 0 003 3v1a3 3 0 003 3 3 3 0 003-3v-1a3 3 0 003-3 3 3 0 00-3-3V8a3 3 0 00-3-3z"/></svg><span class="lbl" style="color:var(--violet);">Stan klienta</span></div>
+              <div id="cs-relationship" style="font-size:var(--f-sm);font-weight:800;">—</div>
+            </div>
+            <div class="c-body">
+              <div class="lbl" style="margin-bottom:3px;">Co zrobić dalej</div>
+              <div id="cs-recommendation" style="font-size:var(--f-md);font-weight:700;color:var(--text);line-height:1.4;">Analizuję…</div>
+              <div class="lbl" style="margin:var(--s4) 0 3px;">Twoja notatka</div>
+              <input id="cd-next-action" class="in" placeholder="np. Zadzwonić jutro, Czekam na decyzję…"
+                onblur="saveNextAction(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
+              <div id="cs-activity-bar" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-top:var(--s4);"></div>
+              <div id="cs-warnings" style="margin-top:var(--s3);"></div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Etap w lejku</div></div>
+            <div class="c-body"><div id="cd-pipeline-pills" style="display:flex;gap:var(--s2);flex-wrap:wrap;"></div></div>
+          </div>
+
+          <div class="c">
+            <div class="c-head"><div class="h2">Szybkie akcje</div></div>
+            <div class="c-body">
+              <div id="cd-qa-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);">
+                <button id="cd-qa-call" onclick="quickActionCall()" class="qa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z"/></svg><span>Zadzwoń</span></button>
+                <button id="cd-qa-email" onclick="quickActionEmail()" class="qa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg><span>Email</span></button>
+                <button onclick="quickActionFocusNote()" class="qa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17l-1.9-5.1L4.5 10l5.6-1.4L12 3z"/></svg><span>Notatka</span></button>
+                <button onclick="toggleForm('cd-task-form')" class="qa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span>Zadanie</span></button>
+                <button onclick="newOfferForClient(currentClientId)" class="qa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>Oferta</span></button>
+                <button id="cd-qa-delivery" onclick="openDeliveryForm({clientId:currentClientId})" class="qa-btn" style="display:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Dostawa</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="c" id="cd-assign-box" style="display:none;">
+            <div class="c-head"><div class="h2">Przypisany handlowiec</div></div>
+            <div class="c-body">
+              <select id="cd-assigned-to" onchange="updateClientAssignment(this.value)" class="in">
+                <option value="">— nieprzypisany —</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-      <select id="ct-priority" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">
-        <option value="yellow">🟡 Normalne</option>
-        <option value="red">🔴 Pilne</option>
-        <option value="green">🟢 Niski priorytet</option>
-      </select>
-      <div id="ct-error" style="display:none;font-size:11px;color:#ef4444;"></div>
-      <button onclick="saveQuickTask()" style="background:#e8601c;border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">💾 Zapisz zadanie</button>
     </div>
   </div>
-
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:14px;font-weight:800;">🏗️ Budowy</div>
-      <button onclick="resetBuildingForm();toggleForm('cd-building-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
-    </div>
-    <div id="cd-building-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;display:none;flex-direction:column;gap:8px;">
-      <input id="cb-name" placeholder="Nazwa budowy *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <input id="cb-address" placeholder="Adres" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <div id="cb-error" style="display:none;font-size:11px;color:#ef4444;"></div>
-      <button onclick="addBuilding()" style="background:#22c55e;border:none;border-radius:9px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Zapisz budowę</button>
-    </div>
-    <div id="cd-buildings-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-  </div>
-
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:14px;font-weight:800;">👤 Kontakty</div>
-      <button onclick="resetContactForm();toggleForm('cd-contact-form')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj</button>
-    </div>
-    <div id="cd-contact-form" style="display:none;background:#162130;border-radius:11px;padding:12px;margin-bottom:8px;flex-direction:column;gap:8px;">
-      <input id="cc-name" placeholder="Imię i nazwisko *" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <input id="cc-role" placeholder="Stanowisko (np. kierownik budowy)" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <input id="cc-phone" placeholder="Telefon" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <input id="cc-email" placeholder="E-mail" style="width:100%;padding:10px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      <div id="cc-error" style="display:none;font-size:11px;color:#ef4444;"></div>
-      <button onclick="addContact()" style="background:#22c55e;border:none;border-radius:9px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Zapisz kontakt</button>
-    </div>
-    <div id="cd-contacts-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-  </div>
-
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:14px;font-weight:800;">📄 Oferty</div>
-      <button onclick="newOfferForClient(currentClientId)" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Nowa oferta</button>
-    </div>
-    <div class="card" style="padding:10px 13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">Zamówienia (zaakcept.)</div><div id="cd-intel-orders" style="font-size:13px;font-weight:800;margin-top:2px;">—</div></div>
-      <div style="text-align:right;"><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">Wartość wszystkich ofert</div><div id="cd-intel-value" style="font-size:14px;font-weight:800;margin-top:2px;color:#22c55e;">—</div></div>
-    </div>
-    <div id="cd-offers-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-  </div>
-
-  <div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:8px;">⚙️ Automatyzacje</div>
-    <div id="cd-automations-list" style="display:flex;flex-direction:column;gap:6px;">
-      <div style="font-size:11px;color:#8a9ab0;">Ładowanie…</div>
-    </div>
-  </div>
-
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
-      <div style="font-size:14px;font-weight:800;">📜 Historia współpracy</div>
-      <div id="cd-last-activity" style="font-size:10px;color:#8a9ab0;"></div>
-    </div>
-    <div style="display:flex;gap:6px;margin:8px 0;">
-      <input id="cd-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
-      <button id="cd-ai-note-btn" onclick="aiTidyNote()" title="Uporządkuj z AI" style="background:rgba(232,96,28,.15);color:#e8601c;border:1px solid rgba(232,96,28,.4);border-radius:10px;padding:0 12px;font-size:13px;font-weight:700;cursor:pointer;">✨</button>
-      <button onclick="addClientNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
-    </div>
-    <div id="cd-ai-note-panel" style="display:none;margin:0 0 10px;padding:12px;background:#162130;border:1px solid rgba(232,96,28,.35);border-radius:12px;"></div>
-    <button id="cd-prep-btn" onclick="aiPrepareMe(currentClientId,'cd-prep-panel',(currentClientRecord&&currentClientRecord.phone)||'')" style="width:100%;margin-bottom:8px;padding:11px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.45);border-radius:11px;color:#a78bfa;font-size:12px;font-weight:800;cursor:pointer;">🧠 Przygotuj mnie do rozmowy</button>
-    <div id="cd-prep-panel" style="display:none;margin-bottom:10px;"></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;">
-      <div onclick="cdActivityFilter('')" id="cd-af-all" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
-      <div onclick="cdActivityFilter('call')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Telefony</div>
-      <div onclick="cdActivityFilter('meeting')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📍 Spotkania</div>
-      <div onclick="cdActivityFilter('offer')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
-      <div onclick="cdActivityFilter('delivery')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🚚 Dostawy</div>
-      <div onclick="cdActivityFilter('note')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📝 Notatki</div>
-      <div onclick="cdActivityFilter('task')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">☑️ Zadania</div>
-      <div onclick="cdActivityFilter('contact')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">👤 Kontakty</div>
-      <div onclick="cdActivityFilter('building')" style="font-size:9px;font-weight:700;padding:5px 9px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🏗️ Budowy</div>
-    </div>
-    <div id="cd-activities-list"></div>
-  </div>
-
-  <div id="cd-assign-box" style="display:none;">
-    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Przypisany handlowiec</div>
-    <select id="cd-assigned-to" onchange="updateClientAssignment(this.value)" style="width:100%;padding:9px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;outline:none;">
-      <option value="">— nieprzypisany —</option>
-    </select>
-  </div>
-
-  <button class="btn ghost" onclick="go('s-crm')">← Wróć do listy klientów</button>
 </div>
-
-  </div><!-- /main -->
-</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-offers">
@@ -2247,7 +2278,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.58.0-zadania';
+var APP_VERSION = 'v0.59.0-klient';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3212,11 +3243,16 @@ function activityBucket(type){
 }
 var cdActivitiesCache=[];
 var cdActivityActiveFilter='';
-function cdActivityFilter(bucket){
+function cdActivityFilter(bucket,el){
+  /* Naprawa kruchej zaleznosci UI (P1): filtry maja klase .cdaf-pill
+     i data-filter. Wczesniej selektor szukal ich po tresci onclick,
+     a klikniety element bral z globalnego event.target.
+     cdActivityActiveFilter i logika filtrowania — BEZ ZMIAN. */
   cdActivityActiveFilter=bucket;
-  var pills=document.querySelectorAll('[onclick^="cdActivityFilter"]');
-  pills.forEach(function(p){p.style.background='#1e2f42';p.style.color='#8a9ab0';});
-  if(event&&event.target){event.target.style.background='#e8601c';event.target.style.color='#fff';}
+  document.querySelectorAll('.cdaf-pill').forEach(function(p){
+    p.style.background='#1e2f42';p.style.color='#8a9ab0';});
+  var t=el||document.querySelector('.cdaf-pill[data-filter="'+bucket+'"]')||document.getElementById('cd-af-all');
+  if(t){t.style.background='#e8601c';t.style.color='#fff';}
   renderClientActivitiesList();
 }
 function renderClientActivitiesList(){
