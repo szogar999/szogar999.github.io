@@ -208,6 +208,9 @@
   .cd-cols{grid-template-columns:1fr;}
   .cd-side{order:-1;}
 }
+
+.ca-grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+@media(max-width:700px){ .ca-grid2{grid-template-columns:1fr;} }
 /* ---------- BADGE ---------- */
 .bd{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
   border-radius:var(--r-full);font-size:var(--f-xs);font-weight:700;}
@@ -1546,22 +1549,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="app-shell">
   <div class="sb-mount"></div>
   <div class="main">
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <button class="b b-ico" onclick="go('s-crm')" title="Wróć do klientów"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div id="ca-title" class="h1">Dodaj klienta</div>
+        <div class="sub">Nazwa firmy jest wymagana, pozostałe pola opcjonalne</div>
+      </div>
+    </header>
 
-<div class="hdr"><button class="back" onclick="go('s-crm')">←</button><span style="font-size:18px;font-weight:800;flex:1;">+ Dodaj klienta</span></div>
-<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-  <div style="font-size:11px;color:#8a9ab0;">Nazwa firmy jest wymagana, reszta pól opcjonalna.</div>
-  <input id="ca-name" placeholder="Nazwa firmy *" style="width:100%;padding:12px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
-  <input id="ca-nip" placeholder="NIP" style="width:100%;padding:12px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
-  <input id="ca-phone" placeholder="Telefon" style="width:100%;padding:12px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
-  <input id="ca-email" placeholder="E-mail" style="width:100%;padding:12px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;">
-  <textarea id="ca-notes" placeholder="Notatki" rows="3" style="width:100%;padding:12px 14px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:14px;outline:none;font-family:inherit;resize:vertical;"></textarea>
-  <div id="ca-error" style="display:none;font-size:12px;color:#ef4444;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:9px 11px;"></div>
-  <button id="ca-save-btn" onclick="saveClient()" class="btn" style="margin-top:4px;">💾 Zapisz klienta</button>
-  <button class="btn ghost" onclick="go('s-crm')">Anuluj</button>
+    <div class="main-body">
+      <div class="c" style="max-width:720px;">
+        <div class="c-pad">
+
+          <div class="lbl" style="margin-bottom:var(--s3);">Dane firmy</div>
+          <div style="display:flex;flex-direction:column;gap:var(--s3);margin-bottom:var(--s6);">
+            <div>
+              <label for="ca-name" style="display:block;font-size:var(--f-sm);color:var(--text-2);margin-bottom:5px;font-weight:600;">Nazwa firmy *</label>
+              <input id="ca-name" class="in" placeholder="np. Milo Sp. z o.o.">
+            </div>
+            <div style="max-width:280px;">
+              <label for="ca-nip" style="display:block;font-size:var(--f-sm);color:var(--text-2);margin-bottom:5px;font-weight:600;">NIP</label>
+              <input id="ca-nip" class="in" placeholder="0000000000">
+            </div>
+          </div>
+
+          <div class="lbl" style="margin-bottom:var(--s3);">Kontakt</div>
+          <div class="ca-grid2" style="margin-bottom:var(--s6);">
+            <div>
+              <label for="ca-phone" style="display:block;font-size:var(--f-sm);color:var(--text-2);margin-bottom:5px;font-weight:600;">Telefon</label>
+              <input id="ca-phone" class="in" placeholder="600 000 000">
+            </div>
+            <div>
+              <label for="ca-email" style="display:block;font-size:var(--f-sm);color:var(--text-2);margin-bottom:5px;font-weight:600;">E-mail</label>
+              <input id="ca-email" class="in" placeholder="biuro@firma.pl">
+            </div>
+          </div>
+
+          <div class="lbl" style="margin-bottom:var(--s3);">Notatki</div>
+          <textarea id="ca-notes" class="in" rows="4" placeholder="Czym się zajmują, na co zwrócić uwagę…"
+            style="font-family:inherit;resize:vertical;margin-bottom:var(--s4);"></textarea>
+
+          <div id="ca-error" style="display:none;font-size:var(--f-base);color:var(--err);background:var(--err-bg);border-radius:var(--r);padding:11px 13px;margin-bottom:var(--s4);"></div>
+
+          <div style="display:flex;justify-content:flex-end;gap:var(--s2);padding-top:var(--s4);border-top:1px solid var(--border);">
+            <button class="b b-sec" onclick="go('s-crm')">Anuluj</button>
+            <button id="ca-save-btn" onclick="saveClient()" class="b b-pri">Zapisz klienta</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-  </div><!-- /main -->
-</div><!-- /app-shell -->
 </div>
 
 <div class="screen" id="s-driver-deliveries">
@@ -2278,7 +2318,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.59.0-klient';
+var APP_VERSION = 'v0.60.0-formularz';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -2493,8 +2533,9 @@ function renderClients(){
 var editingClientId=null;
 function resetClientForm(){
   editingClientId=null;
+  var t=document.getElementById('ca-title'); if(t)t.textContent='Dodaj klienta';
   ['ca-name','ca-nip','ca-phone','ca-email','ca-notes'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('ca-save-btn').textContent='💾 Zapisz klienta';
+  document.getElementById('ca-save-btn').textContent='Zapisz klienta';
 }
 async function editClient(id){
   if(!sbEnabled)return;
@@ -2507,7 +2548,8 @@ async function editClient(id){
   document.getElementById('ca-phone').value=c.phone||'';
   document.getElementById('ca-email').value=c.email||'';
   document.getElementById('ca-notes').value=c.notes||'';
-  document.getElementById('ca-save-btn').textContent='💾 Zapisz zmiany';
+  document.getElementById('ca-save-btn').textContent='Zapisz zmiany';
+  var t=document.getElementById('ca-title'); if(t)t.textContent='Edytuj klienta';
   go('s-client-add');
 }
 async function archiveClient(id){
@@ -2545,7 +2587,7 @@ async function saveClient(){
   if(res.error){
     errEl.textContent='Błąd zapisu: '+res.error.message;
     errEl.style.display='block';
-    btn.textContent=editingClientId?'💾 Zapisz zmiany':'💾 Zapisz klienta';
+    btn.textContent=editingClientId?'Zapisz zmiany':'Zapisz klienta';
     return;
   }
   resetClientForm();
