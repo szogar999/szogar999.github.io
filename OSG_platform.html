@@ -284,6 +284,62 @@
   background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--r);}
 
 /* modale modulu dostaw */
+/* ---- Oferta: edycja/tworzenie (redesign vol6) — prefiks oe- ---- */
+.oe-cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--s5);align-items:start;}
+@media(max-width:1100px){ .oe-cols{grid-template-columns:1fr;} }
+.oe-main{display:flex;flex-direction:column;gap:var(--s4);min-width:0;}
+.oe-side{position:sticky;top:var(--s4);display:flex;flex-direction:column;gap:var(--s4);}
+@media(max-width:1100px){ .oe-side{position:static;} }
+.oe-dt-row{display:flex;gap:var(--s2);margin-top:5px;}
+.oe-dt{flex:1;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);
+  border-radius:var(--r);padding:9px 6px;font-size:var(--f-sm);font-weight:700;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:.12s;}
+.oe-dt:hover{color:var(--text);}
+.oe-dt.oe-dt-on{background:var(--osg-orange);color:#fff;border-color:transparent;}
+.oe-fields{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+@media(max-width:640px){ .oe-fields{grid-template-columns:1fr;} }
+.oe-fields .oe-wide{grid-column:1/-1;}
+.oe-items{display:flex;flex-direction:column;gap:var(--s3);}
+.oe-item-row{position:relative;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);}
+.oe-row-top{display:flex;gap:var(--s2);align-items:center;}
+.oe-i-name{flex:1;min-width:0;}
+.oe-grid3{display:grid;grid-template-columns:1fr 110px 1.3fr;gap:var(--s2);}
+.oe-grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+@media(max-width:640px){ .oe-grid3{grid-template-columns:1fr 1fr;} }
+.oe-cap{font-size:var(--f-xs);text-transform:uppercase;font-weight:700;letter-spacing:.3px;
+  color:var(--text-3);margin-bottom:3px;}
+.oe-cap-sell{color:var(--osg-orange);}
+.oe-i-suggest-box{position:absolute;left:var(--s4);right:var(--s4);top:56px;z-index:20;
+  background:var(--surface);border:1px solid var(--osg-orange);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--sh-md);}
+.oe-i-suggest-item{padding:9px 11px;cursor:pointer;border-bottom:1px solid var(--border);}
+.oe-i-suggest-item:last-child{border-bottom:none;}
+.oe-i-suggest-item:hover{background:var(--surface-2);}
+.oe-i-price-suggest{font-size:var(--f-sm);color:var(--text-3);}
+.oe-i-margin{font-size:var(--f-sm);color:var(--text-3);}
+.oe-del{border:1px solid var(--border);background:var(--surface);color:var(--text-3);
+  border-radius:var(--r-sm);width:34px;height:34px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0;transition:.12s;}
+.oe-del:hover{border-color:var(--err);color:var(--err);background:var(--err-bg);}
+.oe-chips{display:flex;gap:var(--s2);overflow-x:auto;padding-bottom:4px;}
+.oe-chip{flex:0 0 auto;min-width:130px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:9px 11px;cursor:pointer;transition:.12s;}
+.oe-chip:hover{border-color:var(--osg-orange);}
+.oe-sum{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);
+  padding:7px 0;border-bottom:1px solid var(--border);}
+.oe-sum:last-of-type{border-bottom:none;}
+.oe-sum-k{font-size:var(--f-sm);color:var(--text-2);}
+.oe-sum-v{font-size:var(--f-md);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
+.oe-sum-total .oe-sum-k{font-weight:700;color:var(--text);}
+.oe-sum-total .oe-sum-v{font-size:var(--f-lg);font-weight:800;}
+.oe-warn{display:none;font-size:var(--f-sm);color:var(--warn);background:var(--warn-bg);
+  border:1px solid var(--warn);border-radius:var(--r-sm);padding:9px 11px;margin-top:var(--s3);line-height:1.5;}
+.oe-loading{display:flex;flex-direction:column;gap:var(--s3);}
+.oe-skel{height:74px;border-radius:var(--r);border:1px solid var(--border);
+  background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface) 50%,var(--surface-2) 75%);
+  background-size:400% 100%;animation:oe-sh 1.3s ease-in-out infinite;}
+@keyframes oe-sh{0%{background-position:100% 0;}100%{background-position:0 0;}}
 /* ---- Kalendarz (redesign vol6) — wszystkie klasy prefiksowane cal- ---- */
 .cal-bar{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s4);}
 .cal-switch{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);
@@ -1998,87 +2054,114 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="app-shell">
   <div class="sb-mount"></div>
   <div class="main">
+    <header class="main-head">
+      <button class="b b-ico sb-burger" onclick="sbToggle(true)" style="display:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <button class="b b-ico" onclick="go('s-offers')" title="Wróć do dokumentów"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <div style="flex:1;min-width:0;">
+        <div class="h1" id="oe-title">Nowa oferta</div>
+        <div class="sub">Dokument sprzedażowy</div>
+      </div>
+      <button class="b b-sec" onclick="go('s-offers')">Anuluj</button>
+    </header>
 
-<div class="hdr"><button class="back" onclick="go('s-offers')">←</button><span id="oe-title" style="font-size:18px;font-weight:800;flex:1;">Nowa oferta</span></div>
-<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+    <div class="main-body">
+      <div class="oe-cols">
 
-  <div>
-    <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:6px;">Typ dokumentu</div>
-    <div id="oe-doctype-pills" style="display:flex;gap:6px;">
-      <div onclick="setOfferDocType('oferta')" id="oe-dt-oferta" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#e8601c;color:#fff;cursor:pointer;">📄 Oferta</div>
-      <div onclick="setOfferDocType('proforma')" id="oe-dt-proforma" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Pro Forma</div>
-      <div onclick="setOfferDocType('faktura_vat')" id="oe-dt-faktura_vat" style="flex:1;text-align:center;font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">🧾 Faktura VAT</div>
+        <div class="oe-main">
+
+          <div class="c c-pad">
+            <div class="lbl">Typ dokumentu</div>
+            <div id="oe-doctype-pills" class="oe-dt-row">
+              <button type="button" onclick="setOfferDocType('oferta')" id="oe-dt-oferta" class="oe-dt oe-dt-on"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Oferta</button>
+              <button type="button" onclick="setOfferDocType('proforma')" id="oe-dt-proforma" class="oe-dt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15h6"/></svg>Pro Forma</button>
+              <button type="button" onclick="setOfferDocType('faktura_vat')" id="oe-dt-faktura_vat" class="oe-dt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>Faktura VAT</button>
+            </div>
+
+            <div class="oe-fields" style="margin-top:var(--s4);">
+              <div class="fld oe-wide">
+                <label class="lbl" for="oe-client">Klient *</label>
+                <select id="oe-client" class="in" onchange="onOfferClientChange()"><option value="">&mdash; wybierz klienta &mdash;</option></select>
+              </div>
+              <div class="fld oe-wide">
+                <label class="lbl" for="oe-building">Budowa (opcjonalnie)</label>
+                <select id="oe-building" class="in"><option value="">&mdash; brak / ogólna &mdash;</option></select>
+              </div>
+              <div class="fld">
+                <label class="lbl" for="oe-status">Status dokumentu</label>
+                <select id="oe-status" class="in">
+                  <option value="draft">Robocza</option>
+                  <option value="wysłana">Wysłana</option>
+                  <option value="zaakceptowana">Zaakceptowana</option>
+                  <option value="odrzucona">Odrzucona</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label class="lbl" for="oe-vat">Stawka VAT</label>
+                <select id="oe-vat" class="in" onchange="recalcOfferTotals()">
+                  <option value="23">23%</option>
+                  <option value="8">8%</option>
+                  <option value="5">5%</option>
+                  <option value="0">0%</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label class="lbl" for="oe-delivery">Termin dostawy</label>
+                <input id="oe-delivery" class="in" placeholder="np. 3-5 dni roboczych">
+              </div>
+              <div class="fld">
+                <label class="lbl" for="oe-valid-days">Ważność oferty (dni)</label>
+                <input id="oe-valid-days" class="in" type="number" step="1" value="7">
+              </div>
+            </div>
+          </div>
+
+          <div id="oe-recent-purchases" style="display:none;">
+            <div class="c c-pad">
+              <div class="lbl" style="margin-bottom:var(--s3);">Ostatnio kupione &mdash; koszt OSG</div>
+              <div id="oe-recent-purchases-list" class="oe-chips"></div>
+            </div>
+          </div>
+
+          <div class="c">
+            <div class="c-head">
+              <div class="h2" style="flex:1;">Pozycje oferty</div>
+              <button class="b b-sec b-sm" onclick="addOfferItemRow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Dodaj pozycję</button>
+            </div>
+            <div class="c-body">
+              <div id="oe-items" class="oe-items"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="oe-side">
+          <div class="c c-pad">
+            <div class="h2" style="margin-bottom:var(--s3);">Podsumowanie</div>
+
+            <div class="oe-sum"><span class="oe-sum-k">Suma netto</span><span class="oe-sum-v" id="oe-sum-net">&mdash;</span></div>
+            <div class="oe-sum"><span class="oe-sum-k">VAT</span><span class="oe-sum-v" id="oe-sum-vat">&mdash;</span></div>
+            <div class="oe-sum oe-sum-total"><span class="oe-sum-k">Do zapłaty brutto</span><span class="oe-sum-v" id="oe-sum-gross">&mdash;</span></div>
+
+            <div style="height:1px;background:var(--border);margin:var(--s4) 0;"></div>
+
+            <div class="oe-sum"><span class="oe-sum-k">Zysk kwotowy</span><span class="oe-sum-v" id="oe-sum-margin-amt">&mdash;</span></div>
+            <div class="oe-sum"><span class="oe-sum-k">Marża</span><span class="oe-sum-v" id="oe-sum-margin-pct">&mdash;</span></div>
+
+            <div id="oe-margin-warning" class="oe-warn"></div>
+            <div id="oe-error" class="err-box" style="margin-top:var(--s3);"></div>
+
+            <div style="display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s5);">
+              <button id="oe-save-btn" class="b b-pri" onclick="saveOffer()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Zapisz ofertę</button>
+              <button id="oe-pdf-btn" class="b b-sec" onclick="generateOfferPdf()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Generuj PDF</button>
+            </div>
+          </div>
+        </aside>
+
+      </div>
     </div>
   </div>
-
-  <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:9px;">
-    <div style="font-size:11px;color:#8a9ab0;">Klient *</div>
-    <select id="oe-client" onchange="onOfferClientChange()" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— wybierz klienta —</option></select>
-    <div style="font-size:11px;color:#8a9ab0;">Budowa (opcjonalnie)</div>
-    <select id="oe-building" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;"><option value="">— brak / ogólna —</option></select>
-    <div style="display:flex;gap:9px;">
-      <div style="flex:1;">
-        <div style="font-size:11px;color:#8a9ab0;">Status</div>
-        <select id="oe-status" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-          <option value="draft">📝 Robocza</option>
-          <option value="wysłana">📤 Wysłana</option>
-          <option value="zaakceptowana">✅ Zaakceptowana</option>
-          <option value="odrzucona">❌ Odrzucona</option>
-        </select>
-      </div>
-      <div style="width:90px;">
-        <div style="font-size:11px;color:#8a9ab0;">VAT</div>
-        <select id="oe-vat" onchange="recalcOfferTotals()" style="width:100%;padding:11px 6px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-          <option value="23">23%</option>
-          <option value="8">8%</option>
-          <option value="5">5%</option>
-          <option value="0">0%</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:9px;">
-      <div style="flex:1;">
-        <div style="font-size:11px;color:#8a9ab0;">Termin dostawy</div>
-        <input id="oe-delivery" placeholder="np. 3-5 dni roboczych" style="width:100%;padding:11px 12px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      </div>
-      <div style="width:110px;">
-        <div style="font-size:11px;color:#8a9ab0;">Ważność (dni)</div>
-        <input id="oe-valid-days" type="number" step="1" value="7" style="width:100%;padding:11px 8px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:13px;outline:none;">
-      </div>
-    </div>
-  </div>
-
-  <div id="oe-recent-purchases" style="display:none;">
-    <div style="font-size:11px;font-weight:700;color:#8a9ab0;margin-bottom:6px;">🛒 Ostatnio kupione — koszt OSG</div>
-    <div id="oe-recent-purchases-list" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;"></div>
-  </div>
-
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:14px;font-weight:800;">Pozycje oferty</div>
-      <button onclick="addOfferItemRow()" style="background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;padding:6px 10px;cursor:pointer;">+ Dodaj pozycję</button>
-    </div>
-    <div id="oe-items" style="display:flex;flex-direction:column;gap:10px;"></div>
-  </div>
-
-  <div class="card" style="padding:13px;display:flex;flex-direction:column;gap:6px;">
-    <div class="row" style="padding:0;border:none;"><span style="font-size:12px;color:#8a9ab0;">Suma netto</span><span id="oe-sum-net" style="font-size:16px;font-weight:800;">0 zł</span></div>
-    <div class="row" style="padding:0;border:none;"><span style="font-size:12px;color:#8a9ab0;">Suma brutto</span><span id="oe-sum-gross" style="font-size:14px;font-weight:700;">0 zł</span></div>
-    <div class="row" style="padding:0;border:none;"><span style="font-size:12px;color:#8a9ab0;">Zysk (marża kwotowa)</span><span id="oe-sum-margin-amt" style="font-size:14px;font-weight:700;color:#22c55e;">0 zł</span></div>
-    <div class="row" style="padding:0;border:none;"><span style="font-size:12px;color:#8a9ab0;">Marża (%)</span><span id="oe-sum-margin-pct" style="font-size:14px;font-weight:700;color:#22c55e;">0%</span></div>
-    <div id="oe-margin-warning" style="display:none;font-size:11px;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 10px;margin-top:4px;"></div>
-  </div>
-
-  <div id="oe-error" style="display:none;font-size:12px;color:#ef4444;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:9px 11px;"></div>
-  <button id="oe-save-btn" onclick="saveOffer()" class="btn">💾 Zapisz ofertę</button>
-  <button id="oe-pdf-btn" onclick="generateOfferPdf()" style="width:100%;padding:13px;border:1px solid rgba(255,255,255,.15);border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;background:#1e2f42;color:#fff;">📄 Generuj PDF</button>
-  <button class="btn ghost" onclick="go('s-offers')">Anuluj</button>
 </div>
-
-  </div><!-- /main -->
-</div><!-- /app-shell -->
 </div>
-
 <div class="screen" id="s-calendar">
 <div class="app-shell">
   <div class="sb-mount"></div>
@@ -2507,7 +2590,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.66.4-klient';
+var APP_VERSION = 'v0.67.0-oferta';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3829,33 +3912,37 @@ function offerItemRowHtml(item){
      przechodziło przez zapis i zawyżało marżę całej oferty. */
   item=item||{name:'',qty:1,unit:'szt',category:CATEGORY_LIST[0],buy_price:null,sell_price:null,_rid:'r'+Math.random().toString(36).slice(2,9)};
   if(!item._rid)item._rid='r'+Math.random().toString(36).slice(2,9);
-  var catOptions=CATEGORY_LIST.map(function(c){return '<option value="'+c+'"'+(c===item.category?' selected':'')+'>'+c+'</option>';}).join('');
-  return '<div class="card oe-item-row" data-rid="'+item._rid+'" style="padding:11px;display:flex;flex-direction:column;gap:7px;">'
-    +'<div style="display:flex;gap:6px;">'
-    +'<input class="oe-i-name" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Produkt *" oninput="recalcOfferTotals();handleProductNameInput(this)" onblur="hideProductSuggestSoon(this)" autocomplete="off" style="flex:1;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
-    +'<button onclick="removeOfferItemRow(\''+item._rid+'\')" style="background:#0f1923;border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#ef4444;font-size:12px;padding:0 11px;cursor:pointer;">🗑️</button>'
+  var catOptions=CATEGORY_LIST.map(function(c){return '<option value="'+c+'"'+(c===item.category?' selected':'')+'>'+escHtml(c)+'</option>';}).join('');
+  /* Redesign vol6 — TYLKO warstwa HTML. Nietkniete: data-rid, wszystkie klasy
+     oe-i-*, typy pol (number step=any — parseFloat zalezy od tego), inline
+     oninput/onblur/onkeydown, kolejnosc pol. .oe-i-suggest-box zostaje
+     POTOMKIEM .oe-item-row, bo autocomplete szuka go przez row.querySelector. */
+  var svgDel='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+  return '<div class="card oe-item-row" data-rid="'+item._rid+'">'
+    +'<div class="oe-row-top">'
+      +'<input class="oe-i-name in" value="'+escAttr(item.name||'')+'" placeholder="Produkt *" oninput="recalcOfferTotals();handleProductNameInput(this)" onblur="hideProductSuggestSoon(this)" autocomplete="off">'
+      +'<button class="oe-del" title="Usuń pozycję" onclick="removeOfferItemRow(\''+item._rid+'\')">'+svgDel+'</button>'
     +'</div>'
-    +'<div class="oe-i-suggest-box" style="display:none;background:#0a1520;border:1px solid rgba(232,96,28,.3);border-radius:8px;overflow:hidden;"></div>'
-    +'<input class="oe-i-desc" value="'+(item.description||'').replace(/"/g,'&quot;')+'" placeholder="Opis (opcjonalnie)" style="width:100%;padding:8px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.07);border-radius:8px;color:#c7d0da;font-size:11px;outline:none;">'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:6px;">'
-    +'<input class="oe-i-qty" type="number" step="any" value="'+(item.qty!=null?item.qty:1)+'" placeholder="Ilość" oninput="recalcOfferTotals()" style="padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
-    +'<select class="oe-i-unit" style="padding:9px 6px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;outline:none;">'
-      +['szt','m2','mb','kg','opak','kpl'].map(function(u){return '<option value="'+u+'"'+(u===item.unit?' selected':'')+'>'+u+'</option>';}).join('')
-    +'</select>'
-    +'<select class="oe-i-cat" onchange="recalcOfferTotals()" style="padding:9px 6px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:11px;outline:none;">'+catOptions+'</select>'
+    +'<div class="oe-i-suggest-box" style="display:none;"></div>'
+    +'<input class="oe-i-desc in" value="'+escAttr(item.description||'')+'" placeholder="Opis (opcjonalnie)">'
+    +'<div class="oe-grid3">'
+      +'<div><div class="oe-cap">Ilość</div>'
+        +'<input class="oe-i-qty in" type="number" step="any" value="'+(item.qty!=null?item.qty:1)+'" placeholder="Ilość" oninput="recalcOfferTotals()"></div>'
+      +'<div><div class="oe-cap">Jedn.</div>'
+        +'<select class="oe-i-unit in">'
+        +['szt','m2','mb','kg','opak','kpl'].map(function(u){return '<option value="'+u+'"'+(u===item.unit?' selected':'')+'>'+u+'</option>';}).join('')
+        +'</select></div>'
+      +'<div><div class="oe-cap">Kategoria</div>'
+        +'<select class="oe-i-cat in" onchange="recalcOfferTotals()">'+catOptions+'</select></div>'
     +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
-    +'<div>'
-      +'<div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;font-weight:700;letter-spacing:.3px;margin-bottom:3px;">Cena zakupu netto</div>'
-      +'<input class="oe-i-buy" type="number" step="any" value="'+(item.buy_price!=null&&item.buy_price!==''?item.buy_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()" style="width:100%;box-sizing:border-box;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
+    +'<div class="oe-grid2">'
+      +'<div><div class="oe-cap">Cena zakupu netto</div>'
+        +'<input class="oe-i-buy in" type="number" step="any" value="'+(item.buy_price!=null&&item.buy_price!==''?item.buy_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()"></div>'
+      +'<div><div class="oe-cap oe-cap-sell">Cena sprzedaży netto</div>'
+        +'<input class="oe-i-sell in" type="number" step="any" value="'+(item.sell_price!=null&&item.sell_price!==''?item.sell_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}"></div>'
     +'</div>'
-    +'<div>'
-      +'<div style="font-size:9px;color:#e8601c;text-transform:uppercase;font-weight:700;letter-spacing:.3px;margin-bottom:3px;">Cena sprzedaży netto</div>'
-      +'<input class="oe-i-sell" type="number" step="any" value="'+(item.sell_price!=null&&item.sell_price!==''?item.sell_price:'')+'" placeholder="0,00" oninput="recalcOfferTotals()" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOfferItemRowFromEnter(this);}" style="width:100%;box-sizing:border-box;padding:9px 10px;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:12px;outline:none;">'
-    +'</div>'
-    +'</div>'
-    +'<div class="oe-i-price-suggest" style="display:none;font-size:10px;color:#8a9ab0;"></div>'
-    +'<div class="oe-i-margin" style="font-size:11px;color:#8a9ab0;"></div>'
+    +'<div class="oe-i-price-suggest" style="display:none;"></div>'
+    +'<div class="oe-i-margin"></div>'
     +'</div>';
 }
 /* Sprint 0.39 — "Ostatnio kupione": osobny blok, osobne źródło danych
@@ -3872,10 +3959,10 @@ async function loadRecentPurchases(){
   recentPurchasesCache=res.data;
   wrap.style.display='block';
   listEl.innerHTML=res.data.map(function(r,idx){
-    return '<div onclick="addRecentPurchaseToOffer('+idx+')" style="flex:0 0 auto;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;cursor:pointer;min-width:118px;">'
-      +'<div style="font-size:11px;font-weight:700;color:#fff;">'+r.product_name+'</div>'
-      +'<div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+(r.unit||'')+' · '+pzFmt(r.unit_price_net)+' zł</div>'
-      +'<div style="font-size:9px;color:#8a9ab0;">'+acRecentDaysLabel(r.last_purchased_at)+'</div>'
+    return '<div class="oe-chip" onclick="addRecentPurchaseToOffer('+idx+')">'
+      +'<div style="font-size:var(--f-sm);font-weight:700;color:var(--text);">'+escHtml(r.product_name||'')+'</div>'
+      +'<div style="font-size:var(--f-xs);color:var(--osg-orange);font-weight:700;margin-top:2px;">'+pzFmt(r.unit_price_net)+' zł / '+escHtml(r.unit||'')+'</div>'
+      +'<div style="font-size:var(--f-xs);color:var(--text-3);margin-top:1px;">'+acRecentDaysLabel(r.last_purchased_at)+'</div>'
       +'</div>';
   }).join('');
 }
@@ -3895,8 +3982,8 @@ function addRecentPurchaseToOffer(idx){
   var box=row?row.querySelector('.oe-i-price-suggest'):null;
   if(box){
     box.style.display='block';
-    box.innerHTML='Ostatnio kupiono: <b style="color:#fff;">'+pzFmt(r.unit_price_net)+' zł</b> · '+acRecentDaysLabel(r.last_purchased_at)
-      +' — <span onclick="useSuggestedBuyPrice(this,'+Number(r.unit_price_net)+')" style="color:#22c55e;font-weight:700;cursor:pointer;text-decoration:underline;">Użyj tej ceny</span>';
+    box.innerHTML='Ostatnio kupiono: <b style="color:var(--text);">'+pzFmt(r.unit_price_net)+' zł</b> · '+acRecentDaysLabel(r.last_purchased_at)
+      +' — <span onclick="useSuggestedBuyPrice(this,'+Number(r.unit_price_net)+')" style="color:var(--ok);font-weight:700;cursor:pointer;text-decoration:underline;">Użyj tej ceny</span>';
   }
 }
 function useSuggestedBuyPrice(spanEl,price){
@@ -3944,11 +4031,11 @@ async function fetchProductSuggestions(clientId,term,row,box){
        ofercie — nie wolno jej podawać jako "historii godnej powtórzenia". */
     var priced=isTrustedHistoricPrice(r);
     var line2 = priced
-      ? (r.unit||'')+' · '+(r.category||'')+' · u tego klienta: '+Number(r.sell_price).toFixed(2)+' zł'
-      : (r.unit||'')+' · '+(r.category||'')+' · <span style="color:#f59e0b;">bez wiarygodnej ceny — wypełni tylko opis</span>';
-    return '<div class="oe-i-suggest-item" data-idx="'+idx+'" style="padding:8px 10px;'+(idx<items.length-1?'border-bottom:1px solid rgba(255,255,255,.06);':'')+'cursor:pointer;'+(priced?'':'opacity:.72;')+'">'
-      +'<div style="font-size:12px;font-weight:700;color:'+(priced?'#fff':'#c7d0da')+';">'+r.name+'</div>'
-      +'<div style="font-size:10px;color:#8a9ab0;">'+line2+'</div>'
+      ? escHtml(r.unit||'')+' · '+escHtml(r.category||'')+' · u tego klienta: '+Number(r.sell_price).toFixed(2)+' zł'
+      : escHtml(r.unit||'')+' · '+escHtml(r.category||'')+' · <span style="color:var(--warn);">bez wiarygodnej ceny — wypełni tylko opis</span>';
+    return '<div class="oe-i-suggest-item" data-idx="'+idx+'"'+(priced?'':' style="opacity:.72;"')+'>'
+      +'<div style="font-size:var(--f-base);font-weight:700;color:var(--text);">'+escHtml(r.name||'')+'</div>'
+      +'<div style="font-size:var(--f-sm);color:var(--text-3);margin-top:1px;">'+line2+'</div>'
       +'</div>';
   }).join('');
   box.style.display='block';
@@ -4007,10 +4094,10 @@ function removeOfferItemRow(rid){
   recalcOfferTotals();
 }
 function marginBadgeColor(pct,target){
-  if(target==null)return '#8a9ab0';
-  if(pct>=target)return '#22c55e';
-  if(pct>=target-5)return '#f59e0b';
-  return '#ef4444';
+  if(target==null)return 'var(--text-3)';
+  if(pct>=target)return 'var(--ok)';
+  if(pct>=target-5)return 'var(--warn)';
+  return 'var(--err)';
 }
 function readOfferItemsFromForm(){
   return Array.prototype.map.call(document.querySelectorAll('.oe-item-row'),function(row){
@@ -4036,11 +4123,13 @@ function recalcOfferTotals(){
      progow, a 0 to nie jest "brak progu" tylko "prog zerowy" — badge robil sie
      zielony i sugerowal, ze marza jest powyzej oczekiwanej. */
   var sumNet=0,sumMarginAmt=0,sumTargetWeighted=0,netZTargetem=0;
+  var anyCost=false;   /* czy znamy koszt choc jednej pozycji */
   items.forEach(function(it){
     var lineNet=it.qty*it.sell_price;
     var lineMarginAmt=(it.sell_price-it.buy_price)*it.qty;
     var pct=it.sell_price>0?((it.sell_price-it.buy_price)/it.sell_price*100):0;
     sumNet+=lineNet; sumMarginAmt+=lineMarginAmt;
+    if(it.sell_price>0&&it.buy_price>0) anyCost=true;
     it.margin_amount=lineMarginAmt; it.margin_pct=pct; // zapisywane przy saveOffer
     var target=CATEGORY_TARGETS[it.category];
     if(target!=null){ sumTargetWeighted+=target*lineNet; netZTargetem+=lineNet; }
@@ -4054,7 +4143,7 @@ function recalcOfferTotals(){
        to fałszywa informacja, a ostrzeżenie o celu nie ma czego pilnować. */
     if(badge){
       if(!(it.sell_price>0)||!(it.buy_price>0)){
-        badge.innerHTML='<span style="color:#8a9ab0;">Marża: — <span style="opacity:.7;">(uzupełnij obie ceny)</span></span>';
+        badge.innerHTML='<span style="color:var(--text-3);">Marża: \u2014 <span style="opacity:.75;">(uzupełnij obie ceny)</span></span>';
       }else{
         badge.innerHTML='<span style="color:'+color+';font-weight:700;">Marża: '+pct.toFixed(1)+'%'+'</span> · '+lineMarginAmt.toFixed(0)+' zł'+warnTxt;
       }
@@ -4064,15 +4153,29 @@ function recalcOfferTotals(){
   var vatRate=parseFloat((document.getElementById('oe-vat')||{}).value)||0;
   var sumGross=sumNet*(1+vatRate/100);
   var blendedTarget=netZTargetem>0?(sumTargetWeighted/netZTargetem):null;
-  var elNet=document.getElementById('oe-sum-net'); if(elNet)elNet.textContent=sumNet.toFixed(0)+' zł';
-  var elGross=document.getElementById('oe-sum-gross'); if(elGross)elGross.textContent=sumGross.toFixed(0)+' zł';
-  var elMA=document.getElementById('oe-sum-margin-amt'); if(elMA)elMA.textContent=sumMarginAmt.toFixed(0)+' zł';
-  var elMP=document.getElementById('oe-sum-margin-pct'); if(elMP){elMP.textContent=pctTotal.toFixed(1)+'%';elMP.style.color=marginBadgeColor(pctTotal,blendedTarget);}
+  /* vol6 — konsekwentnie z logika badge'a pozycji (Sprint 0.39.1): dopoki nie
+     ma danych, kwota jest NIEZNANA, nie zerowa.
+     Dwa osobne przypadki:
+     1) pusty formularz  -> netto/VAT/brutto pokazuja "\u2014", nie "0 zl";
+     2) rola sales       -> v_offer_items maskuje buy_price do NULL, wiec
+        parseFloat('')||0 dawalo koszt 0 i marze 100%. Bez kompletu cen
+        zysk i marza pokazuja "\u2014" zamiast falszywej setki. */
+  function oeMoney(v){ return v.toLocaleString('pl-PL',{maximumFractionDigits:0})+' zł'; }
+  var hasNet=(items.length>0&&sumNet>0);
+  var elNet=document.getElementById('oe-sum-net'); if(elNet)elNet.textContent=hasNet?oeMoney(sumNet):'\u2014';
+  var elVat=document.getElementById('oe-sum-vat'); if(elVat)elVat.textContent=hasNet?oeMoney(sumGross-sumNet):'\u2014';
+  var elGross=document.getElementById('oe-sum-gross'); if(elGross)elGross.textContent=hasNet?oeMoney(sumGross):'\u2014';
+  var elMA=document.getElementById('oe-sum-margin-amt');
+  if(elMA){ elMA.textContent=(hasNet&&anyCost)?oeMoney(sumMarginAmt):'\u2014';
+            elMA.style.color=(hasNet&&anyCost)?'var(--ok)':'var(--text-3)'; }
+  var elMP=document.getElementById('oe-sum-margin-pct');
+  if(elMP){ elMP.textContent=(hasNet&&anyCost)?(pctTotal.toFixed(1)+'%'):'\u2014';
+            elMP.style.color=(hasNet&&anyCost)?marginBadgeColor(pctTotal,blendedTarget):'var(--text-3)'; }
   var warnEl=document.getElementById('oe-margin-warning');
   if(warnEl){
-    if(blendedTarget!=null&&pctTotal<blendedTarget){
+    if(anyCost&&blendedTarget!=null&&pctTotal<blendedTarget){
       warnEl.style.display='block';
-      warnEl.textContent='⚠️ Cała oferta ma marżę '+pctTotal.toFixed(1)+'% przy oczekiwanej ok. '+blendedTarget.toFixed(1)+'% (średnia ważona kategorii pozycji). Możesz zapisać mimo to.';
+      warnEl.textContent='Cała oferta ma marżę '+pctTotal.toFixed(1)+'% przy oczekiwanej ok. '+blendedTarget.toFixed(1)+'% (średnia ważona kategorii pozycji). Możesz zapisać mimo to.';
     }else{
       warnEl.style.display='none';
     }
@@ -5248,8 +5351,7 @@ function setOfferDocType(t){
   ['oferta','proforma','faktura_vat'].forEach(function(k){
     var el=document.getElementById('oe-dt-'+k);
     if(!el)return;
-    if(k===t){el.style.background='#e8601c';el.style.color='#fff';}
-    else{el.style.background='#1e2f42';el.style.color='#8a9ab0';}
+    el.classList.toggle('oe-dt-on', k===t);
   });
 }
 var previousOfferStatus=null;
@@ -5281,6 +5383,14 @@ function newOfferForClient(clientId,clientName){
     onOfferClientChange();
   });
 }
+function offerFormLoadingState(on){
+  var box=document.getElementById('oe-items');
+  if(box&&on)box.innerHTML='<div class="oe-loading"><div class="oe-skel"></div><div class="oe-skel"></div><div class="oe-skel"></div></div>';
+  ['oe-sum-net','oe-sum-vat','oe-sum-gross','oe-sum-margin-amt','oe-sum-margin-pct'].forEach(function(k){
+    var el=document.getElementById(k); if(el){el.textContent='\u2014';el.style.color='';}
+  });
+  var w=document.getElementById('oe-margin-warning'); if(w)w.style.display='none';
+}
 async function openOffer(id){
   editingOfferId=id;
   ensureOfferIdempotencyKey(true);
@@ -5288,10 +5398,18 @@ async function openOffer(id){
   document.getElementById('oe-error').style.display='none';
   var pdfBtn=document.getElementById('oe-pdf-btn'); if(pdfBtn)pdfBtn.style.display='block';
   loadRecentPurchases();
+  /* vol6 — zanim dane dojda, formularz pokazuje szkielet, a nie pozycje
+     POPRZEDNIO otwartej oferty i sumy "0 zl". Placeholder celowo NIE ma klasy
+     .oe-item-row, zeby nie wszedl do readOfferItemsFromForm ani do sum. */
+  offerFormLoadingState(true);
   go('s-offer-edit');
-  if(!sbEnabled)return;
+  if(!sbEnabled){offerFormLoadingState(false);return;}
   var res=await sb.from('v_offers').select('*').eq('id',id).maybeSingle();   /* 3C */
-  if(res.error||!res.data){alert('Błąd wczytywania oferty.');return;}
+  if(res.error||!res.data){
+    var box=document.getElementById('oe-items');
+    if(box)box.innerHTML='<div class="cal-empty">Nie udało się wczytać oferty. Wróć do dokumentów i spróbuj ponownie.</div>';
+    return;
+  }
   var o=res.data;
   setOfferDocType(o.document_type||'oferta');
   previousOfferStatus=o.status||'draft';
@@ -5345,7 +5463,7 @@ async function saveOffer(){
     if(firstBad){
       var inp=firstBad.querySelector('.oe-i-buy');
       firstBad.scrollIntoView({behavior:'smooth',block:'center'});
-      if(inp){inp.style.border='1px solid #ef4444'; setTimeout(function(){inp.style.border='1px solid rgba(255,255,255,.1)';},4000);}
+      if(inp){inp.style.border='1px solid var(--err)'; setTimeout(function(){inp.style.border='';},4000);}
     }
     return;
   }
