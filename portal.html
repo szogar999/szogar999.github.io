@@ -129,7 +129,7 @@ h1{margin:0;font-size:31px;line-height:1.15;font-weight:800;letter-spacing:-.7px
   <div class="hero">
     <div class="pill"><span class="dot"></span>Zamówienie w realizacji</div>
     <h1>Towar jest<br>przygotowywany</h1>
-    <div class="hero-sub">Dostawa <b>dziś do godz. 8:00</b><br>Osiedle Zielona Dolina — etap II</div>
+    <div class="hero-sub">Dostawa <b>dziś do godz. <span id="h-hour"></span></b><br>Osiedle Zielona Dolina — etap II</div>
   </div>
 
   <div class="card">
@@ -145,7 +145,7 @@ h1{margin:0;font-size:31px;line-height:1.15;font-weight:800;letter-spacing:-.7px
     </div>
     <div class="r">
       <div class="r-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-      <div><div class="r-k">Termin</div><div class="r-v">Dziś, 2 września · 8:00</div></div>
+      <div><div class="r-k">Termin</div><div class="r-v" id="d-when"></div></div>
     </div>
     <div class="r">
       <div class="r-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
@@ -168,7 +168,7 @@ h1{margin:0;font-size:31px;line-height:1.15;font-weight:800;letter-spacing:-.7px
     <button class="doc-h" id="doc-btn" aria-expanded="false" aria-controls="doc-body">
       <span>
         <span style="font-size:15px;font-weight:700;display:block;">Oferta OSG/2026/0038</span>
-        <span style="font-size:13px;color:var(--ink-3);">5 pozycji · zaakceptowana 14 sierpnia</span>
+        <span style="font-size:13px;color:var(--ink-3);">5 pozycji · zaakceptowana <span id="d-acc"></span></span>
       </span>
       <svg class="chev" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
     </button>
@@ -213,15 +213,28 @@ var SNAP={
     ['Wkręty do płyt g-k 3,5x35',60,'op',37.50],
     ['Gładź gipsowa szpachlowa 20 kg',200,'szt',39.90]
   ],
+  hour:'16:00',
   steps:[
-    ['done','Oferta przygotowana','13 sierpnia'],
-    ['done','Oferta zaakceptowana','14 sierpnia'],
-    ['now','Towar w przygotowaniu','dziś rano'],
-    ['todo','Transport na budowę','dziś, 8:00'],
-    ['todo','Dostarczone','—']
+    ['done','Oferta przygotowana',-20],
+    ['done','Oferta zaakceptowana',-19],
+    ['now','Towar w przygotowaniu',0],
+    ['todo','Transport na budowę',0],
+    ['todo','Dostarczone',null]
   ]
 };
 function zl(v){return v.toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2})+' zł';}
+/* Daty liczone od dnia otwarcia strony — portal nigdy nie pokaże terminu
+   z przeszłości ani daty sprzed prezentacji. */
+function dOff(n){var d=new Date();d.setDate(d.getDate()+n);return d;}
+function dLong(d){return d.toLocaleDateString('pl-PL',{day:'numeric',month:'long'});}
+function stepWhen(off,i){
+  if(off===null)return '—';
+  if(off<0)return dLong(dOff(off));
+  return i===3 ? ('dziś, '+SNAP.hour) : 'dziś rano';
+}
+document.getElementById('h-hour').textContent=SNAP.hour;
+document.getElementById('d-when').textContent='Dziś, '+dLong(dOff(0))+' · '+SNAP.hour;
+document.getElementById('d-acc').textContent=dLong(dOff(-19));
 document.getElementById('s-net').textContent=zl(SNAP.net);
 document.getElementById('s-vat').textContent=zl(SNAP.vat);
 document.getElementById('s-gross').textContent=zl(SNAP.gross);
@@ -231,9 +244,9 @@ var ICO={
   now:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   todo:'<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>'
 };
-document.getElementById('tl').innerHTML=SNAP.steps.map(function(s){
+document.getElementById('tl').innerHTML=SNAP.steps.map(function(s,i){
   return '<div class="tl-i '+s[0]+'"><div class="tl-b">'+ICO[s[0]]+'</div>'
-    +'<div class="tl-n">'+s[1]+'</div><div class="tl-d">'+s[2]+'</div></div>';
+    +'<div class="tl-n">'+s[1]+'</div><div class="tl-d">'+stepWhen(s[2],i)+'</div></div>';
 }).join('');
 
 document.getElementById('items').innerHTML=SNAP.items.map(function(i){

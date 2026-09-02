@@ -284,6 +284,11 @@
   background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--r);}
 
 /* modale modulu dostaw */
+/* Pływający OSG AI siedział na 76px — to zapas pod dolną nawigację,
+   której na desktopie już nie ma. Zjeżdża niżej, a treść dostaje margines,
+   żeby przycisk nigdy nie zasłaniał CTA ani ostatniego wiersza. */
+@media(min-width:1025px){ #ai-fab{bottom:20px!important;right:20px!important;} }
+.main-body{padding-bottom:96px;}
 #cmd-day-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   gap:var(--s3) var(--s2);padding:var(--s3) 0;}
 @media(max-width:520px){ #cmd-day-summary{grid-template-columns:repeat(2,minmax(0,1fr));} }
@@ -304,7 +309,8 @@
 .oe-cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--s5);align-items:start;}
 @media(max-width:1100px){ .oe-cols{grid-template-columns:1fr;} }
 .oe-main{display:flex;flex-direction:column;gap:var(--s4);min-width:0;}
-.oe-side{position:sticky;top:var(--s6);display:flex;flex-direction:column;gap:var(--s4);max-height:calc(100vh - var(--s10));overflow-y:auto;}
+.oe-side{position:sticky;top:108px;display:flex;flex-direction:column;gap:var(--s4);
+  max-height:calc(100vh - 128px);overflow-y:auto;padding-bottom:var(--s6);}
 @media(max-width:1100px){ .oe-side{position:static;} }
 .oe-dt-row{display:flex;gap:var(--s2);margin-top:5px;}
 .oe-dt{flex:1;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);
@@ -1930,7 +1936,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
                 <div id="ct-error" style="display:none;font-size:var(--f-sm);color:var(--err);"></div>
                 <button onclick="saveQuickTask()" class="b b-pri" style="gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Zapisz zadanie</button>
               </div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:var(--f-sm);color:var(--text-3);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Zadania widoczne w module Zadania</div>
+              
             </div>
           </div>
 
@@ -2608,7 +2614,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.68.1-fixpack';
+var APP_VERSION = 'v0.69.0-final';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4666,9 +4672,8 @@ async function loadAiSignals(){
   var alertsEl=document.getElementById('cmd-ai-alerts');
   if(alertsEl){
     var extra=signals.slice(5,13);
-    alertsEl.innerHTML=extra.length===0
-      ? '<div class="row"><div style="font-size:var(--f-sm);color:var(--text-3);">'
-        +(signals.length===0?'Brak alarmów — wszystko wygląda spokojnie.':'Nic poza priorytetami obok.')+'</div></div>'
+    alertsEl.style.display=extra.length?'':'none';
+    alertsEl.innerHTML=extra.length===0 ? ''
       : extra.map(function(s){
           return '<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div>';
         }).join('');
@@ -4722,6 +4727,7 @@ function renderCeoMagazyn(stock){
   var zarezerwowane=stock.filter(function(s){return Number(s.reserved_qty)>0;}).length;
   var braki=stock.filter(function(s){return s.is_shortage;});
   var tile=function(label,val,color){return '<div style="display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:var(--f-base);color:var(--text-2);">'+label+'</span><span style="font-size:var(--f-lg);font-weight:800;'+(color?'color:'+color+';':'color:var(--text);')+'">'+val+'</span></div>';};
+  demoHideCard(tileEl,(naStanie+zarezerwowane+braki.length)===0);
   tileEl.innerHTML=tile('Produktów na stanie',naStanie,'#22c55e')+tile('Z rezerwacją',zarezerwowane,'#3b82f6')+tile('Braki',braki.length,braki.length?'#ef4444':'#8a9ab0')+tile('Wszystkich produktów',stock.length);
   if(braki.length){
     brakiEl.innerHTML='<div style="margin-top:var(--s3);padding:var(--s3);background:var(--err-bg);border-radius:var(--r);"><div style="font-size:var(--f-sm);color:var(--err);font-weight:700;margin-bottom:5px;">Braki — zarezerwowano więcej niż jest fizycznie</div>'
@@ -4813,6 +4819,12 @@ async function updateDeliveryDate(id,dateValue){
   if(res.error){alert('Błąd zapisu terminu: '+res.error.message);return;}
   loadOwnerDeliveries();
 }
+/* Final polish — pusta sekcja na demo jest gorsza niz jej brak.
+   Chowamy CALA karte (.c), nie samo wnetrze, zeby nie zostawal naglowek. */
+function demoHideCard(el,hide){
+  var card=el&&el.closest?el.closest('.c'):null;
+  if(card)card.style.display=hide?'none':'';
+}
 function renderCeoPurchasing(purchases){
   var el=document.getElementById('ceo-purchasing');
   if(!el)return;
@@ -4824,6 +4836,7 @@ function renderCeoPurchasing(purchases){
     return p.needed_by&&p.needed_by<today&&['odebrane','wydane na budowę','anulowane'].indexOf(p.status)===-1;
   }).length;
   var tile=function(label,val,color){return '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;'+(color?'color:'+color+';':'')+'">'+val+'</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">'+label+'</div></div>';};
+  demoHideCard(el,(czeka+zamowiono+opoznione+wydano)===0);
   el.innerHTML=tile('Czeka na zamówienie',czeka,'#f59e0b')+tile('Zamówione',zamowiono,'#3b82f6')+tile('Opóźnione',opoznione,'#ef4444')+tile('Wydane na budowę',wydano,'#22c55e');
 }
 
@@ -4913,10 +4926,13 @@ function renderCeoRisks(riskSignals,overdueFollowups){
   if(overdueFollowups.length>0){
     items.push('<div class="row"><div style="font-size:12px;color:#ef4444;">⏰ '+overdueFollowups.length+' '+(overdueFollowups.length===1?'przeterminowany follow-up ofertowy':'przeterminowanych follow-upów ofertowych')+'.</div></div>');
   }
-  riskSignals.slice(0,6).forEach(function(s){
+  /* Final polish — riskSignals to ta sama lista co Priorytety AI, wiec
+     pierwsza piatka dublowala sie slowo w slowo. Pokazujemy nadwyzke. */
+  riskSignals.slice(5,11).forEach(function(s){
     items.push('<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div>');
   });
-  el.innerHTML=items.length?items.join(''):'<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak wykrytych ryzyk. 🎉</div></div>';
+  demoHideCard(el,items.length===0);
+  el.innerHTML=items.join('');
 }
 
 function renderCeoForecast(clients,offers){
