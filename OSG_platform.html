@@ -238,6 +238,7 @@
 .dlv-line{display:flex;gap:9px;align-items:flex-start;font-size:var(--f-base);color:var(--text-2);}
 .dlv-line svg{flex-shrink:0;margin-top:2px;color:var(--text-3);}
 .dlv-line b{color:var(--text);font-weight:700;}
+.dlv-addr{color:var(--text);font-weight:600;}
 .dlv-eta{font-size:var(--f-md);font-weight:800;color:var(--text);letter-spacing:-.2px;}
 .dlv-late{color:var(--err);font-weight:800;}
 .dlv-acts{display:flex;gap:var(--s2);padding:0 var(--s4) var(--s4);flex-wrap:wrap;}
@@ -2437,7 +2438,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.65.1-dostawy';
+var APP_VERSION = 'v0.65.2-dostawy';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5729,19 +5730,38 @@ function dlvDniOd(dateStr){
   var d=new Date(dateStr+'T00:00:00'), t=new Date(); t.setHours(0,0,0,0);
   return Math.round((t-d)/86400000);
 }
+/* Prezentacja terminu. LOGIKA DAT BEZ ZMIAN — dlvDniOd() liczy tak samo,
+   zmienia sie wylacznie to, co i kiedy pokazujemy:
+     dzis / jutro  -> sama etykieta, data nic nie wnosi
+     dalszy termin -> dzien tygodnia + data
+     zalegly       -> "Opozniona" + konkretna data i liczba dni
+     zamkniete w przeszlosci -> dzien tygodnia + data, bez alarmu */
 function dlvTermin(d){
-  var data=d.delivery_date?new Date(d.delivery_date+'T00:00:00').toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit'}):null;
-  if(!data&&!d.delivery_time)return '';
+  if(!d.delivery_date&&!d.delivery_time)return '';
   var dni=dlvDniOd(d.delivery_date);
   var otwarta=(d.status!=='dostarczona'&&d.status!=='anulowana');
-  var opis=(dni===0?'Dziś':dni===1?'Wczoraj':dni===-1?'Jutro':data)||'';
-  var late=(otwarta&&dni>0);
+  var late=(otwarta&&dni!=null&&dni>0);
+  var dt=d.delivery_date?new Date(d.delivery_date+'T00:00:00'):null;
+  var data=dt?dt.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit'}):'';
+  var dzien=dt?dt.toLocaleDateString('pl-PL',{weekday:'short'}).replace('.',''):'';
+  var godz=d.delivery_time?' · '+escHtml(d.delivery_time):'';
+  if(late){
+    return '<div class="dlv-line">'+dlvIco('clock',16)
+      +'<div><span class="dlv-eta dlv-late">Opóźniona</span>'
+      +'<div style="font-size:var(--f-sm);color:var(--err);font-weight:700;">'
+        +escHtml(dzien?dzien+' '+data:data)+' · '+dni+' '+(dni===1?'dzień':'dni')+' po terminie</div>'
+      +(d.delivery_time?'<div style="font-size:var(--f-sm);color:var(--text-3);">'+escHtml(d.delivery_time)+'</div>':'')
+      +'</div></div>';
+  }
+  var glowna;
+  if(dni===0)glowna='Dziś';
+  else if(dni===-1)glowna='Jutro';
+  else if(dt)glowna=(dzien?dzien+' ':'')+data;
+  else glowna='';
+  var tresc=glowna?escHtml(glowna)+godz:(d.delivery_time?escHtml(d.delivery_time):'');
+  if(!tresc)return '';
   return '<div class="dlv-line">'+dlvIco('clock',16)
-    +'<div><span class="dlv-eta'+(late?' dlv-late':'')+'">'+escHtml(opis)
-    +(d.delivery_time?' · '+escHtml(d.delivery_time):'')+'</span>'
-    +(late?'<div style="font-size:var(--f-sm);color:var(--err);font-weight:700;">Opóźnienie '+dni+' dn.</div>':'')
-    +(data&&opis!==data?'<div style="font-size:var(--f-sm);color:var(--text-3);">'+escHtml(data)+'</div>':'')
-    +'</div></div>';
+    +'<span class="dlv-eta">'+tresc+'</span></div>';
 }
 
 var driverDeliveriesCache=[];
