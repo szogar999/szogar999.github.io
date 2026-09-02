@@ -333,6 +333,7 @@
 .oe-i-suggest-item{padding:9px 11px;cursor:pointer;border-bottom:1px solid var(--border);}
 .oe-i-suggest-item:last-child{border-bottom:none;}
 .oe-i-suggest-item:hover{background:var(--surface-2);}
+.oe-sugg-msg{padding:9px 11px;font-size:var(--f-sm);color:var(--text-3);}
 .oe-i-price-suggest{font-size:var(--f-sm);color:var(--text-3);}
 .oe-i-margin{font-size:var(--f-sm);color:var(--text-3);}
 .oe-del{border:1px solid var(--border);background:var(--surface);color:var(--text-3);
@@ -2607,7 +2608,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.68.0-fixpack';
+var APP_VERSION = 'v0.68.1-fixpack';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4020,6 +4021,8 @@ function handleProductNameInput(inputEl){
   clearTimeout(productSuggestTimer);
   var clientId=(document.getElementById('oe-client')||{value:''}).value;
   if(!clientId||term.length<2){ box.style.display='none'; box.innerHTML=''; return; }
+  box.innerHTML='<div class="oe-sugg-msg">Szukam w historii tego klienta\u2026</div>';
+  box.style.display='block';
   productSuggestTimer=setTimeout(function(){ fetchProductSuggestions(clientId,term,row,box); },280);
 }
 async function fetchProductSuggestions(clientId,term,row,box){
@@ -4035,7 +4038,10 @@ async function fetchProductSuggestions(clientId,term,row,box){
     .order('created_at',{ascending:false})
     .limit(20);
   if(res.error){ console.warn('Autocomplete — zapytanie odrzucone:',res.error); box.style.display='none'; box.innerHTML=''; return; }
-  if(!res.data||res.data.length===0){ box.style.display='none'; box.innerHTML=''; return; }
+  if(!res.data||res.data.length===0){
+    box.innerHTML='<div class="oe-sugg-msg">Brak tego produktu w historii klienta \u2014 wpisz dane ręcznie.</div>';
+    box.style.display='block'; return;
+  }
   var seen={},items=[];
   res.data.forEach(function(r){
     var key=(r.name||'').toLowerCase();
