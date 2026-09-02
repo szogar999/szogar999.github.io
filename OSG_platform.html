@@ -250,25 +250,26 @@
 .dlv-note svg{flex-shrink:0;margin-top:1px;}
 .dlv-done{display:flex;gap:7px;align-items:center;font-size:var(--f-sm);color:var(--ok);font-weight:600;}
 
-/* timeline przebiegu */
-.tl{display:flex;padding:var(--s3) var(--s4) var(--s1);}
-.tl-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;min-width:0;}
-.tl-bar{position:absolute;top:6px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
-.tl-step.done .tl-bar{background:var(--ok);}
-.tl-step:last-child .tl-bar{display:none;}
-.tl-dot{width:14px;height:14px;border-radius:50%;background:var(--surface);
-  border:2px solid var(--border-strong);position:relative;z-index:1;}
-.tl-step.done .tl-dot{background:var(--ok);border-color:var(--ok);}
-.tl-step.now .tl-dot{background:var(--osg-orange);border-color:var(--osg-orange);
+/* timeline przebiegu dostawy — prefiks dtl-, bo .tl-dot jest juz zajete
+   przez timeline aktywnosci (tl-wrap / tl-item) i nadpisywalo kropki. */
+.dtl{display:flex;padding:var(--s3) var(--s4) var(--s1);}
+.dtl-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;min-width:0;}
+.dtl-bar{position:absolute;top:6px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.dtl-step.done .dtl-bar{background:var(--ok);}
+.dtl-step:last-child .dtl-bar{display:none;}
+.dtl-dot{width:14px;height:14px;border-radius:50%;background:var(--surface);
+  border:2px solid var(--border-strong);position:relative;z-index:1;flex-shrink:0;}
+.dtl-step.done .dtl-dot{background:var(--ok);border-color:var(--ok);}
+.dtl-step.now .dtl-dot{background:var(--osg-orange);border-color:var(--osg-orange);
   box-shadow:0 0 0 4px var(--osg-orange-soft);}
-.tl-lbl{font-size:10px;font-weight:700;color:var(--text-3);text-align:center;line-height:1.2;}
-.tl-step.done .tl-lbl{color:var(--text-2);}
-.tl-step.now .tl-lbl{color:var(--osg-orange);}
-.tl-halt{margin:var(--s3) var(--s4) 0;border-radius:var(--r-sm);padding:8px 11px;
+.dtl-lbl{font-size:9.5px;font-weight:700;color:var(--text-3);text-align:center;
+  line-height:1.15;letter-spacing:-.1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dtl-step.done .dtl-lbl{color:var(--text-2);}
+.dtl-step.now .dtl-lbl{color:var(--osg-orange);}
+.dtl-halt{margin:var(--s3) var(--s4) 0;border-radius:var(--r-sm);padding:8px 11px;
   font-size:var(--f-sm);font-weight:700;display:flex;gap:7px;align-items:center;}
-.tl-halt.err{background:var(--err-bg);color:var(--err);}
-.tl-halt.mut{background:#f3f4f6;color:var(--text-2);}
-
+.dtl-halt.err{background:var(--err-bg);color:var(--err);}
+.dtl-halt.mut{background:#f3f4f6;color:var(--text-2);}
 .dlv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:var(--s4);}
 .dlv-sec{margin-bottom:var(--s6);}
 .dlv-sec-head{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3);}
@@ -2436,7 +2437,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.65.0-dostawy';
+var APP_VERSION = 'v0.65.1-dostawy';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -5703,17 +5704,23 @@ function deliveryStatusBadge(status){
   var txt=DELIVERY_STATUS_LABEL[status]||status||'—';
   return '<span class="bd bd-'+tone+'">'+dlvIco(DLV_STATUS_ICO[status]||'box',13)+escHtml(txt)+'</span>';
 }
+/* Skrocone podpisy WYLACZNIE pod kropki timeline'u — pelna nazwa zostaje
+   w DELIVERY_STATUS_LABEL (alert, <option>) i trafia tu do title. */
+var DELIVERY_STATUS_SHORT={zaplanowana:'Plan',do_odbioru:'Odbiór',odebrana:'Odebrane',
+  w_trasie:'Trasa',dostarczona:'Dostawa'};
 /* Timeline przebiegu — rysowany z DELIVERY_FLOW, bez wlasnej listy statusow. */
 function deliveryTimeline(status){
   if(status==='problem')
-    return '<div class="tl-halt err">'+dlvIco('alert',15)+'Przebieg wstrzymany — zgłoszony problem</div>';
+    return '<div class="dtl-halt err">'+dlvIco('alert',15)+'Przebieg wstrzymany — zgłoszony problem</div>';
   if(status==='anulowana')
-    return '<div class="tl-halt mut">'+dlvIco('x',15)+'Dostawa anulowana</div>';
+    return '<div class="dtl-halt mut">'+dlvIco('x',15)+'Dostawa anulowana</div>';
   var idx=DELIVERY_FLOW.indexOf(status);
-  return '<div class="tl">'+DELIVERY_FLOW.map(function(st,i){
+  return '<div class="dtl">'+DELIVERY_FLOW.map(function(st,i){
     var cls=i<idx?'done':(i===idx?'now':'');
-    return '<div class="tl-step '+cls+'"><span class="tl-bar"></span><span class="tl-dot"></span>'
-      +'<span class="tl-lbl">'+escHtml(DELIVERY_STATUS_LABEL[st])+'</span></div>';
+    var pelna=DELIVERY_STATUS_LABEL[st];
+    return '<div class="dtl-step '+cls+'" title="'+escHtml(pelna)+'">'
+      +'<span class="dtl-bar"></span><span class="dtl-dot"></span>'
+      +'<span class="dtl-lbl">'+escHtml(DELIVERY_STATUS_SHORT[st]||pelna)+'</span></div>';
   }).join('')+'</div>';
 }
 /* Ile dni temu wzgledem dzisiaj — do wyroznienia opoznien. */
