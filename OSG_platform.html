@@ -198,6 +198,8 @@
 .qa-btn:hover{background:var(--surface);border-color:var(--border-strong);color:var(--text);}
 .qt-type{border:1px solid var(--border);border-radius:var(--r);padding:9px;font-size:var(--f-sm);
   font-weight:700;cursor:pointer;}
+.qt-type{background:var(--surface-2);color:var(--text-2);}
+.qt-type.qt-on{background:var(--osg-orange);color:#fff;border-color:transparent;}
 .cdaf-pill{font-size:var(--f-sm);font-weight:700;padding:6px 12px;border-radius:var(--r-full);
   cursor:pointer;user-select:none;white-space:nowrap;}
 .cdaf-pill[style*="background:#1e2f42"],.cdaf-pill[style*="background: rgb(30, 47, 66)"]{
@@ -1839,8 +1841,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
             <div class="c-body">
               <div id="cd-task-form" style="display:none;flex-direction:column;gap:var(--s3);margin-bottom:var(--s3);padding:var(--s4);background:var(--surface-2);border-radius:var(--r);">
                 <div style="display:flex;gap:var(--s2);">
-                  <button type="button" id="ct-type-call" onclick="setQuickTaskType('call')" class="qt-type" style="flex:1;background:#e8601c;color:#fff;">Telefon</button>
-                  <button type="button" id="ct-type-meeting" onclick="setQuickTaskType('meeting')" class="qt-type" style="flex:1;background:#1e2f42;color:#fff;">Spotkanie</button>
+                  <button type="button" id="ct-type-call" onclick="setQuickTaskType('call')" class="qt-type qt-on" style="flex:1;">Telefon</button>
+                  <button type="button" id="ct-type-meeting" onclick="setQuickTaskType('meeting')" class="qt-type" style="flex:1;">Spotkanie</button>
                 </div>
                 <input id="ct-reason" class="in" placeholder="Co trzeba zrobić?">
                 <input id="ct-address" class="in" placeholder="Adres spotkania" style="display:none;">
@@ -2505,7 +2507,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.66.3-klient';
+var APP_VERSION = 'v0.66.4-klient';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3230,18 +3232,15 @@ function quickActionFocusNote(){
 }
 var quickTaskType='call';
 function setQuickTaskType(type){
+  /* vol6: stan aktywny idzie klasa .is-on zamiast zaszytych kolorow inline.
+     quickTaskType i zachowanie pola adresu bez zmian. */
   quickTaskType=type;
   var callBtn=document.getElementById('ct-type-call'), meetBtn=document.getElementById('ct-type-meeting');
   var addrInput=document.getElementById('ct-address');
-  if(type==='meeting'){
-    meetBtn.style.background='#e8601c'; meetBtn.style.border='none';
-    callBtn.style.background='#1e2f42'; callBtn.style.border='1px solid rgba(255,255,255,.1)';
-    addrInput.style.display='block';
-  }else{
-    callBtn.style.background='#e8601c'; callBtn.style.border='none';
-    meetBtn.style.background='#1e2f42'; meetBtn.style.border='1px solid rgba(255,255,255,.1)';
-    addrInput.style.display='none';
-  }
+  var isMeeting=(type==='meeting');
+  if(callBtn)callBtn.classList.toggle('qt-on',!isMeeting);
+  if(meetBtn)meetBtn.classList.toggle('qt-on',isMeeting);
+  if(addrInput)addrInput.style.display=isMeeting?'block':'none';
 }
 async function saveQuickTask(){
   var reason=document.getElementById('ct-reason').value.trim();
