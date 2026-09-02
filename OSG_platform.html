@@ -284,11 +284,27 @@
   background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--r);}
 
 /* modale modulu dostaw */
+#cmd-day-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--s3) var(--s2);padding:var(--s3) 0;}
+@media(max-width:520px){ #cmd-day-summary{grid-template-columns:repeat(2,minmax(0,1fr));} }
+/* ---- Szeroki desktop: Zadania i Kontakt dzisiaj (fix pack) ----
+   Same ekrany mialy max-width:960px inline i na monitorze zostawialy
+   pol ekranu pustego. Tylko CSS — zero zmian w danych i funkcjach.
+   Mobile i tablet bez zmian, siatka wlacza sie dopiero od 1280px. */
+@media(min-width:1280px){
+  #s-planday .main-body,
+  #s-contact-today .main-body{max-width:1280px!important;}
+  #plan-list,
+  #ct-due-list,
+  #ct-fresh-list,
+  #ct-planned-list{display:grid!important;grid-template-columns:1fr 1fr;
+    gap:var(--s3);align-items:start;}
+}
 /* ---- Oferta: edycja/tworzenie (redesign vol6) — prefiks oe- ---- */
 .oe-cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--s5);align-items:start;}
 @media(max-width:1100px){ .oe-cols{grid-template-columns:1fr;} }
 .oe-main{display:flex;flex-direction:column;gap:var(--s4);min-width:0;}
-.oe-side{position:sticky;top:var(--s4);display:flex;flex-direction:column;gap:var(--s4);}
+.oe-side{position:sticky;top:var(--s6);display:flex;flex-direction:column;gap:var(--s4);max-height:calc(100vh - var(--s10));overflow-y:auto;}
 @media(max-width:1100px){ .oe-side{position:static;} }
 .oe-dt-row{display:flex;gap:var(--s2);margin-top:5px;}
 .oe-dt{flex:1;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);
@@ -301,7 +317,8 @@
 .oe-fields .oe-wide{grid-column:1/-1;}
 .oe-items{display:flex;flex-direction:column;gap:var(--s3);}
 .oe-item-row{position:relative;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);}
+  border-radius:var(--r);padding:var(--s3) var(--s4);display:flex;flex-direction:column;gap:var(--s2);}
+.oe-item-row .in{padding:7px 10px;}
 .oe-row-top{display:flex;gap:var(--s2);align-items:center;}
 .oe-i-name{flex:1;min-width:0;}
 .oe-grid3{display:grid;grid-template-columns:1fr 110px 1.3fr;gap:var(--s2);}
@@ -2590,7 +2607,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.67.0-oferta';
+var APP_VERSION = 'v0.68.0-fixpack';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4160,7 +4177,7 @@ function recalcOfferTotals(){
      2) rola sales       -> v_offer_items maskuje buy_price do NULL, wiec
         parseFloat('')||0 dawalo koszt 0 i marze 100%. Bez kompletu cen
         zysk i marza pokazuja "\u2014" zamiast falszywej setki. */
-  function oeMoney(v){ return v.toLocaleString('pl-PL',{maximumFractionDigits:0})+' zł'; }
+  function oeMoney(v){ return v.toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2})+' zł'; }
   var hasNet=(items.length>0&&sumNet>0);
   var elNet=document.getElementById('oe-sum-net'); if(elNet)elNet.textContent=hasNet?oeMoney(sumNet):'\u2014';
   var elVat=document.getElementById('oe-sum-vat'); if(elVat)elVat.textContent=hasNet?oeMoney(sumGross-sumNet):'\u2014';
@@ -4192,7 +4209,7 @@ async function loadClientsForOfferForm(selectedClientId,selectedBuildingId){
   sel.innerHTML='<option value="">— wybierz klienta —</option>'+allClientsCache.map(function(c){
     return '<option value="'+c.id+'"'+(c.id===selectedClientId?' selected':'')+'>'+c.name+'</option>';
   }).join('');
-  if(selectedClientId) await onOfferClientChange(selectedBuildingId);
+  await onOfferClientChange(selectedBuildingId);
 }
 async function onOfferClientChange(selectedBuildingId){
   var clientId=document.getElementById('oe-client').value;
@@ -4642,16 +4659,18 @@ async function loadAiSignals(){
   aiSignalsCache=signals;
   var alertsEl=document.getElementById('cmd-ai-alerts');
   if(alertsEl){
-    alertsEl.innerHTML=signals.length===0
-      ? '<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak alarmów — wszystko wygląda spokojnie. 🎉</div></div>'
-      : signals.slice(0,8).map(function(s){
+    var extra=signals.slice(5,13);
+    alertsEl.innerHTML=extra.length===0
+      ? '<div class="row"><div style="font-size:var(--f-sm);color:var(--text-3);">'
+        +(signals.length===0?'Brak alarmów — wszystko wygląda spokojnie.':'Nic poza priorytetami obok.')+'</div></div>'
+      : extra.map(function(s){
           return '<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div>';
         }).join('');
   }
   var top5El=document.getElementById('cmd-ai-top5');
   if(top5El){
     top5El.innerHTML=signals.length===0
-      ? '<div class="row"><div style="font-size:12px;color:#8a9ab0;">Brak pilnych priorytetów — dobra robota. 🎉</div></div>'
+      ? '<div class="row"><div style="font-size:var(--f-sm);color:var(--text-3);">Brak pilnych priorytetów.</div></div>'
       : signals.slice(0,5).map(function(s,idx){
           return '<div class="row"'+(s.clientId?' style="cursor:pointer;" onclick="openClient(\''+s.clientId+'\')"':'')+'><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:11px;font-weight:800;color:#a855f7;">'+(idx+1)+'.</span><div style="font-size:12px;">'+s.icon+' '+s.text+'</div></div></div>';
         }).join('');
@@ -5076,15 +5095,15 @@ async function loadDaySummary(){
   var newClients=newClientsRes.count!=null?newClientsRes.count:0;
   var tasksDone=tasksDoneRes.count!=null?tasksDoneRes.count:0;
   function stat(label,value,color){
-    return '<div><div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;">'+label+'</div><div style="font-size:18px;font-weight:800;margin-top:2px;color:'+(color||'#fff')+';">'+value+'</div></div>';
+    return '<div><div style="font-size:var(--f-xs);color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;">'+label+'</div><div style="font-size:var(--f-md);font-weight:800;margin-top:1px;color:'+(color||'var(--text)')+';">'+value+'</div></div>';
   }
-  el.innerHTML=stat('📞 Telefony',calls)
-    +stat('📄 Oferty wysłane',offersSent)
-    +stat('📝 Notatki',notes)
-    +stat('🆕 Nowi klienci',newClients)
-    +stat('✅ Wygrane',won,'#22c55e')
-    +stat('❌ Przegrane',lost,'#ef4444')
-    +stat('☑️ Zadania',tasksDone);
+  el.innerHTML=stat('Telefony',calls)
+    +stat('Oferty',offersSent)
+    +stat('Notatki',notes)
+    +stat('Nowi klienci',newClients)
+    +stat('Wygrane',won,'var(--ok)')
+    +stat('Przegrane',lost,'var(--err)')
+    +stat('Zadania',tasksDone);
 }
 async function generateOfferPdf(){
   if(!editingOfferId){alert('Najpierw zapisz ofertę — PDF generujemy z zapisanych danych w bazie, nie z niezapisanego formularza.');return;}
@@ -5374,6 +5393,9 @@ async function newOffer(){
   await loadClientsForOfferForm(null,null);
   addOfferItemRow();
   loadRecentPurchases();
+  /* Bez tego podsumowanie (netto/VAT/brutto/zysk/marza) i ostrzezenie o marzy
+     zostawaly z POPRZEDNIO otwartej oferty az do pierwszego wpisu w formularzu. */
+  recalcOfferTotals();
   go('s-offer-edit');
 }
 function newOfferForClient(clientId,clientName){
