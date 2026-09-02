@@ -365,7 +365,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     ⚠️ Supabase niepodłączony — działa tryb demo (dane lokalne, bez logowania). Wklej <code>SUPABASE_URL</code> i <code>SUPABASE_ANON_KEY</code> w kodzie, żeby włączyć prawdziwe logowanie.
   </div>
   <button id="login-demo-btn" onclick="enterDemoMode()" style="display:none;margin-top:12px;background:none;border:none;color:#8a9ab0;font-size:12px;text-decoration:underline;cursor:pointer;">Wejdź w tryb demo →</button>
-  <div style="margin-top:26px;font-size:10px;color:#4b5a6b;">OSG Platform v0.10.0</div>
 </div>
 </div>
 
@@ -725,11 +724,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div id="bld-memory" style="display:none;flex-direction:column;gap:11px;">
     <input id="mem-search" oninput="renderMemory()" placeholder="🔎 Szukaj np. Baumit, faktura, Jan K." style="width:100%;padding:11px 13px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <div onclick="memFilterType('')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;" id="mf-all">Wszystko</div>
-      <div onclick="memFilterType('📞')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Rozmowy</div>
-      <div onclick="memFilterType('📄')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
-      <div onclick="memFilterType('📦')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📦 Zamówienia</div>
-      <div onclick="memFilterType('💰')" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">💰 Faktury</div>
+      <div onclick="memFilterType('',this)" class="mf-pill" data-filter="" id="mf-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
+      <div onclick="memFilterType('📞',this)" class="mf-pill" data-filter="📞" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Rozmowy</div>
+      <div onclick="memFilterType('📄',this)" class="mf-pill" data-filter="📄" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
+      <div onclick="memFilterType('📦',this)" class="mf-pill" data-filter="📦" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📦 Zamówienia</div>
+      <div onclick="memFilterType('💰',this)" class="mf-pill" data-filter="💰" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">💰 Faktury</div>
     </div>
     <div style="display:flex;gap:6px;">
       <input id="mem-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
@@ -1295,7 +1294,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
             <div class="kpi-note">w obiegu</div>
           </div>
         </div>
-        <div class="kpi" onclick="loadDeliveries();go('s-deliveries')" style="cursor:pointer;">
+        <div class="kpi" onclick="sbOpenDeliveries()" style="cursor:pointer;">
           <div class="kpi-ic" style="background:var(--violet-bg);color:var(--violet);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:21px;height:21px"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
           <div style="min-width:0;">
             <div class="kpi-lbl">Dostawy</div>
@@ -1841,11 +1840,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         <div style="display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;">
           <span class="lbl" style="min-width:46px;">Status</span>
           <div id="of-status-pills" style="display:flex;gap:var(--s2);flex-wrap:wrap;">
-            <div onclick="offersFilter('')" id="of-all" class="of-pill" style="background:#e8601c;color:#fff;">Wszystkie</div>
-            <div onclick="offersFilter('draft')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Robocze</div>
-            <div onclick="offersFilter('wysłana')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Wysłane</div>
-            <div onclick="offersFilter('zaakceptowana')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Zaakceptowane</div>
-            <div onclick="offersFilter('odrzucona')" class="of-pill" style="background:#1e2f42;color:#8a9ab0;">Odrzucone</div>
+            <div onclick="offersFilter('',this)" id="of-all" class="of-pill" data-filter="" style="background:#e8601c;color:#fff;">Wszystkie</div>
+            <div onclick="offersFilter('draft',this)" class="of-pill" data-filter="draft" style="background:#1e2f42;color:#8a9ab0;">Robocze</div>
+            <div onclick="offersFilter('wysłana',this)" class="of-pill" data-filter="wysłana" style="background:#1e2f42;color:#8a9ab0;">Wysłane</div>
+            <div onclick="offersFilter('zaakceptowana',this)" class="of-pill" data-filter="zaakceptowana" style="background:#1e2f42;color:#8a9ab0;">Zaakceptowane</div>
+            <div onclick="offersFilter('odrzucona',this)" class="of-pill" data-filter="odrzucona" style="background:#1e2f42;color:#8a9ab0;">Odrzucone</div>
           </div>
         </div>
       </div>
@@ -2318,7 +2317,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.60.0-formularz';
+var APP_VERSION = 'v0.63.0-vol6';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3336,20 +3335,18 @@ async function loadClientActivities(clientId){
     var lcRes=await sb.from('v_client_last_contact').select('*').eq('client_id',currentClientId).maybeSingle();
     currentClientLastContact=lcRes&&lcRes.data?lcRes.data:null;
   }catch(e){ currentClientLastContact=null; }
-  var elLastContact=document.getElementById('cd-intel-lastcontact');
-  var elDaysSince=document.getElementById('cd-intel-dayssince');
+  /* vol6 — usuniety martwy kod: cd-intel-lastcontact i cd-intel-dayssince
+     nie istnieja w HTML od redesignu P1. currentClientDaysSinceContact
+     i currentClientLastContact ZOSTAJA — czyta je renderClientState()
+     (ClientStateEngine), wiec zapytanie do v_client_last_contact powyzej
+     jest nadal potrzebne. */
   var elLastActivity=document.getElementById('cd-last-activity');
   if(rows.length>0){
     var lastDate=new Date(rows[0].created_at);
-    var days=Math.floor((new Date()-lastDate)/86400000);
-    currentClientDaysSinceContact=days;
-    if(elLastContact)elLastContact.textContent=lastDate.toLocaleDateString('pl-PL');
-    if(elDaysSince){elDaysSince.textContent=days+' dni';elDaysSince.style.color=contactColor(days);}
+    currentClientDaysSinceContact=Math.floor((new Date()-lastDate)/86400000);
     if(elLastActivity)elLastActivity.textContent='Ostatnia aktywność: '+relativeTimePl(lastDate);
   }else{
     currentClientDaysSinceContact=null;
-    if(elLastContact)elLastContact.textContent='brak';
-    if(elDaysSince)elDaysSince.textContent='—';
     if(elLastActivity)elLastActivity.textContent='Brak dotychczasowej aktywności';
   }
   renderClientState();
@@ -3565,7 +3562,12 @@ var CATEGORY_TARGETS=Object.assign({},CATEGORY_TARGETS_DEFAULT);
 async function loadCategoryTargets(){
   if(!sbEnabled)return;
   try{
-    var res=await sb.from('categories').select('*');
+    /* vol6 P3 — zrodlem jest widok maskujacy v_categories, nie tabela.
+       Rola authenticated stracila SELECT na public.categories, wiec
+       handlowiec dostaje nazwy kategorii z target_margin_pct = NULL,
+       a wlasciciel/admin prawdziwe wartosci. Logika progow BEZ ZMIAN —
+       ponizsza petla i tak pomija wiersze z null. */
+    var res=await sb.from('v_categories').select('*');
     if(!res.error&&res.data&&res.data.length){
       res.data.forEach(function(r){ if(r.name&&r.target_margin_pct!=null) CATEGORY_TARGETS[r.name]=Number(r.target_margin_pct); });
     }
@@ -5327,11 +5329,17 @@ function offersFilterType(t){
   });
   renderOffersList();
 }
-function offersFilter(status){
+function offersFilter(status,el){
+  /* Naprawa kruchej zaleznosci UI (P1, vol6): pigulki maja klase .of-pill
+     i data-filter. Wczesniej klikniety element bral sie z globalnego
+     event.target (bledny cel gdy klikniesz w tekst wewnatrz pigulki
+     i brak wsparcia przy wywolaniu programowym). Logika filtrowania
+     i offersActiveFilter — BEZ ZMIAN. */
   offersActiveFilter=status;
-  document.querySelectorAll('#of-status-pills > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
-  var target=status===''?document.getElementById('of-all'):event.target;
-  target.style.background='#e8601c';target.style.color='#fff';
+  document.querySelectorAll('#of-status-pills .of-pill').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
+  var target=el||document.querySelector('#of-status-pills .of-pill[data-filter="'+status+'"]')
+             ||document.getElementById('of-all');
+  if(target){target.style.background='#e8601c';target.style.color='#fff';}
   renderOffersList();
 }
 /* ====================== AUTOMATY WYCOFANE (Sprint 0.43) ======================
@@ -5425,10 +5433,9 @@ async function loadClientOffers(clientId){
   var rows=res.data||[];
   currentClientOffers=rows;
   // CRM Intelligence — liczone z danych które i tak już tu ściągnęliśmy, zero dodatkowych zapytań
-  var elLastOffer=document.getElementById('cd-intel-lastoffer');
+  /* vol6 — usuniety martwy cd-intel-lastoffer (brak elementu w HTML po P1). */
   var elValue=document.getElementById('cd-intel-value');
   var elOrders=document.getElementById('cd-intel-orders');
-  if(elLastOffer)elLastOffer.textContent=rows.length?new Date(rows[0].created_at).toLocaleDateString('pl-PL'):'brak';
   if(elValue)elValue.textContent=rows.reduce(function(sum,o){return sum+Number(o.net_total||0);},0).toFixed(0)+' zł netto';
   if(elOrders)elOrders.textContent=rows.filter(function(o){return o.status==='zaakceptowana';}).length+' / '+rows.length+' ofert';
   renderClientState();
@@ -5979,7 +5986,7 @@ async function logActivity(clientId,icon,type,desc){
 }
 
 
-var OWNER_ONLY_SCREENS=['s-director','s-product','s-system-status-admin','s-deliveries-owner'];
+var OWNER_ONLY_SCREENS=['s-director','s-product','s-system-status-admin','s-deliveries-owner','s-purchasing'];
 var DRIVER_BLOCKED_SCREENS=['s-command','s-director','s-purchasing','s-product','s-crm','s-client-add','s-client-detail','s-system-status','s-offers','s-offer-edit','s-planday','s-calendar','s-deliveries-owner'];
 /* ============================================================
    MODUŁ "KONTAKT DZISIAJ"  (Sprint 0.41)
@@ -6933,11 +6940,16 @@ function addMemoryNote(){
      nie brudzi produkcyjnych danych. Świadoma decyzja, nie przeoczenie. */
 }
 var memActiveIcon='';
-function memFilterType(icon){
+function memFilterType(icon,el){
+  /* Naprawa kruchej zaleznosci UI (P1, vol6): pigulki maja klase .mf-pill
+     i data-filter zamiast selektora po strukturze DOM i tekscie
+     'flex-wrap' w atrybucie style; klikniety element przychodzi jako
+     argument, nie z globalnego event.target. Logika — BEZ ZMIAN. */
   memActiveIcon=icon;
-  document.querySelectorAll('#bld-memory > div[style*="flex-wrap"] > div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
-  var target=icon===''?document.getElementById('mf-all'):event.target;
-  target.style.background='#e8601c';target.style.color='#fff';
+  document.querySelectorAll('#bld-memory .mf-pill').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
+  var target=el||document.querySelector('#bld-memory .mf-pill[data-filter="'+icon+'"]')
+             ||document.getElementById('mf-all');
+  if(target){target.style.background='#e8601c';target.style.color='#fff';}
   renderMemory();
 }
 function renderMemory(){
