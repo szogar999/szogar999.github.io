@@ -2317,7 +2317,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-var APP_VERSION = 'v0.63.0-vol6';
+var APP_VERSION = 'v0.64.0-vol6';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -3552,12 +3552,15 @@ async function addClientNote(){
 /* ====================== OFERTY — realny moduł (Supabase) ======================
    Tabele: offers (nagłówek), offer_items (pozycje), categories (docelowe marże, opcjonalna).
    Marża liczona jako marża na cenie sprzedaży: (sell-buy)/sell*100.
-   Progi z tabeli 'categories' jeśli istnieje, inaczej z CATEGORY_TARGETS_DEFAULT — 
-   ostrzeżenie jest informacyjne, NIE blokuje zapisu (zgodnie z ustaleniami). */
+   Progi WYLACZNIE z widoku v_categories. Brak fallbacku po stronie klienta:
+   plik jest publiczny, wiec kazda zaszyta tu wartosc bylaby polityka marz
+   wystawiona calemu internetowi. Handlowiec dostaje z widoku same NULL-e,
+   wiec progow nie ma i badge zostaje neutralny.
+   Ostrzezenie jest informacyjne, NIE blokuje zapisu (zgodnie z ustaleniami). */
 var PIPELINE_STAGES=['Lead','Pierwszy kontakt','Wycena','Oferta wysłana','Negocjacje','Wygrana','Przegrana'];
 var PIPELINE_COLORS={'Lead':'#8a9ab0','Pierwszy kontakt':'#3b82f6','Wycena':'#e8601c','Oferta wysłana':'#f59e0b','Negocjacje':'#a855f7','Wygrana':'#22c55e','Przegrana':'#ef4444'};
 var CATEGORY_LIST=['Materiały budowlane','Chemia budowlana','BHP','Elektryka','Hydraulika','Narzędzia','Wynajem sprzętu','Inne'];
-var CATEGORY_TARGETS_DEFAULT={'Materiały budowlane':15,'Chemia budowlana':22,'BHP':35,'Elektryka':20,'Hydraulika':20,'Narzędzia':25,'Wynajem sprzętu':20,'Inne':15};
+var CATEGORY_TARGETS_DEFAULT={};   /* vol6 P3 — brak zaszytych progow, takze w demo */
 var CATEGORY_TARGETS=Object.assign({},CATEGORY_TARGETS_DEFAULT);
 async function loadCategoryTargets(){
   if(!sbEnabled)return;
@@ -3788,7 +3791,11 @@ function readOfferItemsFromForm(){
 }
 function recalcOfferTotals(){
   var items=readOfferItemsFromForm();
-  var sumNet=0,sumMarginAmt=0,sumTargetWeighted=0;
+  /* vol6 P3 — srednia wazona liczona TYLKO po pozycjach, ktore maja prog.
+     Wczesniej sumTargetWeighted dzielone przez caly sumNet dawalo 0 przy braku
+     progow, a 0 to nie jest "brak progu" tylko "prog zerowy" — badge robil sie
+     zielony i sugerowal, ze marza jest powyzej oczekiwanej. */
+  var sumNet=0,sumMarginAmt=0,sumTargetWeighted=0,netZTargetem=0;
   items.forEach(function(it){
     var lineNet=it.qty*it.sell_price;
     var lineMarginAmt=(it.sell_price-it.buy_price)*it.qty;
@@ -3796,7 +3803,7 @@ function recalcOfferTotals(){
     sumNet+=lineNet; sumMarginAmt+=lineMarginAmt;
     it.margin_amount=lineMarginAmt; it.margin_pct=pct; // zapisywane przy saveOffer
     var target=CATEGORY_TARGETS[it.category];
-    if(target!=null) sumTargetWeighted+=target*lineNet;
+    if(target!=null){ sumTargetWeighted+=target*lineNet; netZTargetem+=lineNet; }
     var color=marginBadgeColor(pct,target);
     var warnTxt='';
     if(target!=null&&pct<target-5) warnTxt=' · ⚠️ poniżej celu ('+target+'%)';
@@ -3816,7 +3823,7 @@ function recalcOfferTotals(){
   var pctTotal=sumNet>0?(sumMarginAmt/sumNet*100):0;
   var vatRate=parseFloat((document.getElementById('oe-vat')||{}).value)||0;
   var sumGross=sumNet*(1+vatRate/100);
-  var blendedTarget=sumNet>0?(sumTargetWeighted/sumNet):null;
+  var blendedTarget=netZTargetem>0?(sumTargetWeighted/netZTargetem):null;
   var elNet=document.getElementById('oe-sum-net'); if(elNet)elNet.textContent=sumNet.toFixed(0)+' zł';
   var elGross=document.getElementById('oe-sum-gross'); if(elGross)elGross.textContent=sumGross.toFixed(0)+' zł';
   var elMA=document.getElementById('oe-sum-margin-amt'); if(elMA)elMA.textContent=sumMarginAmt.toFixed(0)+' zł';
