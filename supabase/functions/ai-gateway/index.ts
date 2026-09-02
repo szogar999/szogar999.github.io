@@ -59,9 +59,23 @@ function redact(text: string): { redacted: string; hits: string[] } {
     hits.push("email"); return "[email]";
   });
 
-  // NIP: 10 cyfr, ewentualnie z myślnikami/spacjami, często po słowie NIP
-  out = out.replace(/\bNIP[:\s-]*([\d][\d\s-]{9,15}\d)/gi, () => {
+  // NIP: 10 cyfr, ewentualnie z myslnikami/spacjami.
+  // vol6: poprzedni wzorzec [\d][\d\s-]{9,15}\d wymagal MINIMUM 11 znakow,
+  // wiec goly 10-cyfrowy NIP ("NIP 1182095359") nigdy sie nie lapal —
+  // dopiero regex telefonu zjadal z niego 9 cyfr jako numer telefonu.
+  // Teraz: 10 cyfr z opcjonalnym separatorem po kazdej z pierwszych dziewieciu.
+  const NIP_CYFRY = /(?:\d[\s-]?){9}\d/;
+  // 1) po slowie NIP
+  out = out.replace(new RegExp("\\bNIP[:\\s-]*(" + NIP_CYFRY.source + ")", "gi"), () => {
     hits.push("nip"); return "NIP [zredagowany]";
+  });
+  // 2) samodzielny NIP w kanonicznym grupowaniu 123-456-78-90 / 123 456 78 90
+  out = out.replace(/\b\d{3}[\s-]\d{3}[\s-]\d{2}[\s-]\d{2}\b/g, () => {
+    hits.push("nip"); return "[nip]";
+  });
+  // 3) samodzielny ciag dokladnie 10 cyfr (telefon ma 9, wiec nie kolidujemy)
+  out = out.replace(/(?<![\d-])\d{10}(?![\d-])/g, () => {
+    hits.push("nip"); return "[nip]";
   });
 
   // IBAN / numer konta (26 cyfr, PL opcjonalnie)
@@ -274,7 +288,7 @@ Deno.serve(async (req: Request) => {
       return json({
         ok: true,
         data: {
-          health: "ok", version: "ai-gateway/0.4-summary",
+          health: "ok", version: "ai-gateway/0.5-redakcja",
           user: { id: user.id, email: user.email, role: role ?? null },
           rls: { visible_clients: count ?? 0 },
           secrets: { anthropic_key_present: key.startsWith("sk-") && key.length > 20 },
