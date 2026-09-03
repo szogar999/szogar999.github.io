@@ -485,7 +485,7 @@ function ico(n,s,sw){ return '<svg width="'+(s||17)+'" height="'+(s||17)+'" view
 
 var ORDER_STATUS={
   w_realizacji:{t:'W realizacji',c:'wait'},
-  do_akceptacji:{t:'Czeka na akceptację',c:'info'},
+  do_akceptacji:{t:'Czeka na akceptację',s:'Do akceptacji',c:'info'},
   dostarczone:{t:'Dostarczone',c:'ok'},
   archiwalne:{t:'Zakończone',c:'mut'}
 };
@@ -564,7 +564,7 @@ function orderRow(o){
     +'<span class="row-ic o-ic">'+ico('box',17)+'</span>'
     +'<span class="row-m o-m">'
       +'<span class="o-top"><span class="row-t">'+esc(o.number)+'</span>'
-        +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
+        +'<span class="o-st '+st.c+'">'+(st.s||st.t)+'</span></span>'
       +'<span class="o-bld">'+esc(o.building)+'</span>'
       +'<span class="o-bot"><span class="o-date">'+dPretty(o.createdAt)+'</span>'
         +'<span class="o-val">'+zl(o.gross)+'</span></span>'
@@ -710,10 +710,19 @@ function rqRowHtml(){
 function rqAddRow(){
   var box=document.getElementById('rq-items'); if(!box)return;
   box.insertAdjacentHTML('beforeend',rqRowHtml());
+  rqSyncDel();
 }
 function rqDelRow(btn){
   var box=document.getElementById('rq-items');
-  if(box&&box.children.length>1) btn.closest('.rq-row').remove();
+  if(box&&box.children.length>1){ btn.closest('.rq-row').remove(); rqSyncDel(); }
+}
+/* Jedna pozycja = nie ma czego usuwac. Przycisk, ktory nic nie robi, wyglada jak blad. */
+function rqSyncDel(){
+  var box=document.getElementById('rq-items'); if(!box)return;
+  var jedna=box.children.length<2;
+  [].forEach.call(box.querySelectorAll('.rq-del'),function(b){ b.hidden=jedna; });
+  [].forEach.call(box.querySelectorAll('.rq-sub'),function(sb){
+    sb.style.gridTemplateColumns = jedna ? '1fr 96px' : ''; });
 }
 async function rqSubmit(){
   var err=document.getElementById('rq-err'), btn=document.getElementById('rq-send');
@@ -811,7 +820,7 @@ function ordSet(f){ ordFilter=f; ordPaint(); }
 /* ---------- Dokumenty ---------- */
 var DOC_STATUS={
   zaakceptowana:{t:'Zaakceptowana',c:'ok'},
-  oczekuje:{t:'Czeka na akceptację',c:'info'},
+  oczekuje:{t:'Do akceptacji',c:'info'},
   wystawiona:{t:'Wystawiona',c:'mut'}
 };
 var DOC_FILTERS=[['all','Wszystkie'],['oferta','Oferty'],['faktura','Faktury']];
