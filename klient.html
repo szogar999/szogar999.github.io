@@ -230,6 +230,90 @@ textarea.in{min-height:84px;resize:vertical;line-height:1.5;}
 a.btn{text-decoration:none;color:var(--ink);}
 a.btn.pri{color:#fff;}
 
+/* ============================================================
+   Mikrointerakcje. Zasady: 150-250 ms, wylacznie CSS,
+   nic nie blokuje nawigacji, prefers-reduced-motion wylacza ruch.
+   ============================================================ */
+:root{ --mo:190ms; --mo-fast:140ms; --ease:cubic-bezier(.22,.61,.36,1); }
+
+/* 1. Przejscie miedzy ekranami + przenikanie szkielet -> tresc */
+#app.mo{animation:appIn var(--mo) var(--ease);}
+@keyframes appIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+
+/* 2. Feedback dotyku */
+.card,.hero{transition:box-shadow var(--mo) var(--ease),transform var(--mo-fast) var(--ease);}
+.row{transition:background-color var(--mo-fast) var(--ease),transform var(--mo-fast) var(--ease);}
+.row:not(.static):active{background:var(--line-2);transform:scale(.995);}
+.btn{transition:transform var(--mo-fast) var(--ease),box-shadow var(--mo) var(--ease),
+  background-color var(--mo-fast),border-color var(--mo-fast);}
+.btn:active{transform:scale(.97);}
+.btn.pri:active{box-shadow:0 1px 3px rgba(232,96,28,.3);}
+button.card{transition:background-color var(--mo-fast) var(--ease),transform var(--mo-fast) var(--ease);}
+button.card:active{background:var(--line-2);transform:scale(.99);}
+.rq-add,.rq-del{transition:background-color var(--mo-fast),border-color var(--mo-fast),
+  color var(--mo-fast),transform var(--mo-fast) var(--ease);}
+.rq-add:active,.rq-del:active{transform:scale(.97);}
+.sec-a{transition:opacity var(--mo-fast);} .sec-a:active{opacity:.55;}
+.back{transition:transform var(--mo-fast) var(--ease),background-color var(--mo-fast);}
+.flt-b{transition:background-color var(--mo-fast) var(--ease),color var(--mo-fast),
+  border-color var(--mo-fast),transform var(--mo-fast) var(--ease);}
+
+/* 3. Wejscie statusow i osi czasu */
+.pill{animation:pillIn 200ms var(--ease) backwards;}
+@keyframes pillIn{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:none;}}
+.o-st{animation:pillIn 200ms var(--ease) 40ms backwards;}
+.tl-i{animation:tlIn 220ms var(--ease) backwards;}
+.tl-i:nth-child(1){animation-delay:30ms}
+.tl-i:nth-child(2){animation-delay:75ms}
+.tl-i:nth-child(3){animation-delay:120ms}
+.tl-i:nth-child(4){animation-delay:165ms}
+.tl-i:nth-child(5){animation-delay:210ms}
+@keyframes tlIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.tl-i.now .tl-b{animation:pulse 2.4s ease-in-out 600ms infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 5px var(--osg-soft);}50%{box-shadow:0 0 0 9px var(--osg-soft);}}
+
+/* 4. Sukces po wyslaniu zapotrzebowania */
+.done-ic{animation:doneIn 260ms cubic-bezier(.34,1.4,.64,1) backwards;}
+@keyframes doneIn{from{opacity:0;transform:scale(.72);}to{opacity:1;transform:none;}}
+.done-ic svg path{stroke-dasharray:34;stroke-dashoffset:34;
+  animation:draw 240ms var(--ease) 170ms forwards;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+
+/* 5. Rozwijanie szczegolow dokumentu */
+.doc-w{border-bottom:1px solid var(--line-2);}
+.doc-w:last-child{border-bottom:none;}
+.doc-w .row{border-bottom:none;}
+.doc-w .chev{transition:transform var(--mo) var(--ease);}
+.doc-w.on .chev{transform:rotate(90deg);}
+.doc-x{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--mo) var(--ease);}
+.doc-w.on .doc-x{grid-template-rows:1fr;}
+.doc-x>div{overflow:hidden;}
+.doc-x-in{padding:0 0 15px 51px;opacity:0;transition:opacity var(--mo-fast) var(--ease);}
+.doc-w.on .doc-x-in{opacity:1;transition-delay:70ms;}
+.doc-note{font-size:13px;color:var(--ink-2);line-height:1.45;margin-bottom:11px;}
+.doc-go{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+  background:var(--card);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:700;
+  color:var(--osg);cursor:pointer;transition:transform var(--mo-fast) var(--ease),background-color var(--mo-fast);}
+.doc-go:active{transform:scale(.96);background:var(--osg-soft);}
+
+/* 6. Tab bar */
+.tab{position:relative;}
+.tab svg{transition:transform var(--mo) var(--ease);}
+.tab.on svg{transform:translateY(-1px) scale(1.09);}
+.tab::before{content:'';position:absolute;top:0;left:50%;width:26px;height:3px;
+  border-radius:0 0 3px 3px;background:var(--osg);
+  transform:translateX(-50%) scaleX(0);transform-origin:center;
+  transition:transform var(--mo) var(--ease);}
+.tab.on::before{transform:translateX(-50%) scaleX(1);}
+
+/* 7. Szanujemy ustawienie systemowe */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;animation-delay:0ms!important;
+    animation-iteration-count:1!important;transition-duration:.001ms!important;
+    transition-delay:0ms!important;scroll-behavior:auto!important;}
+}
+
 .foot{text-align:center;color:var(--ink-3);font-size:12px;padding:26px 10px 6px;line-height:1.6;}
 @media(min-width:640px){ .wrap{padding-bottom:34px;} h1{font-size:32px;} }
 </style>
@@ -444,6 +528,29 @@ var api = (function(){
 })();
 
 /* ============================================================
+   Straznik nawigacji.
+   Widok czeka na api (~150 ms). Przy szybkim przelaczaniu zakladek
+   odpowiedz porzuconego widoku moglaby nadpisac juz narysowany ekran.
+   Opakowujemy api tak, zeby obietnica porzuconego widoku nigdy sie nie
+   rozwiazala — widok zatrzymuje sie na swoim await i nic nie rysuje.
+   To nadal jedyne wejscie do danych: DEMO pozostaje niedostepne.
+   ============================================================ */
+var rtGen=0;
+api=(function(orig){
+  var w={};
+  Object.keys(orig).forEach(function(k){
+    w[k]=function(){
+      var g=rtGen, out=orig[k].apply(orig,arguments);
+      return out.then(function(v){
+        if(g!==rtGen) return new Promise(function(){});
+        return v;
+      });
+    };
+  });
+  return w;
+})(api);
+
+/* ============================================================
    Pomocnicze — formatowanie. Bez dostępu do danych.
    ============================================================ */
 function zl(v){ return Number(v).toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2})+' zł'; }
@@ -518,9 +625,9 @@ views.home=async function(){
     var ds=DELIVERY_STATUS[d.activeDelivery.status];
     h.push('<div class="sec"><div class="hero">'
       +'<span class="pill '+ds.c+'"><span class="dot"></span>'+ds.t+'</span>'
-      +'<div class="hero-h">'+ds.h+'</div>'
-      +'<div class="hero-s">Dostawa <b>'+relDay(d.activeDelivery.dayOff)+' do godz. '+esc(d.activeDelivery.hour)+'</b><br>'
-      +esc(d.active.building)+'</div>'
+      +'<div class="hero-h">'+relDay(d.activeDelivery.dayOff).replace(/^./,function(ch){return ch.toUpperCase();})
+        +' do godz. '+esc(d.activeDelivery.hour)+'</div>'
+      +'<div class="hero-s">'+esc(d.active.building)+'<br>Zamówienie <b>'+esc(d.active.number)+'</b></div>'
       +'<div class="btn-row">'
         +'<button class="btn pri sm" onclick="go(\'#/orders/'+d.active.id+'/delivery\')">'+ico('truck',15)+'Śledź dostawę</button>'
         +'<button class="btn sm" onclick="go(\'#/orders/'+d.active.id+'\')">Szczegóły</button>'
@@ -855,17 +962,33 @@ function docPaint(){
 function docSet(f){ docFilter=f; docPaint(); }
 function docRow(d){
   var fv = d.type==='faktura', st=DOC_STATUS[d.status]||DOC_STATUS.wystawiona;
-  return '<button class="row o-row" onclick="go(\'#/orders/'+d.orderId+'\')">'
-    +'<span class="row-ic o-ic'+(fv?' d-fv':'')+'">'+ico('file',17)+'</span>'
-    +'<span class="row-m o-m">'
-      +'<span class="o-top"><span class="row-t">'+esc(d.number)+'</span>'
-        +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
-      +'<span class="o-bld">'+(fv?('Faktura VAT do '+esc(d.orderNumber)):'Oferta handlowa')
-        +'<br>'+esc(d.building)+'</span>'
-      +'<span class="o-bot"><span class="o-date">'+dPretty(d.date)+'</span>'
-        +'<span class="o-val">'+(d.gross==null?'—':zl(d.gross))+'</span></span>'
-    +'</span>'
-    +'<span class="chev">'+ico('chev',16)+'</span></button>';
+  var opis = fv ? ('Faktura wystawiona do zamówienia '+esc(d.orderNumber)+'.')
+    : (d.status==='oczekuje' ? 'Oferta czeka na Twoją decyzję — otwórz zamówienie, żeby zobaczyć pozycje.'
+                             : 'Oferta zaakceptowana. Realizację prowadzimy w zamówieniu '+esc(d.orderNumber)+'.');
+  return '<div class="doc-w">'
+    +'<button class="row o-row" aria-expanded="false" onclick="docToggle(this)">'
+      +'<span class="row-ic o-ic'+(fv?' d-fv':'')+'">'+ico('file',17)+'</span>'
+      +'<span class="row-m o-m">'
+        +'<span class="o-top"><span class="row-t">'+esc(d.number)+'</span>'
+          +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
+        +'<span class="o-bld">'+(fv?('Faktura VAT do '+esc(d.orderNumber)):'Oferta handlowa')
+          +'<br>'+esc(d.building)+'</span>'
+        +'<span class="o-bot"><span class="o-date">'+dPretty(d.date)+'</span>'
+          +'<span class="o-val">'+(d.gross==null?'—':zl(d.gross))+'</span></span>'
+      +'</span>'
+      +'<span class="chev">'+ico('chev',16)+'</span></button>'
+    +'<div class="doc-x"><div><div class="doc-x-in">'
+      +'<div class="doc-note">'+opis+'</div>'
+      +'<button class="doc-go" onclick="go(\'#/orders/'+d.orderId+'\')">'
+        +ico('box',15)+'Otwórz zamówienie</button>'
+    +'</div></div></div>'
+  +'</div>';
+}
+function docToggle(btn){
+  var w=btn.parentNode, box=w.parentNode, otwarty=w.classList.contains('on');
+  [].forEach.call(box.querySelectorAll('.doc-w.on'),function(x){
+    x.classList.remove('on'); x.querySelector('.row').setAttribute('aria-expanded','false'); });
+  if(!otwarty){ w.classList.add('on'); btn.setAttribute('aria-expanded','true'); }
 }
 
 /* ---------- Profil ---------- */
@@ -923,7 +1046,11 @@ views.soon=function(title){
 /* ============================================================
    Shell + router
    ============================================================ */
-function mount(html){ document.getElementById('app').innerHTML=html; }
+function mount(html){
+  var a=document.getElementById('app');
+  a.innerHTML=html;
+  a.classList.remove('mo'); void a.offsetWidth; a.classList.add('mo');
+}
 function paintTop(o){
   document.getElementById('top').innerHTML=
     (o.back?'<button class="back" onclick="go(\''+o.back+'\')">'+ico('back',18)+'</button>'
@@ -939,9 +1066,13 @@ var TABS=[
   ['#/profile','Profil','user']
 ];
 function paintTabs(active){
-  document.getElementById('tabs').innerHTML=TABS.map(function(t){
-    return '<button class="tab'+(t[0]===active?' on':'')+'" onclick="go(\''+t[0]+'\')">'
-      +ico(t[2],20)+'<span>'+t[1]+'</span></button>'; }).join('');
+  var box=document.getElementById('tabs');
+  if(box.children.length!==TABS.length){
+    box.innerHTML=TABS.map(function(t){
+      return '<button class="tab" onclick="go(\''+t[0]+'\')">'
+        +ico(t[2],20)+'<span>'+t[1]+'</span></button>'; }).join('');
+  }
+  [].forEach.call(box.children,function(el,i){ el.classList.toggle('on',TABS[i][0]===active); });
 }
 function go(hash){ if(location.hash===hash) route(); else location.hash=hash; }
 
@@ -960,7 +1091,7 @@ function route(){
   window.scrollTo(0,0);
   for(var i=0;i<ROUTES.length;i++){
     var m=h.match(ROUTES[i][0]);
-    if(m){ ROUTES[i][1](m); return; }
+    if(m){ rtGen++; ROUTES[i][1](m); return; }
   }
   location.hash='#/';
 }
