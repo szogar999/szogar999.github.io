@@ -151,6 +151,28 @@ h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px;}
 .tab:active{transform:scale(.94);}
 .tab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.lbl{font-size:13px;font-weight:600;color:var(--ink-2);}
+.in{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 13px;
+  font:inherit;font-size:15px;background:var(--card);color:var(--ink);outline:none;
+  -webkit-appearance:none;appearance:none;}
+.in:focus{border-color:var(--osg);box-shadow:0 0 0 3px var(--osg-soft);}
+select.in{background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239aa3b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:38px;}
+textarea.in{min-height:84px;resize:vertical;line-height:1.5;}
+.rq-row{display:grid;grid-template-columns:1fr 78px 84px 40px;gap:8px;align-items:center;margin-bottom:9px;}
+@media(max-width:420px){ .rq-row{grid-template-columns:1fr 62px 72px 36px;gap:6px;} }
+.rq-row .in{padding:11px 10px;font-size:14px;}
+.rq-del{width:100%;height:40px;border:1px solid var(--line);background:var(--card);border-radius:var(--r-sm);
+  color:var(--ink-3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.rq-del:hover{border-color:#ef4444;color:#ef4444;}
+.rq-add{width:100%;border:1px dashed var(--line);background:none;border-radius:var(--r-sm);
+  padding:11px;color:var(--osg);font-weight:700;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;}
+.err{display:none;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:var(--r-sm);
+  padding:11px 13px;font-size:14px;font-weight:600;margin-bottom:12px;}
+.done-ic{width:78px;height:78px;border-radius:50%;background:var(--ok-soft);color:var(--ok);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
 .foot{text-align:center;color:var(--ink-3);font-size:12px;padding:26px 10px 6px;line-height:1.6;}
 @media(min-width:640px){ .wrap{padding-bottom:34px;} h1{font-size:32px;} }
 </style>
@@ -187,8 +209,14 @@ var api = (function(){
       name:'Vantis Development S.A.',
       nip:'7010556482',
       address:'ul. Puławska 182, 02-670 Warszawa',
-      manager:{name:'Oskar Hołyński', role:'Opiekun klienta', phone:'+48221000000', email:'biuro@osglogistics.pl'}
+      manager:{name:'Oskar Hołyński', role:'Opiekun klienta', phone:'+48221000000', email:'biuro@osglogistics.pl'},
+      buildings:['Osiedle Zielona Dolina — etap II','Osiedle Zielona Dolina — etap III','Magazyn centralny — Piaseczno']
     },
+    requests:[
+      { id:'z-1041', number:'ZAP/2026/1041', status:'wycenione', createdOff:-9,
+        building:'Osiedle Zielona Dolina — etap II', note:'Pilne, ekipa czeka.',
+        items:[['Taśma spoinowa 90 m',12,'szt'],['Narożnik aluminiowy 2,5 m',40,'szt']] }
+    ],
     orders:[
       { id:'o-0038', number:'OSG/2026/0038', status:'w_realizacji',
         building:'Osiedle Zielona Dolina — etap II',
@@ -269,11 +297,45 @@ var api = (function(){
       steps:copy(d.steps) };
   }
 
+  /* Zgłoszenia złożone w tej przeglądarce. Trzymane lokalnie, żeby demo
+     pokazywało pełny cykl: formularz → potwierdzenie → lista. Po demie ta
+     sama metoda pójdzie do uwierzytelnionego endpointu zapisu. */
+  var LS='osg_klient_zapotrzebowania';
+  function localReqs(){
+    try{ return JSON.parse(localStorage.getItem(LS)||'[]'); }catch(e){ return []; }
+  }
+  function saveLocal(list){
+    try{ localStorage.setItem(LS,JSON.stringify(list.slice(-20))); }catch(e){}
+  }
+  function allRequests(){
+    var seeded=DEMO.requests.map(function(r){
+      return { id:r.id, number:r.number, status:r.status, createdAt:iso(dOff(r.createdOff)),
+               building:r.building, note:r.note, items:copy(r.items) };
+    });
+    return localReqs().concat(seeded);
+  }
+
   return {
+    getRequests:function(){ return wait(allRequests()); },
+    submitRequest:function(payload){
+      var items=(payload.items||[]).filter(function(i){ return String(i[0]||'').trim(); });
+      if(!items.length) return Promise.reject(new Error('Dodaj przynajmniej jedną pozycję.'));
+      if(!String(payload.building||'').trim()) return Promise.reject(new Error('Wybierz budowę.'));
+      var list=localReqs();
+      var seq=1042+list.length;
+      var rec={ id:'z-'+seq, number:'ZAP/2026/'+seq, status:'nowe',
+        createdAt:iso(new Date()), building:String(payload.building),
+        note:String(payload.note||''), items:copy(items) };
+      list.push(rec); saveLocal(list);
+      return wait(copy(rec));
+    },
+    getBuildings:function(){ return wait(copy(DEMO.client.buildings)); },
     getHome:function(){
       var active=DEMO.orders.filter(function(o){return o.status==='w_realizacji';})[0]||null;
       var pending=DEMO.orders.filter(function(o){return o.status==='do_akceptacji';})[0]||null;
+      var reqs=allRequests();
       return wait({
+        lastRequest:reqs.length?reqs[0]:null,
         client:copy(DEMO.client),
         active:active?pubOrder(active):null,
         activeDelivery:active?pubDelivery(DEMO.deliveries[active.deliveryId]):null,
@@ -337,6 +399,11 @@ var ORDER_STATUS={
   dostarczone:{t:'Dostarczone',c:'ok'},
   archiwalne:{t:'Zakończone',c:'mut'}
 };
+var REQ_STATUS={
+  nowe:{t:'Przyjęte do wyceny',c:'wait'},
+  w_opracowaniu:{t:'W opracowaniu',c:'wait'},
+  wycenione:{t:'Wycenione',c:'ok'}
+};
 var DELIVERY_STATUS={
   przygotowanie:{t:'W przygotowaniu',c:'wait',h:'Towar jest przygotowywany'},
   w_trasie:{t:'W trasie',c:'wait',h:'Kierowca jest w drodze'},
@@ -379,6 +446,15 @@ views.home=async function(){
       +'</div></div>');
   }
 
+  if(d.lastRequest){
+    var rq=d.lastRequest, rs=REQ_STATUS[rq.status];
+    h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Twoje zapotrzebowanie</div></div>'
+      +'<button class="card row" style="width:100%;" onclick="go(\'#/request\')">'
+      +'<span class="row-ic">'+ico('plus',17)+'</span>'
+      +'<span class="row-m"><span class="row-t">'+esc(rq.number)+'</span>'
+      +'<span class="row-s">'+rs.t+' · '+esc(rq.building)+'</span></span>'
+      +'<span class="chev">'+ico('chev',16)+'</span></button></div>');
+  }
   h.push('<div class="sec"><div class="btn-row">'
     +'<button class="btn pri" onclick="go(\'#/request\')">'+ico('plus',16)+'Zapotrzebowanie</button>'
     +'<button class="btn" onclick="go(\'#/documents\')">'+ico('file',16)+'Dokumenty</button>'
@@ -485,6 +561,111 @@ views.delivery=async function(id){
   mount(h.join(''));
 };
 
+views.request=async function(){
+  paintTop({title:'Nowe zapotrzebowanie',sub:'Wyślij zapytanie do OSG'});
+  mount('<div class="sec"><div class="skel big"></div></div>');
+  var buildings=await api.getBuildings();
+  var reqs=await api.getRequests();
+  var h=[];
+  h.push('<div class="sec" style="margin-top:18px;"><h1>Czego potrzebujesz?</h1>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">Opiekun przygotuje wycenę i odeśle ofertę.</div></div>');
+
+  h.push('<div class="sec"><div class="card">'
+    +'<div class="err" id="rq-err"></div>'
+    +'<div class="fld"><label class="lbl" for="rq-building">Budowa</label>'
+      +'<select class="in" id="rq-building">'
+      +buildings.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>';}).join('')
+      +'</select></div>'
+    +'<div class="fld"><span class="lbl">Pozycje</span><div id="rq-items"></div>'
+      +'<button class="rq-add" onclick="rqAddRow()">'+ico('plus',15)+'Dodaj pozycję</button></div>'
+    +'<div class="fld"><label class="lbl" for="rq-note">Uwagi (opcjonalnie)</label>'
+      +'<textarea class="in" id="rq-note" placeholder="np. termin, sposób rozładunku, kontakt na budowie"></textarea></div>'
+    +'<button class="btn pri" id="rq-send" onclick="rqSubmit()">'+ico('check',16)+'Wyślij zapotrzebowanie</button>'
+    +'</div></div>');
+
+  if(reqs.length){
+    h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Twoje zgłoszenia</div></div><div class="card">'
+      +reqs.map(function(r){
+        var st=REQ_STATUS[r.status]||REQ_STATUS.nowe;
+        return '<div class="row static"><span class="row-ic">'+ico('file',17)+'</span>'
+          +'<span class="row-m"><span class="row-t">'+esc(r.number)+'</span>'
+          +'<span class="row-s">'+st.t+' · '+esc(r.building)+'</span></span>'
+          +'<span class="pill '+st.c+'">'+r.items.length+' poz.</span></div>'; }).join('')
+      +'</div></div>');
+  }
+  h.push('<div class="foot">Zapytanie trafia do Twojego opiekuna w OSG.</div>');
+  mount(h.join(''));
+  rqAddRow();
+};
+
+function rqRowHtml(){
+  var units=['szt','m2','mb','kg','op','t'];
+  return '<div class="rq-row">'
+    +'<input class="in rq-name" placeholder="Nazwa produktu">'
+    +'<input class="in rq-qty" type="number" step="any" min="0" placeholder="Ilość">'
+    +'<select class="in rq-unit">'+units.map(function(u){return '<option value="'+u+'">'+u+'</option>';}).join('')+'</select>'
+    +'<button class="rq-del" onclick="rqDelRow(this)" title="Usuń">'+ico('back',15)+'</button>'
+    +'</div>';
+}
+function rqAddRow(){
+  var box=document.getElementById('rq-items'); if(!box)return;
+  box.insertAdjacentHTML('beforeend',rqRowHtml());
+}
+function rqDelRow(btn){
+  var box=document.getElementById('rq-items');
+  if(box&&box.children.length>1) btn.closest('.rq-row').remove();
+}
+async function rqSubmit(){
+  var err=document.getElementById('rq-err'), btn=document.getElementById('rq-send');
+  err.style.display='none';
+  var items=[].map.call(document.querySelectorAll('#rq-items .rq-row'),function(r){
+    return [ r.querySelector('.rq-name').value.trim(),
+             parseFloat(r.querySelector('.rq-qty').value)||0,
+             r.querySelector('.rq-unit').value ];
+  });
+  btn.disabled=true; btn.style.opacity='.6';
+  try{
+    var rec=await api.submitRequest({
+      building:document.getElementById('rq-building').value,
+      note:document.getElementById('rq-note').value,
+      items:items
+    });
+    go('#/request/sent/'+rec.id);
+  }catch(e){
+    err.textContent=e.message; err.style.display='block';
+    btn.disabled=false; btn.style.opacity='';
+    window.scrollTo(0,0);
+  }
+}
+
+views.requestSent=async function(id){
+  paintTop({title:'Zapotrzebowanie wysłane',sub:'Potwierdzenie'});
+  var reqs=await api.getRequests();
+  var r=reqs.filter(function(x){return x.id===id;})[0];
+  if(!r){ mount(emptyState('Nie znaleziono zgłoszenia','Wróć i spróbuj ponownie.')); return; }
+  var h=[];
+  h.push('<div class="sec" style="margin-top:34px;text-align:center;">'
+    +'<div class="done-ic">'+ico('check',34,3)+'</div>'
+    +'<h1>Zapotrzebowanie wysłane</h1>'
+    +'<div style="color:var(--ink-2);margin-top:8px;">Numer zgłoszenia <b>'+esc(r.number)+'</b><br>'
+    +'Opiekun przygotuje wycenę i odeśle ofertę.</div></div>');
+  h.push('<div class="sec"><div class="card">'
+    +infoRow('pin','Budowa',esc(r.building))
+    +infoRow('box','Pozycje',r.items.length+' '+(r.items.length===1?'pozycja':'pozycji'))
+    +infoRow('clock','Status',(REQ_STATUS[r.status]||REQ_STATUS.nowe).t)
+    +'</div></div>');
+  h.push('<div class="sec"><div class="card">'
+    +r.items.map(function(i){
+      return '<div class="li"><div><div class="li-n">'+esc(i[0])+'</div>'
+        +'<div class="li-q">'+i[1]+' '+esc(i[2])+'</div></div></div>'; }).join('')
+    +'</div></div>');
+  h.push('<div class="sec"><div class="btn-row">'
+    +'<button class="btn pri" onclick="go(\'#/\')">Wróć na start</button>'
+    +'<button class="btn" onclick="go(\'#/request\')">Nowe zgłoszenie</button>'
+    +'</div></div>');
+  mount(h.join(''));
+};
+
 function infoRow(icon,k,v){
   return '<div class="row static"><span class="row-ic">'+ico(icon,17)+'</span>'
     +'<span class="row-m"><span class="row-s">'+k+'</span><span class="row-t">'+v+'</span></span></div>';
@@ -530,7 +711,8 @@ var ROUTES=[
   [/^#\/orders\/([\w-]+)\/delivery$/,function(m){ paintTabs('#/orders');   return views.delivery(m[1]); }],
   [/^#\/orders\/([\w-]+)$/,          function(m){ paintTabs('#/orders');   return views.order(m[1]); }],
   [/^#\/orders$/,                    function(){ paintTabs('#/orders');    return views.soon('Moje zamówienia'); }],
-  [/^#\/request$/,                   function(){ paintTabs('#/request');   return views.soon('Nowe zapotrzebowanie'); }],
+  [/^#\/request\/sent\/([\w-]+)$/,    function(m){ paintTabs('#/request');  return views.requestSent(m[1]); }],
+  [/^#\/request$/,                   function(){ paintTabs('#/request');   return views.request(); }],
   [/^#\/documents$/,                 function(){ paintTabs('#/documents'); return views.soon('Dokumenty'); }],
   [/^#\/profile$/,                   function(){ paintTabs('#/profile');   return views.soon('Profil firmy'); }]
 ];
