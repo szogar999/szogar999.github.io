@@ -459,11 +459,6 @@ function initials(name){
   var w=String(name||'').replace(/[^A-Za-z\u00C0-\u017F ]/g,' ').trim().split(/\s+/);
   return ((w[0]||'?').charAt(0)+(w[1]||'').charAt(0)).toUpperCase();
 }
-function monthLabel(isoStr){
-  var d=dFromIso(isoStr);
-  var t=d.toLocaleDateString('pl-PL',{month:'long',year:'numeric'});
-  return t.charAt(0).toUpperCase()+t.slice(1);
-}
 function relDay(off){
   if(off===0)return 'dziś';
   if(off===1)return 'jutro';
@@ -846,18 +841,7 @@ function docPaint(){
       +x[1]+' <span>'+c+'</span></button>'; }).join('');
   var rows=docCache.filter(function(d){ return docFilter==='all'||d.type===docFilter; });
   if(!rows.length){ l.innerHTML=emptyState('Brak dokumentów','W tej kategorii nie ma jeszcze dokumentów.'); return; }
-  var out='', biezacy='';
-  rows.forEach(function(d,i){
-    var m=monthLabel(d.date);
-    if(m!==biezacy){
-      if(biezacy) out+='</div>';
-      out+='<div class="grp"><span class="grp-t">'+esc(m)+'</span></div><div class="card">';
-      biezacy=m;
-    }
-    out+=docRow(d);
-  });
-  if(biezacy) out+='</div>';
-  l.innerHTML=out;
+  l.innerHTML='<div class="card">'+rows.map(docRow).join('')+'</div>';
 }
 function docSet(f){ docFilter=f; docPaint(); }
 function docRow(d){
@@ -867,7 +851,7 @@ function docRow(d){
     +'<span class="row-m o-m">'
       +'<span class="o-top"><span class="row-t">'+esc(d.number)+'</span>'
         +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
-      +'<span class="o-bld">'+(fv?'Faktura VAT':'Oferta')+' do '+esc(d.orderNumber)
+      +'<span class="o-bld">'+(fv?('Faktura VAT do '+esc(d.orderNumber)):'Oferta handlowa')
         +'<br>'+esc(d.building)+'</span>'
       +'<span class="o-bot"><span class="o-date">'+dPretty(d.date)+'</span>'
         +'<span class="o-val">'+(d.gross==null?'—':zl(d.gross))+'</span></span>'
