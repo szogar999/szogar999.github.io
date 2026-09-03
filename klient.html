@@ -160,12 +160,23 @@ h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px;}
 select.in{background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239aa3b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 11px center;padding-right:38px;}
 textarea.in{min-height:84px;resize:vertical;line-height:1.5;}
-.rq-row{display:grid;grid-template-columns:1fr 78px 84px 40px;gap:8px;align-items:center;margin-bottom:9px;}
-@media(max-width:420px){ .rq-row{grid-template-columns:1fr 62px 72px 36px;gap:6px;} }
-.rq-row .in{padding:11px 10px;font-size:14px;}
-.rq-del{width:100%;height:40px;border:1px solid var(--line);background:var(--card);border-radius:var(--r-sm);
-  color:var(--ink-3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.rq-del:hover{border-color:#ef4444;color:#ef4444;}
+.rq-row{margin-bottom:11px;padding-bottom:11px;border-bottom:1px dashed var(--line-2);}
+.rq-row:last-child{border-bottom:none;padding-bottom:0;margin-bottom:6px;}
+.rq-sub{display:grid;grid-template-columns:1fr 96px 1fr;gap:8px;align-items:center;margin-top:7px;}
+.rq-row .in{padding:11px 12px;font-size:14px;}
+.rq-name{font-weight:600;}
+.rq-del{height:42px;border:1px solid var(--line);background:var(--card);border-radius:var(--r-sm);
+  color:var(--ink-3);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  font-size:14px;font-weight:600;}
+.rq-del:hover,.rq-del:active{border-color:#ef4444;color:#ef4444;background:#fef2f2;}
+.rq-del-t{display:inline;}
+@media(min-width:520px){
+  .rq-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+    padding-bottom:0;border-bottom:none;margin-bottom:9px;}
+  .rq-sub{margin-top:0;grid-template-columns:86px 92px 44px;}
+  .rq-del-t{display:none;}
+  .rq-del{width:44px;padding:0;}
+}
 .rq-add{width:100%;border:1px dashed var(--line);background:none;border-radius:var(--r-sm);
   padding:11px;color:var(--osg);font-weight:700;font-size:14px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:7px;}
@@ -183,6 +194,30 @@ textarea.in{min-height:84px;resize:vertical;line-height:1.5;}
 .flt-b.on{background:var(--ink);border-color:var(--ink);color:#fff;}
 .flt-b.on span{color:rgba(255,255,255,.6);}
 .flt-b:active{transform:scale(.96);}
+
+/* ---------- wiersz listy: zamowienia i dokumenty ---------- */
+.o-row{align-items:flex-start;padding:15px 0;}
+.o-ic{margin-top:1px;}
+.o-ic.d-fv{background:var(--osg-soft);color:var(--osg);}
+.o-m{gap:0;}
+.o-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.o-st{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;line-height:1.4;}
+.o-st.wait{background:var(--wait-soft);color:#a15c00;}
+.o-st.ok{background:var(--ok-soft);color:#0f7a37;}
+.o-st.info{background:var(--info-soft);color:#1d4ed8;}
+.o-st.mut{background:var(--bg);color:var(--ink-3);}
+.o-bld{display:block;font-size:13.5px;color:var(--ink-2);line-height:1.35;margin-top:4px;}
+.o-bot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:7px;}
+.o-date{font-size:12px;color:var(--ink-3);white-space:nowrap;}
+.o-val{font-size:15px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.grp{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 2px 10px;}
+.grp-t{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);}
+.grp-n{font-size:12px;font-weight:700;color:var(--ink-3);}
+.tot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 15px;margin-top:14px;box-shadow:var(--sh);}
+.tot-k{font-size:13px;color:var(--ink-2);}
+.tot-v{font-size:16px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;}
 
 /* ---------- profil ---------- */
 .pf-av{width:74px;height:74px;border-radius:50%;margin:0 auto;background:var(--osg-soft);color:var(--osg);
@@ -359,11 +394,16 @@ var api = (function(){
     },
     getDocuments:function(){
       var byOrder={};
-      DEMO.orders.forEach(function(o){ byOrder[o.id]={number:o.number,building:o.building}; });
+      DEMO.orders.forEach(function(o){ byOrder[o.id]=o; });
       var list=DEMO.documents.map(function(d){
         var o=byOrder[d.orderId]||{};
+        /* Status wyprowadzony z danych, ktore juz sa w snapshocie.
+           Faktura: brak danych o platnosci -> stwierdzamy tylko fakt wystawienia. */
+        var st = d.type==='faktura' ? 'wystawiona'
+               : (o.acceptedOff==null ? 'oczekuje' : 'zaakceptowana');
         return { id:d.id, type:d.type, number:d.number, date:iso(dOff(d.off)),
-                 orderId:d.orderId, orderNumber:o.number||'', building:o.building||'' };
+                 orderId:d.orderId, orderNumber:o.number||'', building:o.building||'',
+                 gross:(o.gross==null?null:o.gross), status:st };
       }).sort(function(a,b){ return a.date<b.date?1:-1; });
       return wait(list);
     },
@@ -419,6 +459,11 @@ function initials(name){
   var w=String(name||'').replace(/[^A-Za-z\u00C0-\u017F ]/g,' ').trim().split(/\s+/);
   return ((w[0]||'?').charAt(0)+(w[1]||'').charAt(0)).toUpperCase();
 }
+function monthLabel(isoStr){
+  var d=dFromIso(isoStr);
+  var t=d.toLocaleDateString('pl-PL',{month:'long',year:'numeric'});
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
 function relDay(off){
   if(off===0)return 'dziś';
   if(off===1)return 'jutro';
@@ -437,7 +482,8 @@ var SVG={
   chev:'<path d="M9 18l6-6-6-6"/>',
   back:'<path d="M19 12H5M12 19l-7-7 7-7"/>',
   home:'<path d="M3 10l9-7 9 7v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/>',
-  dot:'<circle cx="12" cy="12" r="7"/>'
+  dot:'<circle cx="12" cy="12" r="7"/>',
+  trash:'<path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/>'
 };
 function ico(n,s,sw){ return '<svg width="'+(s||17)+'" height="'+(s||17)+'" viewBox="0 0 24 24" fill="none" '
   +'stroke="currentColor" stroke-width="'+(sw||2)+'" stroke-linecap="round" stroke-linejoin="round">'+SVG[n]+'</svg>'; }
@@ -519,11 +565,15 @@ views.home=async function(){
 
 function orderRow(o){
   var st=ORDER_STATUS[o.status];
-  return '<button class="row" onclick="go(\'#/orders/'+o.id+'\')">'
-    +'<span class="row-ic">'+ico('box',17)+'</span>'
-    +'<span class="row-m"><span class="row-t">'+esc(o.number)+'</span>'
-    +'<span class="row-s">'+st.t+' · '+esc(o.building)+'</span></span>'
-    +'<span class="row-v">'+zl(o.gross)+'</span>'
+  return '<button class="row o-row" onclick="go(\'#/orders/'+o.id+'\')">'
+    +'<span class="row-ic o-ic">'+ico('box',17)+'</span>'
+    +'<span class="row-m o-m">'
+      +'<span class="o-top"><span class="row-t">'+esc(o.number)+'</span>'
+        +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
+      +'<span class="o-bld">'+esc(o.building)+'</span>'
+      +'<span class="o-bot"><span class="o-date">'+dPretty(o.createdAt)+'</span>'
+        +'<span class="o-val">'+zl(o.gross)+'</span></span>'
+    +'</span>'
     +'<span class="chev">'+ico('chev',16)+'</span></button>';
 }
 
@@ -550,7 +600,7 @@ views.order=async function(id){
       +'<span class="chev">'+ico('chev',16)+'</span></div></button></div>');
   }
 
-  h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Pozycje ('+o.items.length+')</div></div>'
+  h.push('<div class="sec"><div class="sec-h"><div class="sec-t">'+o.items.length+' '+pl(o.items.length,'pozycja','pozycje','pozycji')+'</div></div>'
     +'<div class="card">'+o.items.map(function(i){
       return '<div class="li"><div><div class="li-n">'+esc(i[0])+'</div>'
         +'<div class="li-q">'+i[1]+' '+esc(i[2])+' × '+zl(i[3])+'</div></div>'
@@ -582,13 +632,17 @@ views.delivery=async function(id){
   var dl=d.delivery, ds=DELIVERY_STATUS[dl.status], done=dl.status==='dostarczona';
   paintTop({back:'#/orders/'+id,title:'Dostawa',sub:d.order.number});
   var h=[];
+  var kiedy=relDay(dl.dayOff).replace(/^./,function(ch){return ch.toUpperCase();});
+  var dalej=(dl.steps.filter(function(st){ return st[0]==='todo'; })[0]||[])[1];
+  var naglowek = done ? ('Dostarczono '+relDay(dl.dayOff))
+                      : (kiedy+' do godz. '+esc(dl.hour));
+  var pod = done ? ('Zamówienie '+esc(d.order.number)+' zrealizowane w całości.')
+                 : (dalej ? ('Następny krok: '+esc(dalej).toLowerCase()+'.')
+                          : 'Realizacja w toku.');
   h.push('<div class="sec" style="margin-top:18px;text-align:center;">'
     +'<span class="pill '+ds.c+'">'+(done?'':'<span class="dot"></span>')+ds.t+'</span>'
-    +'<h1 style="margin-top:14px;">'+ds.h+'</h1>'
-    +'<div style="color:var(--ink-2);margin-top:8px;">'
-    +(done?('Dostarczono '+relDay(dl.dayOff)+' o '+esc(dl.hour))
-          :('Planowana dostawa <b>'+relDay(dl.dayOff)+' do godz. '+esc(dl.hour)+'</b>'))
-    +'</div></div>');
+    +'<h1 style="margin-top:14px;">'+naglowek+'</h1>'
+    +'<div style="color:var(--ink-2);margin-top:8px;">'+pod+'</div></div>');
 
   h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Przebieg realizacji</div></div><div class="card"><div class="tl">'
     +dl.steps.map(function(s,i){
@@ -639,7 +693,7 @@ views.request=async function(){
         return '<div class="row static"><span class="row-ic">'+ico('file',17)+'</span>'
           +'<span class="row-m"><span class="row-t">'+esc(r.number)+'</span>'
           +'<span class="row-s">'+st.t+' · '+esc(r.building)+'</span></span>'
-          +'<span class="pill '+st.c+'">'+r.items.length+' poz.</span></div>'; }).join('')
+          +'<span class="pill '+st.c+'">'+r.items.length+' '+pl(r.items.length,'pozycja','pozycje','pozycji')+'</span></div>'; }).join('')
       +'</div></div>');
   }
   h.push('<div class="foot">Zapytanie trafia do Twojego opiekuna w OSG.</div>');
@@ -650,11 +704,13 @@ views.request=async function(){
 function rqRowHtml(){
   var units=['szt','m2','mb','kg','op','t'];
   return '<div class="rq-row">'
-    +'<input class="in rq-name" placeholder="Nazwa produktu">'
-    +'<input class="in rq-qty" type="number" step="any" min="0" placeholder="Ilość">'
-    +'<select class="in rq-unit">'+units.map(function(u){return '<option value="'+u+'">'+u+'</option>';}).join('')+'</select>'
-    +'<button class="rq-del" onclick="rqDelRow(this)" title="Usuń">'+ico('back',15)+'</button>'
-    +'</div>';
+    +'<input class="in rq-name" placeholder="Nazwa produktu / materiału">'
+    +'<div class="rq-sub">'
+      +'<input class="in rq-qty" type="number" step="any" min="0" placeholder="Ilość">'
+      +'<select class="in rq-unit">'+units.map(function(u){return '<option value="'+u+'">'+u+'</option>';}).join('')+'</select>'
+      +'<button class="rq-del" onclick="rqDelRow(this)" title="Usuń pozycję" aria-label="Usuń pozycję">'
+        +ico('trash',16)+'<span class="rq-del-t">Usuń</span></button>'
+    +'</div></div>';
 }
 function rqAddRow(){
   var box=document.getElementById('rq-items'); if(!box)return;
@@ -700,7 +756,7 @@ views.requestSent=async function(id){
     +'Opiekun przygotuje wycenę i odeśle ofertę.</div></div>');
   h.push('<div class="sec"><div class="card">'
     +infoRow('pin','Budowa',esc(r.building))
-    +infoRow('box','Pozycje',r.items.length+' '+(r.items.length===1?'pozycja':'pozycji'))
+    +infoRow('box','Pozycje',r.items.length+' '+pl(r.items.length,'pozycja','pozycje','pozycji'))
     +infoRow('clock','Status',(REQ_STATUS[r.status]||REQ_STATUS.nowe).t)
     +'</div></div>');
   h.push('<div class="sec"><div class="card">'
@@ -725,11 +781,14 @@ views.orders=async function(){
   mount('<div class="sec"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');
   ordCache=await api.getOrders();
   var n=ordCache.orders.length;
+  var suma=ordCache.orders.reduce(function(a,o){return a+o.gross;},0);
   mount('<div class="sec" style="margin-top:18px;"><h1>Zamówienia</h1>'
-    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'zamówienie','zamówienia','zamówień')+' w historii</div></div>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'zamówienie','zamówienia','zamówień')+' w historii współpracy</div>'
+    +'<div class="tot"><span class="tot-k">Łączna wartość brutto</span><span class="tot-v">'+zl(suma)+'</span></div>'
+    +'</div>'
     +'<div class="flt" id="ord-flt"></div>'
-    +'<div class="sec" style="margin-top:12px;" id="ord-list"></div>'
-    +'<div class="foot">Kwoty brutto. Kliknij zamówienie, żeby zobaczyć pozycje i dokumenty.</div>');
+    +'<div class="sec" style="margin-top:6px;" id="ord-list"></div>'
+    +'<div class="foot">Kliknij zamówienie, żeby zobaczyć pozycje i dokumenty.</div>');
   ordPaint();
 };
 function ordPaint(){
@@ -741,12 +800,25 @@ function ordPaint(){
       return '<button class="flt-b'+(ordFilter===x[0]?' on':'')+'" onclick="ordSet(\''+x[0]+'\')">'
         +x[1]+' <span>'+c+'</span></button>'; }).join('');
   var rows=ordCache.orders.filter(function(o){ return ordFilter==='all'||o.status===ordFilter; });
-  l.innerHTML = rows.length ? ('<div class="card">'+rows.map(orderRow).join('')+'</div>')
-    : emptyState('Brak zamówień','W tej kategorii nie ma jeszcze zamówień.');
+  if(!rows.length){ l.innerHTML=emptyState('Brak zamówień','W tej kategorii nie ma jeszcze zamówień.'); return; }
+  if(ordFilter!=='all'){ l.innerHTML='<div class="card">'+rows.map(orderRow).join('')+'</div>'; return; }
+  var akt=rows.filter(function(o){ return o.status==='w_realizacji'||o.status==='do_akceptacji'; });
+  var zak=rows.filter(function(o){ return o.status==='dostarczone'||o.status==='archiwalne'; });
+  l.innerHTML=grupa('W toku',akt)+grupa('Zakończone',zak);
+}
+function grupa(t,arr){
+  if(!arr.length) return '';
+  return '<div class="grp"><span class="grp-t">'+t+'</span><span class="grp-n">'+arr.length+'</span></div>'
+    +'<div class="card">'+arr.map(orderRow).join('')+'</div>';
 }
 function ordSet(f){ ordFilter=f; ordPaint(); }
 
 /* ---------- Dokumenty ---------- */
+var DOC_STATUS={
+  zaakceptowana:{t:'Zaakceptowana',c:'ok'},
+  oczekuje:{t:'Czeka na akceptację',c:'info'},
+  wystawiona:{t:'Wystawiona',c:'mut'}
+};
 var DOC_FILTERS=[['all','Wszystkie'],['oferta','Oferty'],['faktura','Faktury']];
 var docFilter='all', docCache=null;
 
@@ -754,11 +826,14 @@ views.documents=async function(){
   paintTop({title:'Dokumenty',sub:'Oferty i faktury'});
   mount('<div class="sec"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');
   docCache=await api.getDocuments();
-  var n=docCache.length;
+  var n=docCache.length, fv=docCache.filter(function(d){return d.type==='faktura';}).length;
   mount('<div class="sec" style="margin-top:18px;"><h1>Dokumenty</h1>'
-    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'dokument','dokumenty','dokumentów')+' powiązanych z Twoimi zamówieniami</div></div>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'dokument','dokumenty','dokumentów')+' powiązanych z Twoimi zamówieniami</div>'
+    +'<div class="tot"><span class="tot-k">Ostatni dokument</span><span class="tot-v" style="font-size:14px;">'
+      +esc(docCache[0].number)+' · '+dPretty(docCache[0].date)+'</span></div>'
+    +'</div>'
     +'<div class="flt" id="doc-flt"></div>'
-    +'<div class="sec" style="margin-top:12px;" id="doc-list"></div>'
+    +'<div class="sec" style="margin-top:6px;" id="doc-list"></div>'
     +'<div class="foot">Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.</div>');
   docPaint();
 };
@@ -770,16 +845,33 @@ function docPaint(){
     return '<button class="flt-b'+(docFilter===x[0]?' on':'')+'" onclick="docSet(\''+x[0]+'\')">'
       +x[1]+' <span>'+c+'</span></button>'; }).join('');
   var rows=docCache.filter(function(d){ return docFilter==='all'||d.type===docFilter; });
-  l.innerHTML = rows.length ? ('<div class="card">'+rows.map(docRow).join('')+'</div>')
-    : emptyState('Brak dokumentów','W tej kategorii nie ma jeszcze dokumentów.');
+  if(!rows.length){ l.innerHTML=emptyState('Brak dokumentów','W tej kategorii nie ma jeszcze dokumentów.'); return; }
+  var out='', biezacy='';
+  rows.forEach(function(d,i){
+    var m=monthLabel(d.date);
+    if(m!==biezacy){
+      if(biezacy) out+='</div>';
+      out+='<div class="grp"><span class="grp-t">'+esc(m)+'</span></div><div class="card">';
+      biezacy=m;
+    }
+    out+=docRow(d);
+  });
+  if(biezacy) out+='</div>';
+  l.innerHTML=out;
 }
 function docSet(f){ docFilter=f; docPaint(); }
 function docRow(d){
-  var fv = d.type==='faktura';
-  return '<button class="row" onclick="go(\'#/orders/'+d.orderId+'\')">'
-    +'<span class="row-ic"'+(fv?' style="background:var(--osg-soft);color:var(--osg);"':'')+'>'+ico('file',17)+'</span>'
-    +'<span class="row-m"><span class="row-t">'+esc(d.number)+'</span>'
-    +'<span class="row-s">'+(fv?'Faktura VAT':'Oferta')+' \u00b7 '+dPretty(d.date)+'</span></span>'
+  var fv = d.type==='faktura', st=DOC_STATUS[d.status]||DOC_STATUS.wystawiona;
+  return '<button class="row o-row" onclick="go(\'#/orders/'+d.orderId+'\')">'
+    +'<span class="row-ic o-ic'+(fv?' d-fv':'')+'">'+ico('file',17)+'</span>'
+    +'<span class="row-m o-m">'
+      +'<span class="o-top"><span class="row-t">'+esc(d.number)+'</span>'
+        +'<span class="o-st '+st.c+'">'+st.t+'</span></span>'
+      +'<span class="o-bld">'+(fv?'Faktura VAT':'Oferta')+' do '+esc(d.orderNumber)
+        +'<br>'+esc(d.building)+'</span>'
+      +'<span class="o-bot"><span class="o-date">'+dPretty(d.date)+'</span>'
+        +'<span class="o-val">'+(d.gross==null?'—':zl(d.gross))+'</span></span>'
+    +'</span>'
     +'<span class="chev">'+ico('chev',16)+'</span></button>';
 }
 
@@ -792,7 +884,7 @@ views.profile=async function(){
   h.push('<div class="sec" style="margin-top:22px;text-align:center;">'
     +'<div class="pf-av">'+esc(initials(c.name))+'</div>'
     +'<h1 style="margin-top:14px;font-size:24px;">'+esc(c.name)+'</h1>'
-    +'<div style="color:var(--ink-2);margin-top:4px;">NIP '+esc(c.nip)+'</div></div>');
+    +'<div style="color:var(--ink-3);margin-top:5px;font-size:14px;">Klient OSG Logistics</div></div>');
   h.push('<div class="sec"><div class="pf-st">'
     +'<div class="pf-s"><b>'+d.stats.orders+'</b><span>zamówień</span></div>'
     +'<div class="pf-s"><b>'+d.stats.documents+'</b><span>dokumentów</span></div>'
