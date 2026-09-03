@@ -173,6 +173,28 @@ textarea.in{min-height:84px;resize:vertical;line-height:1.5;}
   padding:11px 13px;font-size:14px;font-weight:600;margin-bottom:12px;}
 .done-ic{width:78px;height:78px;border-radius:50%;background:var(--ok-soft);color:var(--ok);
   display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+/* ---------- filtry list (orders / documents) ---------- */
+.flt{display:flex;gap:8px;overflow-x:auto;margin-top:18px;padding:2px 2px 4px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.flt::-webkit-scrollbar{display:none;}
+.flt-b{flex-shrink:0;border:1px solid var(--line);background:var(--card);border-radius:999px;
+  padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;}
+.flt-b span{color:var(--ink-3);font-weight:700;margin-left:3px;}
+.flt-b.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+.flt-b.on span{color:rgba(255,255,255,.6);}
+.flt-b:active{transform:scale(.96);}
+
+/* ---------- profil ---------- */
+.pf-av{width:74px;height:74px;border-radius:50%;margin:0 auto;background:var(--osg-soft);color:var(--osg);
+  display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:800;letter-spacing:-.5px;}
+.pf-st{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.pf-s{background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:14px 8px;text-align:center;box-shadow:var(--sh);}
+.pf-s b{display:block;font-size:21px;font-weight:800;letter-spacing:-.5px;}
+.pf-s span{display:block;font-size:12px;color:var(--ink-3);margin-top:2px;}
+a.btn{text-decoration:none;color:var(--ink);}
+a.btn.pri{color:#fff;}
+
 .foot{text-align:center;color:var(--ink-3);font-size:12px;padding:26px 10px 6px;line-height:1.6;}
 @media(min-width:640px){ .wrap{padding-bottom:34px;} h1{font-size:32px;} }
 </style>
@@ -329,6 +351,27 @@ var api = (function(){
       list.push(rec); saveLocal(list);
       return wait(copy(rec));
     },
+    getOrders:function(){
+      var list=DEMO.orders.map(pubOrder);
+      var counts={all:list.length};
+      list.forEach(function(o){ counts[o.status]=(counts[o.status]||0)+1; });
+      return wait({ orders:list, counts:counts });
+    },
+    getDocuments:function(){
+      var byOrder={};
+      DEMO.orders.forEach(function(o){ byOrder[o.id]={number:o.number,building:o.building}; });
+      var list=DEMO.documents.map(function(d){
+        var o=byOrder[d.orderId]||{};
+        return { id:d.id, type:d.type, number:d.number, date:iso(dOff(d.off)),
+                 orderId:d.orderId, orderNumber:o.number||'', building:o.building||'' };
+      }).sort(function(a,b){ return a.date<b.date?1:-1; });
+      return wait(list);
+    },
+    getProfile:function(){
+      return wait({ client:copy(DEMO.client),
+        stats:{ orders:DEMO.orders.length, documents:DEMO.documents.length,
+                requests:allRequests().length } });
+    },
     getBuildings:function(){ return wait(copy(DEMO.client.buildings)); },
     getHome:function(){
       var active=DEMO.orders.filter(function(o){return o.status==='w_realizacji';})[0]||null;
@@ -370,6 +413,12 @@ function dFromIso(s){ var p=String(s).split('-'); return new Date(+p[0],+p[1]-1,
 function dPretty(iso){ return dLong(dFromIso(iso)); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function pl(n,a,b,c){ var d=n%10, e=n%100;
+  if(n===1)return a; return (d>=2&&d<=4&&(e<10||e>=20))?b:c; }
+function initials(name){
+  var w=String(name||'').replace(/[^A-Za-z\u00C0-\u017F ]/g,' ').trim().split(/\s+/);
+  return ((w[0]||'?').charAt(0)+(w[1]||'').charAt(0)).toUpperCase();
+}
 function relDay(off){
   if(off===0)return 'dziś';
   if(off===1)return 'jutro';
@@ -666,6 +715,111 @@ views.requestSent=async function(id){
   mount(h.join(''));
 };
 
+/* ---------- Lista zamowien ---------- */
+var ORD_FILTERS=[['all','Wszystkie'],['w_realizacji','W realizacji'],
+  ['do_akceptacji','Do akceptacji'],['dostarczone','Dostarczone'],['archiwalne','Zakończone']];
+var ordFilter='all', ordCache=null;
+
+views.orders=async function(){
+  paintTop({title:'Moje zamówienia',sub:'Historia współpracy'});
+  mount('<div class="sec"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');
+  ordCache=await api.getOrders();
+  var n=ordCache.orders.length;
+  mount('<div class="sec" style="margin-top:18px;"><h1>Zamówienia</h1>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'zamówienie','zamówienia','zamówień')+' w historii</div></div>'
+    +'<div class="flt" id="ord-flt"></div>'
+    +'<div class="sec" style="margin-top:12px;" id="ord-list"></div>'
+    +'<div class="foot">Kwoty brutto. Kliknij zamówienie, żeby zobaczyć pozycje i dokumenty.</div>');
+  ordPaint();
+};
+function ordPaint(){
+  var f=document.getElementById('ord-flt'), l=document.getElementById('ord-list');
+  if(!f||!l||!ordCache)return;
+  f.innerHTML=ORD_FILTERS.filter(function(x){ return x[0]==='all'||ordCache.counts[x[0]]; })
+    .map(function(x){
+      var c=x[0]==='all'?ordCache.counts.all:ordCache.counts[x[0]];
+      return '<button class="flt-b'+(ordFilter===x[0]?' on':'')+'" onclick="ordSet(\''+x[0]+'\')">'
+        +x[1]+' <span>'+c+'</span></button>'; }).join('');
+  var rows=ordCache.orders.filter(function(o){ return ordFilter==='all'||o.status===ordFilter; });
+  l.innerHTML = rows.length ? ('<div class="card">'+rows.map(orderRow).join('')+'</div>')
+    : emptyState('Brak zamówień','W tej kategorii nie ma jeszcze zamówień.');
+}
+function ordSet(f){ ordFilter=f; ordPaint(); }
+
+/* ---------- Dokumenty ---------- */
+var DOC_FILTERS=[['all','Wszystkie'],['oferta','Oferty'],['faktura','Faktury']];
+var docFilter='all', docCache=null;
+
+views.documents=async function(){
+  paintTop({title:'Dokumenty',sub:'Oferty i faktury'});
+  mount('<div class="sec"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');
+  docCache=await api.getDocuments();
+  var n=docCache.length;
+  mount('<div class="sec" style="margin-top:18px;"><h1>Dokumenty</h1>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">'+n+' '+pl(n,'dokument','dokumenty','dokumentów')+' powiązanych z Twoimi zamówieniami</div></div>'
+    +'<div class="flt" id="doc-flt"></div>'
+    +'<div class="sec" style="margin-top:12px;" id="doc-list"></div>'
+    +'<div class="foot">Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.</div>');
+  docPaint();
+};
+function docPaint(){
+  var f=document.getElementById('doc-flt'), l=document.getElementById('doc-list');
+  if(!f||!l||!docCache)return;
+  f.innerHTML=DOC_FILTERS.map(function(x){
+    var c=x[0]==='all'?docCache.length:docCache.filter(function(d){return d.type===x[0];}).length;
+    return '<button class="flt-b'+(docFilter===x[0]?' on':'')+'" onclick="docSet(\''+x[0]+'\')">'
+      +x[1]+' <span>'+c+'</span></button>'; }).join('');
+  var rows=docCache.filter(function(d){ return docFilter==='all'||d.type===docFilter; });
+  l.innerHTML = rows.length ? ('<div class="card">'+rows.map(docRow).join('')+'</div>')
+    : emptyState('Brak dokumentów','W tej kategorii nie ma jeszcze dokumentów.');
+}
+function docSet(f){ docFilter=f; docPaint(); }
+function docRow(d){
+  var fv = d.type==='faktura';
+  return '<button class="row" onclick="go(\'#/orders/'+d.orderId+'\')">'
+    +'<span class="row-ic"'+(fv?' style="background:var(--osg-soft);color:var(--osg);"':'')+'>'+ico('file',17)+'</span>'
+    +'<span class="row-m"><span class="row-t">'+esc(d.number)+'</span>'
+    +'<span class="row-s">'+(fv?'Faktura VAT':'Oferta')+' \u00b7 '+dPretty(d.date)+'</span></span>'
+    +'<span class="chev">'+ico('chev',16)+'</span></button>';
+}
+
+/* ---------- Profil ---------- */
+views.profile=async function(){
+  paintTop({title:'Profil firmy',sub:'Dane i kontakt'});
+  mount('<div class="sec"><div class="skel big"></div></div>');
+  var d=await api.getProfile();
+  var c=d.client, m=c.manager, h=[];
+  h.push('<div class="sec" style="margin-top:22px;text-align:center;">'
+    +'<div class="pf-av">'+esc(initials(c.name))+'</div>'
+    +'<h1 style="margin-top:14px;font-size:24px;">'+esc(c.name)+'</h1>'
+    +'<div style="color:var(--ink-2);margin-top:4px;">NIP '+esc(c.nip)+'</div></div>');
+  h.push('<div class="sec"><div class="pf-st">'
+    +'<div class="pf-s"><b>'+d.stats.orders+'</b><span>zamówień</span></div>'
+    +'<div class="pf-s"><b>'+d.stats.documents+'</b><span>dokumentów</span></div>'
+    +'<div class="pf-s"><b>'+d.stats.requests+'</b><span>zgłoszeń</span></div>'
+    +'</div></div>');
+  h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Twój opiekun</div></div><div class="card">'
+    +'<div class="row static"><span class="row-ic" style="background:var(--osg-soft);color:var(--osg);">'+ico('user',17)+'</span>'
+    +'<span class="row-m"><span class="row-t">'+esc(m.name)+'</span>'
+    +'<span class="row-s">'+esc(m.role)+'</span></span></div>'
+    +'<div class="btn-row">'
+      +'<a class="btn pri sm" href="tel:'+esc(m.phone)+'">Zadzwoń</a>'
+      +'<a class="btn sm" href="mailto:'+esc(m.email)+'">Napisz</a>'
+    +'</div></div></div>');
+  h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Dane firmy</div></div><div class="card">'
+    +infoRow('pin','Adres',esc(c.address))
+    +infoRow('file','NIP',esc(c.nip))
+    +'</div></div>');
+  h.push('<div class="sec"><div class="sec-h"><div class="sec-t">Budowy ('+c.buildings.length+')</div></div><div class="card">'
+    +c.buildings.map(function(b){
+      return '<div class="row static"><span class="row-ic">'+ico('pin',17)+'</span>'
+        +'<span class="row-m"><span class="row-t">'+esc(b)+'</span></span></div>'; }).join('')
+    +'</div></div>');
+  h.push('<div class="sec"><button class="btn" onclick="go(\'#/request\')">'+ico('plus',16)+'Nowe zapotrzebowanie</button></div>');
+  h.push('<div class="foot">OSG Logistics \u00b7 portal klienta v0.3.0<br>Wersja demonstracyjna \u2014 dane poglądowe.</div>');
+  mount(h.join(''));
+};
+
 function infoRow(icon,k,v){
   return '<div class="row static"><span class="row-ic">'+ico(icon,17)+'</span>'
     +'<span class="row-m"><span class="row-s">'+k+'</span><span class="row-t">'+v+'</span></span></div>';
@@ -710,11 +864,11 @@ var ROUTES=[
   [/^#\/$/,                          function(){ paintTabs('#/');          return views.home(); }],
   [/^#\/orders\/([\w-]+)\/delivery$/,function(m){ paintTabs('#/orders');   return views.delivery(m[1]); }],
   [/^#\/orders\/([\w-]+)$/,          function(m){ paintTabs('#/orders');   return views.order(m[1]); }],
-  [/^#\/orders$/,                    function(){ paintTabs('#/orders');    return views.soon('Moje zamówienia'); }],
+  [/^#\/orders$/,                    function(){ paintTabs('#/orders');    return views.orders(); }],
   [/^#\/request\/sent\/([\w-]+)$/,    function(m){ paintTabs('#/request');  return views.requestSent(m[1]); }],
   [/^#\/request$/,                   function(){ paintTabs('#/request');   return views.request(); }],
-  [/^#\/documents$/,                 function(){ paintTabs('#/documents'); return views.soon('Dokumenty'); }],
-  [/^#\/profile$/,                   function(){ paintTabs('#/profile');   return views.soon('Profil firmy'); }]
+  [/^#\/documents$/,                 function(){ paintTabs('#/documents'); return views.documents(); }],
+  [/^#\/profile$/,                   function(){ paintTabs('#/profile');   return views.profile(); }]
 ];
 function route(){
   var h=location.hash||'#/';
