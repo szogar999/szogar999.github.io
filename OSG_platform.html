@@ -549,6 +549,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05);}
 .row:last-child{border-bottom:none;}
 .bnav{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e8601c,#c94e10);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;z-index:99;box-shadow:0 4px 20px rgba(232,96,28,.6);white-space:nowrap;}
+
+/* ============================================================
+   Showcase Polish Pack p.12 — feedback dotyku.
+   Klasy .card / .row / .btn / .nb sa wspoldzielone miedzy profilami
+   showcase (motyw ciemny) a legacy panelami Commandu (motyw jasny),
+   dlatego:
+   1. Zadna regula nie rusza wymiarow — tylko transform, background
+      i box-shadow. Zero wplywu na layout, zero skakania kart.
+   2. Tlo wcisniecia jest neutralne (szary z alfa), zeby czytelnie
+      wygladalo i na granatowym showcase, i na jasnym Commandzie.
+   3. :active propaguje sie na przodkow, wiec skalowanie karty jest
+      ograniczone do kart, ktore SA przyciskiem. Inaczej dotkniecie
+      wiersza skalowaloby cala karte wokol niego.
+   W pliku nie bylo dotad zadnej reguly :active, a :hover nie dotyka
+   zadnej z tych czterech klas — kolizji nie ma.
+   ============================================================ */
+.card,.row,.btn,.nb{
+  transition:transform 140ms cubic-bezier(.22,.61,.36,1),
+             background-color 140ms ease,
+             box-shadow 180ms ease;
+}
+.btn:active{transform:scale(.975);}
+.nb:active{transform:scale(.94);}
+.row[onclick]:active,button.row:active,a.row:active{background-color:rgba(127,127,127,.14);}
+.card[onclick]:active,button.card:active{transform:scale(.993);}
+@media(prefers-reduced-motion:reduce){
+  .card,.row,.btn,.nb{transition-duration:.001ms;}
+  .btn:active,.nb:active,.card[onclick]:active,button.card:active{transform:none;}
+}
 .tl-wrap{position:relative;padding-left:32px;display:flex;flex-direction:column;gap:14px;}
 .tl-item{position:relative;}
 .tl-item:not(:last-child)::after{content:'';position:absolute;left:-21px;top:28px;bottom:-14px;width:2px;background:var(--border);}
@@ -6996,9 +7025,15 @@ function bidRecalc(){
   var v=parseFloat(inp.value); if(!isFinite(v)||v<0)v=0;
   var fee=Math.round(v*BID_FEE_RATE), diff=BID_MARKET-v;
   var set=function(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt;};
-  set('bid-net', scMoney(v)+' netto');
-  set('bid-fee', '−'+scMoney(fee));
-  set('bid-income', scMoney(v-fee));
+  if(v<=0){
+    /* Pusta kwota: neutralna kreska zamiast "0 zl" i "−0 zl" — spojnie
+       z tym, jak reszta formularzy pokazuje brak wartosci. */
+    set('bid-net','—'); set('bid-fee','—'); set('bid-income','—');
+  }else{
+    set('bid-net', scMoney(v)+' netto');
+    set('bid-fee', '−'+scMoney(fee));
+    set('bid-income', scMoney(v-fee));
+  }
   var vs=document.getElementById('bid-vs-market');
   if(vs){
     if(v<=0){ vs.textContent='Wpisz kwotę oferty netto'; vs.style.color='#8a9ab0'; }
