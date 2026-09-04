@@ -619,6 +619,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   background:var(--pl-bg); color:var(--pl-ink);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Arial,sans-serif;
   -webkit-font-smoothing:antialiased; letter-spacing:-.006em;
+  /* body ma ciemne tlo starego showcase — malujemy jasna plaszczyzne takze
+     poza obrysem ekranu, zeby nie przebijaly ciemne marginesy. */
+  box-shadow:0 0 0 100vmax var(--pl-bg); clip-path:inset(0);
 }
 .pl *{box-sizing:border-box;}
 .pl ::selection{background:var(--pl-brand-soft);color:var(--pl-brand-deep);}
@@ -647,7 +650,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   box-shadow:var(--pl-sh);overflow:hidden;transition:box-shadow 220ms var(--pl-e),transform 160ms var(--pl-e),border-color 200ms;}
 .pl-card-p{padding:22px 24px;}
 .pl-card-t{padding:16px 24px;border-top:1px solid var(--pl-line-2);}
-button.pl-card,.pl-card[onclick]{cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;display:block;}
+button.pl-card,.pl-card[onclick]{cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;}
+button.pl-card{display:block;}
 button.pl-card:hover,.pl-card[onclick]:hover{box-shadow:var(--pl-sh-lg);border-color:var(--pl-line-3);}
 button.pl-card:active,.pl-card[onclick]:active{transform:translateY(1px) scale(.996);}
 
@@ -698,9 +702,11 @@ button.pl-card:active,.pl-card[onclick]:active{transform:translateY(1px) scale(.
 button.pl-row{cursor:pointer;}
 button.pl-row:hover{background:var(--pl-surface-2);}
 button.pl-row:active{background:var(--pl-surface-3);}
-.pl-row-m{flex:1;min-width:0;}
-.pl-row-t{font-size:14.5px;font-weight:650;color:var(--pl-ink);line-height:1.3;}
-.pl-row-s{font-size:12.5px;color:var(--pl-ink-3);margin-top:3px;line-height:1.35;}
+.pl-row-m{flex:1;min-width:0;display:flex;flex-direction:column;}
+/* .pl-row-t i .pl-row-s to <span>-y — bez display:block zlewaly sie w jedna linie.
+   Dokladnie ten sam blad zlapalismy wczesniej w kliencie; tu domykamy go od razu. */
+.pl-row-t{display:block;font-size:14.5px;font-weight:650;color:var(--pl-ink);line-height:1.3;}
+.pl-row-s{display:block;font-size:12.5px;color:var(--pl-ink-3);margin-top:3px;line-height:1.35;}
 .pl-row-v{font-size:14.5px;font-weight:750;white-space:nowrap;}
 .pl-chev{color:var(--pl-ink-3);flex-shrink:0;display:flex;transition:transform 180ms var(--pl-e);}
 button.pl-row:hover .pl-chev{transform:translateX(3px);}
@@ -760,7 +766,7 @@ button.pl-row:hover .pl-chev{transform:translateX(3px);}
 .pl-ob .pl-d1{max-width:15ch;margin:0 auto;}
 .pl-ob .pl-lead{margin-top:14px;}
 .pl-profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;text-align:left;}
-.pl-prof{display:flex;flex-direction:column;gap:14px;padding:24px;position:relative;}
+button.pl-prof,.pl-prof{display:flex;flex-direction:column;gap:14px;padding:24px;position:relative;}
 .pl-prof .pl-ico{transition:transform 220ms var(--pl-e);}
 button.pl-prof:hover .pl-ico{transform:scale(1.06) rotate(-3deg);}
 .pl-prof>.pl-h2{display:block;}
@@ -781,7 +787,7 @@ button.pl-prof:hover .pl-prof-a{gap:12px;}
 /* ---------- HERO ---------- */
 .pl-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-top:34px;align-items:stretch;}
 .pl-hero-main{background:linear-gradient(150deg,#12203a 0%,#0e1626 58%,#1c1208 100%);
-  border-radius:var(--pl-r-xl);padding:38px 40px;color:#fff;position:relative;overflow:hidden;
+  border-radius:var(--pl-r-xl);padding:34px 40px;color:#fff;position:relative;overflow:hidden;
   display:flex;flex-direction:column;justify-content:center;}
 .pl-hero-main::after{content:'';position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;
   background:radial-gradient(circle,rgba(232,96,28,.42),transparent 68%);pointer-events:none;}
@@ -793,7 +799,7 @@ button.pl-prof:hover .pl-prof-a{gap:12px;}
 .pl-hero-side{display:flex;flex-direction:column;gap:14px;}
 .pl-save{flex:1;background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r-lg);
   box-shadow:var(--pl-sh);padding:24px;display:flex;flex-direction:column;justify-content:center;}
-.pl-save-n{font-size:36px;font-weight:800;letter-spacing:-.032em;color:var(--pl-ok);line-height:1;margin-top:10px;}
+.pl-save-n{font-size:42px;font-weight:800;letter-spacing:-.032em;color:var(--pl-ok);line-height:1;margin-top:10px;}
 .pl-mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .pl-stat{background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r);
   box-shadow:var(--pl-sh);padding:16px 18px;}
@@ -803,12 +809,14 @@ button.pl-prof:hover .pl-prof-a{gap:12px;}
 /* ---------- dwie kolumny ---------- */
 .pl-cols{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start;margin-top:34px;}
 .pl-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.pl-tile{padding:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}
+button.pl-tile,.pl-tile{padding:18px;display:flex;flex-direction:column;gap:11px;align-items:flex-start;}
+.pl-tile .pl-row-m{width:100%;}
 .pl-tile .pl-row-t{font-size:14px;}
-.pl-feat{padding:22px 24px;display:flex;align-items:center;gap:16px;}
-.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:none;color:#fff;padding:22px 24px;
+button.pl-feat,.pl-feat{padding:22px 24px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap;}
+button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:none;color:#fff;padding:22px 24px;
   display:flex;align-items:center;gap:16px;}
 .pl-ai .pl-row-t{color:#fff;} .pl-ai .pl-row-s{color:rgba(255,255,255,.55);}
+.pl-ai .pl-chev{color:rgba(255,255,255,.5);}
 .pl-ai .pl-ico{background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-2));color:#fff;}
 
 /* ---------- RESPONSYWNOSC ---------- */
