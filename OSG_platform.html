@@ -709,7 +709,7 @@ button.pl-row:hover .pl-chev{transform:translateX(3px);}
 .pl-top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.86);
   backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--pl-line);}
 .pl-top-in{max-width:1180px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:14px;}
-.pl-top img{height:24px;width:auto;display:block;}
+.pl-top img{height:23px;width:auto;display:block;filter:brightness(0);opacity:.9;}
 .pl-top-ctx{font-size:12.5px;color:var(--pl-ink-3);padding-left:14px;margin-left:2px;border-left:1px solid var(--pl-line);}
 .pl-icobtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--pl-line);background:var(--pl-surface);
   display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--pl-ink-2);position:relative;
@@ -723,7 +723,7 @@ button.pl-row:hover .pl-chev{transform:translateX(3px);}
 
 /* ---------- pasek DEMO ---------- */
 .pl-demo{background:var(--pl-navy);color:#fff;text-align:center;padding:9px 16px;
-  font-size:11.5px;font-weight:650;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:8px;}
+  font-size:11.5px;font-weight:650;letter-spacing:.02em;}
 .pl-demo b{color:var(--pl-brand-2);font-weight:750;}
 
 /* ---------- wejscie ekranu ---------- */
@@ -755,7 +755,8 @@ button.pl-row:hover .pl-chev{transform:translateX(3px);}
 /* ---------- PICKER ---------- */
 .pl-ob{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:56px 0 72px;}
 .pl-ob-in{width:100%;text-align:center;}
-.pl-ob img{max-width:216px;width:58%;height:auto;margin:0 auto 26px;display:block;}
+.pl-ob img{max-width:200px;width:54%;height:auto;margin:0 auto 28px;display:block;
+  filter:brightness(0);opacity:.92;}
 .pl-ob .pl-d1{max-width:15ch;margin:0 auto;}
 .pl-ob .pl-lead{margin-top:14px;}
 .pl-profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;text-align:left;}
@@ -7491,7 +7492,7 @@ var SYS='Jesteś OSG AI — asystentem budowlanym. Gdy użytkownik opisze zakres
 function syncAiFab(){
   var fab=document.getElementById('ai-fab'); if(!fab)return;
   var akt=document.querySelector('.screen.active');
-  var wShowcase=!!(akt&&akt.classList.contains('sc-w'));
+  var wShowcase=!!(akt&&(akt.classList.contains('sc-w')||akt.classList.contains('pl')));
   fab.style.display=(aiOpen||wShowcase)?'none':'flex';
 }
 function toggleAI(){
