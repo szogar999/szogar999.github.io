@@ -1063,6 +1063,86 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   font-variant-numeric:tabular-nums;}
 .pl-mini3 span{display:block;font-size:11.5px;color:var(--pl-ink-3);margin-top:6px;}
 
+/* ---------- zmiana ceny ---------- */
+.pl-delta{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:750;
+  padding:4px 9px;border-radius:20px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.pl-delta.pl-down{background:var(--pl-ok-soft);color:var(--pl-ok);}
+.pl-delta.pl-up{background:var(--pl-err-soft);color:var(--pl-err);}
+.pl-delta.pl-flat{background:var(--pl-surface-2);color:var(--pl-ink-3);}
+.pl-price{font-size:19px;font-weight:800;letter-spacing:-.028em;font-variant-numeric:tabular-nums;
+  white-space:nowrap;}
+.pl-spark{display:block;flex-shrink:0;}
+
+/* ---------- slupki historii ceny ---------- */
+.pl-bars{display:flex;flex-direction:column;gap:9px;}
+.pl-bar{display:flex;align-items:center;gap:12px;font-size:12.5px;}
+.pl-bar-l{width:96px;flex-shrink:0;color:var(--pl-ink-3);}
+.pl-bar-t{flex:1;display:block;height:7px;background:var(--pl-surface-3);border-radius:4px;overflow:hidden;}
+.pl-bar-f{display:block;height:100%;border-radius:4px;background:var(--pl-ink-3);
+  transform-origin:left;animation:plBar 620ms var(--pl-e) both;}
+@keyframes plBar{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+.pl-bar-v{width:74px;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;}
+.pl-bar.pl-cur .pl-bar-l,.pl-bar.pl-cur .pl-bar-v{font-weight:750;color:var(--pl-ink);}
+
+/* ---------- prognoza ---------- */
+.pl-fc{border-radius:var(--pl-r);padding:13px 15px;background:var(--pl-surface-2);
+  border:1px solid var(--pl-line);}
+.pl-fc.pl-ok{background:var(--pl-ok-soft);border-color:rgba(15,138,77,.22);}
+.pl-fc.pl-up{background:var(--pl-err-soft);border-color:rgba(198,40,40,.2);}
+.pl-fc-h{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;
+  text-transform:uppercase;letter-spacing:.05em;}
+.pl-fc.pl-ok .pl-fc-h{color:var(--pl-ok);}
+.pl-fc.pl-up .pl-fc-h{color:var(--pl-err);}
+.pl-fc-x{font-size:13px;line-height:1.5;color:var(--pl-ink-2);margin-top:8px;}
+.pl-fc-x b{color:var(--pl-ink);font-weight:750;}
+
+/* ---------- karta wniosku asystenta ---------- */
+.pl-insight{display:flex;gap:15px;padding:20px 22px;border-radius:var(--pl-r-lg);
+  background:var(--pl-surface);border:1px solid var(--pl-line);box-shadow:var(--pl-sh);
+  border-left:3px solid var(--pl-line-3);}
+.pl-insight.pl-warn{border-left-color:var(--pl-warn);}
+.pl-insight.pl-ok{border-left-color:var(--pl-ok);}
+.pl-insight.pl-info{border-left-color:var(--pl-info);}
+.pl-insight-m{flex:1;min-width:0;}
+.pl-insight-k{display:block;font-size:11px;font-weight:750;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--pl-ink-3);}
+.pl-insight.pl-warn .pl-insight-k{color:var(--pl-warn);}
+.pl-insight.pl-ok .pl-insight-k{color:var(--pl-ok);}
+.pl-insight.pl-info .pl-insight-k{color:var(--pl-info);}
+.pl-insight-t{display:block;font-size:16px;font-weight:750;letter-spacing:-.018em;
+  line-height:1.3;margin-top:7px;}
+.pl-insight-s{display:block;font-size:13.5px;color:var(--pl-ink-2);line-height:1.5;margin-top:7px;}
+.pl-insight-a{margin-top:13px;}
+
+/* ---------- nastepny krok ---------- */
+.pl-next{display:flex;align-items:center;gap:16px;padding:22px 24px;border-radius:var(--pl-r-lg);
+  background:linear-gradient(140deg,#141c2e,#101828);color:#fff;}
+.pl-next .pl-ico{background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-2));color:#fff;}
+.pl-next-m{flex:1;min-width:0;}
+.pl-next-k{display:block;font-size:11px;font-weight:750;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--pl-brand-2);}
+.pl-next-t{display:block;font-size:16px;font-weight:750;line-height:1.35;margin-top:7px;}
+.pl-next-s{display:block;font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;margin-top:6px;}
+
+/* ---------- wybor zakresu prac ---------- */
+.pl-pick{padding:9px 15px;border-radius:20px;border:1px solid var(--pl-line);
+  background:var(--pl-surface);font:inherit;font-size:13px;font-weight:650;color:var(--pl-ink-2);
+  cursor:pointer;transition:background-color 160ms var(--pl-e),color 160ms,border-color 160ms,transform 140ms var(--pl-e);}
+.pl-pick:hover{border-color:var(--pl-line-3);color:var(--pl-ink);}
+.pl-pick:active{transform:scale(.97);}
+.pl-pick.pl-on{background:var(--pl-brand);border-color:var(--pl-brand);color:#fff;}
+
+/* ---------- mikrofon ---------- */
+.pl-mic{width:104px;height:104px;border-radius:50%;border:none;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-deep));
+  box-shadow:0 10px 30px rgba(232,96,28,.34);display:flex;align-items:center;justify-content:center;
+  transition:transform 160ms var(--pl-e),box-shadow 200ms;}
+.pl-mic:hover{transform:scale(1.03);}
+.pl-mic:active{transform:scale(.96);}
+.pl-mic.pl-rec{background:linear-gradient(135deg,var(--pl-err),#8e1f1f);
+  box-shadow:0 0 0 0 rgba(198,40,40,.5);animation:plPulse 1.6s var(--pl-e) infinite;}
+@keyframes plPulse{0%{box-shadow:0 0 0 0 rgba(198,40,40,.45);}70%{box-shadow:0 0 0 22px rgba(198,40,40,0);}100%{box-shadow:0 0 0 0 rgba(198,40,40,0);}}
+
 /* ---------- RESPONSYWNOSC ---------- */
 @media(max-width:1000px){
   .pl-hero,.pl-cols{grid-template-columns:1fr;}
@@ -1127,6 +1207,21 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-mini3 span{font-size:10.5px;}
   .pl-tab{padding:9px 8px;font-size:12.5px;gap:6px;}
   .pl-track-r{text-align:left;}
+  .pl-insight{padding:17px 18px;gap:13px;}
+  .pl-insight-t{font-size:15px;}
+  .pl-insight-s{font-size:13px;}
+  .pl-next{padding:18px;gap:13px;flex-wrap:wrap;}
+  .pl-next>.pl-btn{flex:1 0 100%;justify-content:center;}
+  .pl-next-t{font-size:15px;}
+  .pl-bar-l{width:78px;font-size:12px;}
+  .pl-bar-v{width:66px;font-size:12px;}
+  .pl-price{font-size:17px;}
+  .pl-mic{width:92px;height:92px;}
+  /* Na 390 px iskierka zjada szerokosc nazwy materialu — nazwa jest wazniejsza. */
+  .pl-spark{display:none;}
+  /* Karta z akcja po prawej: przycisk schodzi do wlasnego wiersza zamiast dusic tytul. */
+  .pl-feat{flex-wrap:wrap;}
+  .pl-feat>.pl-btn{flex:1 0 100%;justify-content:center;margin-top:4px;}
   /* Pasek gorny: na waskim ekranie kontekst schodzi, tytul nie moze sie lamac. */
   .pl-top-ctx{display:none;}
   .pl-top-h{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
@@ -2021,97 +2116,316 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-smart">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">OSG AI</span><div style="background:rgba(59,130,246,.15);color:#3b82f6;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;">✨ AI</div></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:13px;">
-  <div style="background:linear-gradient(135deg,rgba(232,96,28,.1),rgba(232,96,28,.03));border:1px solid rgba(232,96,28,.2);border-radius:13px;padding:13px;">
-    <div style="font-size:13px;font-weight:700;color:#e8601c;margin-bottom:5px;">🤖 OSG AI — Asystent budowlany</div>
-    <div style="font-size:14px;font-weight:800;margin-bottom:4px;">Powiedz jednym zdaniem co budujesz.</div>
-    <div style="font-size:12px;color:#8a9ab0;line-height:1.6;">AI wyliczy materiały, ilości i ceny. Wyśle zapytanie do 17 dostawców.</div>
+<div class="screen pl" id="s-smart">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">OSG AI</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-brand"><i data-pl-ico="spark" data-pl-s="13"></i>asystent</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Odprawa na dziś</span>
+    <h1>Trzy rzeczy, na które warto dziś spojrzeć.</h1>
+    <p>Asystent przejrzał Twoje budowy, ceny i dostawy z ostatnich 30 dni. Poniżej to, co realnie zmienia decyzje zakupowe.</p>
   </div>
-  <div class="card" style="padding:13px;">
-    <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:9px;">Wybierz lub wpisz:</div>
-    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">
-      <div onclick="setBuild(this,'Dom 140m² stan deweloperski')" style="padding:7px 12px;background:#e8601c;border-radius:20px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Dom 140m² stan dew.</div>
-      <div onclick="setBuild(this,'100m² ścian GK')" style="padding:7px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">100m² ścian GK</div>
-      <div onclick="setBuild(this,'Elewacja 250m²')" style="padding:7px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">Elewacja 250m²</div>
-      <div onclick="setBuild(this,'Wylewka 70m²')" style="padding:7px 12px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:11px;color:#8a9ab0;cursor:pointer;">Wylewka 70m²</div>
-    </div>
-    <button onclick="showAIResult()" class="btn" style="font-size:13px;padding:11px;">✨ Generuj listę i wycenę</button>
+
+  <div class="pl-next pl-in-2" style="margin-top:22px;">
+    <span class="pl-ico pl-lg"><i data-pl-ico="arrow" data-pl-s="24"></i></span>
+    <span class="pl-next-m">
+      <span class="pl-next-k">Następny krok</span>
+      <span class="pl-next-t">Zamów płyty GK w tym tygodniu</span>
+      <span class="pl-next-s">Przy obecnym tempie zabudowy zapas kończy się w czwartek, a cena właśnie spadła o 2,2%.</span>
+    </span>
+    <button class="pl-btn pl-pri pl-lg" style="flex-shrink:0;" onclick="go('s-rfq')">
+      <i data-pl-ico="send" data-pl-s="18"></i>Przygotuj zapytanie</button>
   </div>
-  <div id="ai-result" style="display:none;flex-direction:column;gap:11px;">
-    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:13px;padding:12px;">
-      <div style="font-size:12px;font-weight:700;color:#22c55e;margin-bottom:3px;">✅ Wykryto: Dom 140m² stan deweloperski</div>
-      <div style="font-size:12px;color:#8a9ab0;">Szacowany koszt materiałów: <strong style="color:#e8601c;">14 760 zł</strong></div>
-      <div style="font-size:12px;color:#8a9ab0;">Możliwa oszczędność przez OSG: <strong style="color:#22c55e;">1 200–1 800 zł</strong></div>
+
+  <div class="pl-cols pl-in-2" style="margin-top:26px;">
+    <div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="pl-insight pl-warn">
+          <span class="pl-ico pl-warn"><i data-pl-ico="alert" data-pl-s="20"></i></span>
+          <span class="pl-insight-m">
+            <span class="pl-insight-k">Ostrzeżenie</span>
+            <span class="pl-insight-t">Styropian drożeje trzeci tydzień z rzędu</span>
+            <span class="pl-insight-s">+3,1% w miesiąc, prognoza na 30 dni to 41,20 zł/m&sup2;. Elewacja etapu 3 ma 250 m&sup2; &mdash; zwłoka kosztuje około <b>750 zł</b>.</span>
+            <span class="pl-insight-a" style="display:block;">
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-prices')"><i data-pl-ico="trend" data-pl-s="15"></i>Zobacz historię ceny</button>
+            </span>
+          </span>
+        </div>
+
+        <div class="pl-insight pl-ok">
+          <span class="pl-ico pl-ok"><i data-pl-ico="coins" data-pl-s="20"></i></span>
+          <span class="pl-insight-m">
+            <span class="pl-insight-k">Okazja</span>
+            <span class="pl-insight-t">SMS30 najtaniej od trzydziestu dni</span>
+            <span class="pl-insight-s">39,90 zł zamiast 42,30 zł. Twój stały koszyk to 40 worków &mdash; zamówienie dziś zamiast za tydzień daje <b>96 zł</b> różnicy.</span>
+            <span class="pl-insight-a" style="display:block;">
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-rfq')"><i data-pl-ico="send" data-pl-s="15"></i>Dodaj do zapytania</button>
+            </span>
+          </span>
+        </div>
+
+        <div class="pl-insight pl-info">
+          <span class="pl-ico pl-info"><i data-pl-ico="trophy" data-pl-s="20"></i></span>
+          <span class="pl-insight-m">
+            <span class="pl-insight-k">Rekomendacja</span>
+            <span class="pl-insight-t">Adamex spóźnił dwie z pięciu ostatnich dostaw</span>
+            <span class="pl-insight-s">Terminowość spadła do 88%. Na pilne terminy SIG Warszawa dowozi tego samego dnia przy różnicy <b>40 zł</b> na całym zamówieniu.</span>
+            <span class="pl-insight-a" style="display:block;">
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-ranking')"><i data-pl-ico="trophy" data-pl-s="15"></i>Zobacz ranking</button>
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Rozpisz zakres prac</span>
+          <span class="pl-chip">lista i wycena w kilka sekund</span></div>
+        <div class="pl-card pl-card-p">
+          <p class="pl-meta">Powiedz jednym zdaniem, co budujesz. Asystent wyliczy materiały, ilości i widełki cenowe, a potem wyśle zapytanie do siedemnastu hurtowni.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:15px;">
+            <button class="pl-pick pl-on" onclick="setBuild(this,'Dom 140 m² stan deweloperski')">Dom 140 m² stan dew.</button>
+            <button class="pl-pick" onclick="setBuild(this,'100 m² ścian GK')">100 m² ścian GK</button>
+            <button class="pl-pick" onclick="setBuild(this,'Elewacja 250 m²')">Elewacja 250 m²</button>
+            <button class="pl-pick" onclick="setBuild(this,'Wylewka 70 m²')">Wylewka 70 m²</button>
+          </div>
+          <div class="pl-acts" style="margin-top:16px;">
+            <button class="pl-btn pl-pri pl-lg" onclick="showAIResult()"><i data-pl-ico="spark" data-pl-s="17"></i>Generuj listę i wycenę</button>
+            <button class="pl-btn pl-ghost pl-lg" onclick="go('s-voice')"><i data-pl-ico="mic" data-pl-s="17"></i>Podyktuj głosem</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="ai-result" style="display:none;flex-direction:column;gap:14px;margin-top:22px;">
+        <div class="pl-card pl-feat" style="cursor:default;border-color:var(--pl-ok);">
+          <span class="pl-ico pl-lg pl-ok"><i data-pl-ico="check" data-pl-s="24" data-pl-w="2.4"></i></span>
+          <span class="pl-row-m"><span class="pl-row-t" style="font-size:16px;">Rozpoznano: <span id="ai-detected">Dom 140 m² stan deweloperski</span></span>
+            <span class="pl-row-s">Szacunek na podstawie 340 podobnych zamówień z Twojego rejonu.</span></span>
+        </div>
+        <div class="pl-card">
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span><span class="pl-row-s">Knauf</span></span>
+            <span class="pl-row-v pl-num">308 szt.</span>
+            <span class="pl-row-v pl-num" style="min-width:84px;text-align:right;color:var(--pl-ink-3);font-weight:600;">~6 800 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Profil CD 60 / 3 m</span><span class="pl-row-s">Knauf</span></span>
+            <span class="pl-row-v pl-num">350 szt.</span>
+            <span class="pl-row-v pl-num" style="min-width:84px;text-align:right;color:var(--pl-ink-3);font-weight:600;">~3 500 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Wełna mineralna 10 cm</span><span class="pl-row-s">za m&sup2;</span></span>
+            <span class="pl-row-v pl-num">140 m&sup2;</span>
+            <span class="pl-row-v pl-num" style="min-width:84px;text-align:right;color:var(--pl-ink-3);font-weight:600;">~2 100 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Gładź szpachlowa 20 kg</span><span class="pl-row-s">Baumit</span></span>
+            <span class="pl-row-v pl-num">40 worków</span>
+            <span class="pl-row-v pl-num" style="min-width:84px;text-align:right;color:var(--pl-ink-3);font-weight:600;">~980 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Pianka montażowa 750 ml</span><span class="pl-row-s">Den Braven</span></span>
+            <span class="pl-row-v pl-num">24 szt.</span>
+            <span class="pl-row-v pl-num" style="min-width:84px;text-align:right;color:var(--pl-ink-3);font-weight:600;">~360 zł</span></div>
+          <div class="pl-tot-g"><span>Szacowana wartość</span><b>~13 740 zł</b></div>
+        </div>
+        <div class="pl-savebox">
+          <span class="pl-eyebrow" style="display:block;color:var(--pl-ok);">Możliwa oszczędność przez OSG</span>
+          <div class="pl-savebox-n" style="margin-top:10px;">1 200&ndash;1 800 zł</div>
+          <p class="pl-meta" style="margin-top:9px;color:var(--pl-ok);">Widełki z ostatnich zapytań o podobnym zakresie.</p>
+        </div>
+        <button class="pl-btn pl-pri pl-lg pl-block" onclick="go('s-rfq')">
+          <i data-pl-ico="send" data-pl-s="18"></i>Wyślij do 17 dostawców</button>
+      </div>
     </div>
-    <div class="card">
-      <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11px;font-weight:700;color:#8a9ab0;text-transform:uppercase;">📦 Lista materiałów</div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div><div style="font-size:10px;color:#8a9ab0;">Knauf</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">308 szt.</div><div style="font-size:10px;color:#22c55e;">~6 800 zł</div></div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil CD60/3m</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">350 szt.</div><div style="font-size:10px;color:#22c55e;">~3 500 zł</div></div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Wełna mineralna 10cm</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">140 m²</div><div style="font-size:10px;color:#22c55e;">~2 100 zł</div></div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Gładź szpachlowa 20kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">40 worków</div><div style="font-size:10px;color:#22c55e;">~980 zł</div></div></div>
-      <div class="row"><div><div style="font-size:13px;font-weight:700;">Pianka montażowa 750ml</div><div style="font-size:10px;color:#8a9ab0;">Den Braven</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">24 szt.</div><div style="font-size:10px;color:#22c55e;">~360 zł</div></div></div>
-      <div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;"><span style="font-size:12px;color:#8a9ab0;">Łącznie</span><span style="font-size:15px;font-weight:800;color:#e8601c;">~14 760 zł</span></div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Na czym opiera się asystent</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Twoje zamówienia</span><b>14</b></div>
+          <div class="pl-kv"><span>Oferty w porównaniu</span><b>56</b></div>
+          <div class="pl-kv"><span>Obserwowane ceny</span><b>6 pozycji</b></div>
+          <div class="pl-kv"><span>Okres analizy</span><b>30 dni</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Asystent nie zgaduje z internetu &mdash; liczy na Twoich zapytaniach i ofertach, które faktycznie wróciły.</p>
+        </div>
+      </div>
     </div>
-    <button class="btn" onclick="go('s-rfq')">🚀 Wyślij do 17 dostawców</button>
-    <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
   </div>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-prices">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Historia cen</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:13px;">
-  <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 13px;display:flex;align-items:center;gap:8px;">
-    <span>📉</span><div style="font-size:12px;"><strong style="color:#22c55e;">Baumit Partner obniżył cenę</strong> <span style="color:#8a9ab0;">34 min temu</span></div>
+<div class="screen pl" id="s-prices">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Ceny materiałów</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip"><i data-pl-ico="clock" data-pl-s="13"></i>34 min temu</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Twoja lista obserwowanych</span>
+    <h1>Cztery pozycje potaniały, dwie poszły w górę.</h1>
+    <p>Śledzimy ceny materiałów, które faktycznie kupujesz &mdash; u siedemnastu hurtowni naraz.</p>
   </div>
-  <div class="card" style="padding:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
-      <div><div style="font-size:14px;font-weight:800;">SMS30 Klej 25kg</div><div style="font-size:11px;color:#8a9ab0;">Baumit</div></div>
-      <div style="text-align:right;"><div style="font-size:11px;color:#22c55e;font-weight:700;">📉 −5,7% · 🔥 spadł dziś</div><div style="font-size:19px;font-weight:800;color:#22c55e;">39,90 zł</div></div>
+
+  <div class="pl-card pl-feat pl-in-2" style="margin-top:22px;cursor:default;">
+    <span class="pl-ico pl-lg pl-ok"><i data-pl-ico="coins" data-pl-s="24"></i></span>
+    <span class="pl-row-m">
+      <span class="pl-row-t" style="font-size:16px;">Zamawiając dziś zaoszczędzisz 640 zł</span>
+      <span class="pl-row-s">Na trzech pozycjach z Twoich stałych koszyków cena jest najniższa od 30 dni.</span>
+    </span>
+    <button class="pl-btn pl-pri" onclick="go('s-rfq')"><i data-pl-ico="send" data-pl-s="16"></i>Zamów</button>
+  </div>
+
+  <div class="pl-cols" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Obserwowane materiały</span>
+          <span class="pl-chip">6 pozycji</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">SMS30 Klej 25 kg</span>
+              <span class="pl-row-s">Baumit &middot; najniżej od 30 dni</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,5 13,7 25,6 37,11 49,15 61,18" stroke="#0f8a4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price" style="color:var(--pl-ok);">39,90 zł</span>
+              <span class="pl-delta pl-down" style="margin-top:5px;"><i data-pl-ico="arrowdown" data-pl-s="12" data-pl-w="2.4"></i>5,7%</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">CT17 Tynk 25 kg</span>
+              <span class="pl-row-s">Baumit &middot; stabilnie od tygodnia</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,12 13,10 25,13 37,11 49,12 61,11" stroke="#8b95a7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price">38,90 zł</span>
+              <span class="pl-delta pl-flat" style="margin-top:5px;">bez zmian</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">Styropian grafit 20 cm</span>
+              <span class="pl-row-s">EPS &middot; za m&sup2; &middot; rośnie trzeci tydzień</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,17 13,15 25,14 37,10 49,8 61,4" stroke="#c62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price" style="color:var(--pl-err);">38,20 zł</span>
+              <span class="pl-delta pl-up" style="margin-top:5px;"><i data-pl-ico="arrowup" data-pl-s="12" data-pl-w="2.4"></i>3,1%</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span>
+              <span class="pl-row-s">Knauf &middot; potaniała po weekendzie</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,7 13,8 25,7 37,9 49,13 61,15" stroke="#0f8a4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price" style="color:var(--pl-ok);">53,00 zł</span>
+              <span class="pl-delta pl-down" style="margin-top:5px;"><i data-pl-ico="arrowdown" data-pl-s="12" data-pl-w="2.4"></i>2,2%</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">Profil CD 60 / 3 m</span>
+              <span class="pl-row-s">Knauf &middot; najniżej od 14 dni</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,8 13,6 25,9 37,12 49,14 61,16" stroke="#0f8a4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price" style="color:var(--pl-ok);">39,40 zł</span>
+              <span class="pl-delta pl-down" style="margin-top:5px;"><i data-pl-ico="arrowdown" data-pl-s="12" data-pl-w="2.4"></i>1,4%</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+
+          <button class="pl-row" onclick="go('s-rfq')">
+            <span class="pl-row-m"><span class="pl-row-t">Wełna mineralna 10 cm</span>
+              <span class="pl-row-s">za m&sup2; &middot; sezonowy wzrost</span></span>
+            <svg class="pl-spark" width="62" height="22" viewBox="0 0 62 22" fill="none" aria-hidden="true"><polyline points="1,15 13,14 25,12 37,11 49,9 61,7" stroke="#c62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="text-align:right;flex-shrink:0;"><span class="pl-price" style="color:var(--pl-err);">15,10 zł</span>
+              <span class="pl-delta pl-up" style="margin-top:5px;"><i data-pl-ico="arrowup" data-pl-s="12" data-pl-w="2.4"></i>1,9%</span></span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Największy spadek</span>
+          <span class="pl-chip pl-ok">kup teraz</span></div>
+        <div class="pl-card pl-card-p">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+            <div><div class="pl-row-t" style="font-size:16px;">SMS30 Klej 25 kg</div>
+              <div class="pl-row-s">Baumit &middot; cena za worek</div></div>
+            <div style="text-align:right;"><span class="pl-price" style="font-size:24px;color:var(--pl-ok);">39,90 zł</span>
+              <span class="pl-delta pl-down" style="margin-top:6px;"><i data-pl-ico="arrowdown" data-pl-s="12" data-pl-w="2.4"></i>5,7% w miesiąc</span></div>
+          </div>
+          <div class="pl-bars" style="margin-top:18px;">
+            <div class="pl-bar"><span class="pl-bar-l">Miesiąc temu</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:100%;"></span></span>
+              <span class="pl-bar-v pl-strike">42,30 zł</span></div>
+            <div class="pl-bar"><span class="pl-bar-l">Tydzień temu</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:93%;background:var(--pl-warn);"></span></span>
+              <span class="pl-bar-v">41,10 zł</span></div>
+            <div class="pl-bar pl-cur"><span class="pl-bar-l">Dziś</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:86%;background:var(--pl-ok);"></span></span>
+              <span class="pl-bar-v" style="color:var(--pl-ok);">39,90 zł</span></div>
+          </div>
+          <div class="pl-fc pl-ok" style="margin-top:18px;">
+            <div class="pl-fc-h"><i data-pl-ico="spark" data-pl-s="14"></i>Prognoza OSG AI &mdash; 30 dni</div>
+            <div class="pl-fc-x">Za miesiąc około <b>38,50 zł</b>. Spadek prawdopodobnie się utrzyma, ale przy 40 workach różnica to <b>56 zł</b> &mdash; nie warto czekać z zamówieniem.</div>
+          </div>
+          <button class="pl-btn pl-pri pl-block" style="margin-top:16px;" onclick="go('s-rfq')">
+            <i data-pl-ico="send" data-pl-s="16"></i>Dodaj do zapytania</button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Największy wzrost</span>
+          <span class="pl-chip pl-warn">zamów zawczasu</span></div>
+        <div class="pl-card pl-card-p">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+            <div><div class="pl-row-t" style="font-size:16px;">Styropian grafit 20 cm</div>
+              <div class="pl-row-s">EPS &middot; cena za m&sup2;</div></div>
+            <div style="text-align:right;"><span class="pl-price" style="font-size:24px;color:var(--pl-err);">38,20 zł</span>
+              <span class="pl-delta pl-up" style="margin-top:6px;"><i data-pl-ico="arrowup" data-pl-s="12" data-pl-w="2.4"></i>3,1% w miesiąc</span></div>
+          </div>
+          <div class="pl-bars" style="margin-top:18px;">
+            <div class="pl-bar"><span class="pl-bar-l">Miesiąc temu</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:89%;"></span></span>
+              <span class="pl-bar-v">37,00 zł</span></div>
+            <div class="pl-bar"><span class="pl-bar-l">Tydzień temu</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:92%;background:var(--pl-warn);"></span></span>
+              <span class="pl-bar-v">37,60 zł</span></div>
+            <div class="pl-bar pl-cur"><span class="pl-bar-l">Dziś</span>
+              <span class="pl-bar-t"><span class="pl-bar-f" style="width:100%;background:var(--pl-err);"></span></span>
+              <span class="pl-bar-v" style="color:var(--pl-err);">38,20 zł</span></div>
+          </div>
+          <div class="pl-fc pl-up" style="margin-top:18px;">
+            <div class="pl-fc-h"><i data-pl-ico="spark" data-pl-s="14"></i>Prognoza OSG AI &mdash; 30 dni</div>
+            <div class="pl-fc-x">Za miesiąc około <b>41,20 zł</b>. Przy 250 m&sup2; elewacji zwłoka kosztuje <b>750 zł</b> &mdash; jeśli termin jest pewny, warto zamówić teraz.</div>
+          </div>
+          <button class="pl-btn pl-pri pl-block" style="margin-top:16px;" onclick="go('s-rfq')">
+            <i data-pl-ico="send" data-pl-s="16"></i>Zamów zanim podrożeje</button>
+        </div>
+      </section>
     </div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#8a9ab0;width:90px;">Miesiąc temu</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#8a9ab0;height:100%;width:100%;border-radius:3px;"></div></div><span style="font-size:11px;text-decoration:line-through;color:#8a9ab0;">42,30 zł</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#8a9ab0;width:90px;">Tydzień temu</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#f59e0b;height:100%;width:93%;border-radius:3px;"></div></div><span style="font-size:11px;">41,10 zł</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;font-weight:700;width:90px;">Dziś</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#22c55e;height:100%;width:86%;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:800;color:#22c55e;">39,90 zł</span></div>
-    </div>
-    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:9px;padding:9px 12px;">
-      <div style="font-size:11px;color:#22c55e;font-weight:700;margin-bottom:2px;">🟢 Prognoza OSG AI — 30 dni</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;"><span style="color:#8a9ab0;">Za miesiąc</span><span style="font-weight:700;">~38,50 zł</span></div>
-      <div style="font-size:11px;color:#22c55e;">Prawdopodobny dalszy spadek · Kup teraz ✅</div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Alert cenowy</span>
+          <p class="pl-meta" style="margin-top:9px;">Damy znać, gdy SMS30 spadnie poniżej progu, który ustawisz.</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:14px;">
+            <input id="alert-price" class="pl-inp pl-num" type="number" value="39" style="text-align:center;font-size:17px;font-weight:750;">
+            <span style="font-size:15px;font-weight:700;color:var(--pl-ink-2);flex-shrink:0;">zł</span>
+          </div>
+          <button class="pl-btn pl-ghost pl-block" style="margin-top:12px;"
+            onclick="scSoon('Alarmy cenowe uruchamiamy w kolejnej wersji — dziś powiadomienia przychodzą od opiekuna.')">
+            <i data-pl-ico="bell" data-pl-s="16"></i>Ustaw alert</button>
+        </div>
+
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Skąd te ceny</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Hurtownie w porównaniu</span><b>17</b></div>
+          <div class="pl-kv"><span>Ostatnia aktualizacja</span><b>34 min temu</b></div>
+          <div class="pl-kv"><span>Twoje pozycje</span><b>6 obserwowanych</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Ceny pochodzą z ofert, które wróciły na Twoje zapytania &mdash; nie z cenników katalogowych.</p>
+        </div>
+
+        <button class="pl-btn pl-pri pl-lg pl-block" onclick="go('s-rfq')">
+          <i data-pl-ico="send" data-pl-s="18"></i>Zamów po najlepszej cenie</button>
+      </div>
     </div>
   </div>
-  <div class="card" style="padding:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
-      <div><div style="font-size:14px;font-weight:800;">Styropian grafit 20cm</div><div style="font-size:11px;color:#8a9ab0;">EPS · za m²</div></div>
-      <div style="text-align:right;"><div style="font-size:11px;color:#e8601c;font-weight:700;">📈 +3,1% · 🔴 wzrost</div><div style="font-size:19px;font-weight:800;color:#e8601c;">38,20 zł</div></div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#8a9ab0;width:90px;">Miesiąc temu</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#8a9ab0;height:100%;width:89%;border-radius:3px;"></div></div><span style="font-size:11px;color:#8a9ab0;">37,00 zł</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:#8a9ab0;width:90px;">Tydzień temu</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#f59e0b;height:100%;width:92%;border-radius:3px;"></div></div><span style="font-size:11px;">37,60 zł</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;font-weight:700;width:90px;">Dziś</span><div style="flex:1;height:5px;background:#1e2f42;border-radius:3px;margin:0 8px;"><div style="background:#e8601c;height:100%;width:96%;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:800;color:#e8601c;">38,20 zł</span></div>
-    </div>
-    <div style="background:rgba(232,96,28,.08);border:1px solid rgba(232,96,28,.2);border-radius:9px;padding:9px 12px;">
-      <div style="font-size:11px;color:#e8601c;font-weight:700;margin-bottom:2px;">🔴 Prognoza OSG AI — 30 dni</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;"><span style="color:#8a9ab0;">Za miesiąc</span><span style="font-weight:700;">~41,20 zł</span></div>
-      <div style="font-size:11px;color:#e8601c;">Możliwe wzrosty cen · Zamów teraz ⚠️</div>
-    </div>
-  </div>
-  <div style="background:#162130;border:1px solid rgba(245,158,11,.3);border-radius:13px;padding:13px;">
-    <div style="font-size:13px;font-weight:800;margin-bottom:8px;">🔔 Alarm cenowy</div>
-    <div style="font-size:12px;color:#8a9ab0;margin-bottom:8px;">Powiadom gdy SMS30 spadnie poniżej:</div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
-      <input type="number" value="39" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;color:#fff;font-size:16px;font-weight:700;outline:none;text-align:center;">
-      <span style="font-size:14px;font-weight:700;">zł</span>
-    </div>
-    <button class="btn" onclick="scSoon('Alarmy cenowe uruchamiamy w kolejnej wersji — dziś powiadomienia przychodzą od opiekuna.')" style="font-size:13px;padding:10px;">🔔 Ustaw alarm cenowy</button>
-  </div>
-  <button class="btn" onclick="go('s-rfq')">📨 Zamów teraz po najlepszej cenie</button>
-  <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
 <div class="nav"></div>
 </div>
@@ -3416,18 +3730,39 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-voice">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-rfq')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Zapytanie głosowe</span></div>
-<div style="padding:36px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding-bottom:80px;">
-  <div style="font-size:13px;color:#8a9ab0;max-width:280px;line-height:1.6;">Naciśnij i powiedz czego potrzebujesz. Platform stworzy zapytanie automatycznie.</div>
-  <div style="background:#162130;border-radius:11px;padding:12px 16px;border:1px solid rgba(255,255,255,.07);width:100%;"><div style="font-size:10px;color:#8a9ab0;text-transform:uppercase;margin-bottom:4px;">Przykład:</div><div style="color:#fff;font-style:italic;font-size:12px;">"Potrzebuję 30 worków SMS30, 50 profili CD60 i 20 płyt GK"</div></div>
-  <button id="voice-btn" onclick="doVoice()" style="width:100px;height:100px;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:50%;font-size:40px;cursor:pointer;box-shadow:0 8px 28px rgba(232,96,28,.5);">🎤</button>
-  <div id="voice-status" style="font-size:13px;color:#8a9ab0;">Naciśnij aby mówić</div>
-  <div id="voice-result" style="display:none;width:100%;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:13px;padding:13px;text-align:left;">
-    <div style="font-size:11px;color:#22c55e;font-weight:700;text-transform:uppercase;margin-bottom:6px;">✅ Rozpoznano:</div>
-    <div id="voice-text" style="font-size:13px;line-height:1.6;margin-bottom:10px;"></div>
-    <button onclick="go('s-rfq')" class="btn" style="font-size:13px;padding:10px;">📨 Wyślij jako zapytanie →</button>
+<div class="screen pl" id="s-voice">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-rfq')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Zapytanie głosowe</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-succ" style="padding-top:38px;">
+    <span class="pl-eyebrow">Dyktowanie</span>
+    <h1 style="margin-top:9px;">Powiedz, czego potrzebujesz.</h1>
+    <p>Rozpoznany tekst wpadnie prosto do zapytania. Działa w Chrome, po polsku.</p>
+
+    <div class="pl-card pl-card-p pl-in" style="text-align:left;">
+      <span class="pl-eyebrow" style="display:block;">Przykład</span>
+      <p style="margin:9px 0 0;font-size:14.5px;line-height:1.55;color:var(--pl-ink-2);font-style:italic;">
+        „Potrzebuję 30 worków SMS30, 50 profili CD60 i 20 płyt GK.”</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:30px;">
+      <button class="pl-mic" id="voice-btn" onclick="doVoice()" title="Naciśnij i mów">
+        <i data-pl-ico="mic" data-pl-s="38" data-pl-w="1.9"></i></button>
+      <span id="voice-status" class="pl-meta">Naciśnij, aby mówić</span>
+    </div>
+
+    <div id="voice-result" style="display:none;margin-top:26px;text-align:left;">
+      <div class="pl-card pl-card-p" style="border-color:var(--pl-ok);">
+        <span class="pl-eyebrow" style="display:block;color:var(--pl-ok);">Rozpoznano</span>
+        <div id="voice-text" style="font-size:15px;line-height:1.6;margin-top:10px;"></div>
+        <button class="pl-btn pl-pri pl-block" style="margin-top:16px;" onclick="go('s-rfq')">
+          <i data-pl-ico="send" data-pl-s="16"></i>Wyślij jako zapytanie</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="nav"></div>
@@ -7881,6 +8216,8 @@ var PL_ICO={
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/>',
  hardhat:'<path d="M3.5 17.5h17"/><path d="M5.5 17.5v-3a6.5 6.5 0 0 1 13 0v3"/><path d="M10 8.2V4.6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3.6"/>',
  phone:'<path d="M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 5.6 5.6l1.4-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5C11.4 18.9 5.1 12.6 4.5 5.1A1.5 1.5 0 0 1 6 3.5z"/>',
+ arrowup:'<path d="M12 19V6"/><path d="M6 11.5 12 5.5l6 6"/>',
+ arrowdown:'<path d="M12 5v13"/><path d="M6 12.5 12 18.5l6-6"/>',
  pin:'<path d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10.2" r="2.6"/>',
  camera:'<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.6l1.3-2.2h7.2L16.9 7h2.6A1.5 1.5 0 0 1 21 8.5v10A1.5 1.5 0 0 1 19.5 20h-15A1.5 1.5 0 0 1 3 18.5z"/><circle cx="12" cy="13" r="3.6"/>',
  pencil:'<path d="M16.4 3.6a2 2 0 0 1 2.8 2.8L7.6 18H4.8v-2.8z"/><path d="M14.2 5.8 17 8.6"/>',
@@ -8077,20 +8414,34 @@ function showBidOk(){
   setTimeout(function(){el.scrollIntoView({behavior:'smooth'});},100);
 }
 function setBuild(el,name){
-  el.parentElement.querySelectorAll('div').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';d.style.border='1px solid rgba(255,255,255,.1)';});
-  el.style.background='#e8601c';el.style.color='#fff';el.style.border='none';
+  /* Stan przez klase .pl-on. Dodatkowo wybrany zakres trafia do wyniku —
+     wczesniej „Wykryto:" bylo zaszyte na sztywno i nie zgadzalo sie z klikiem. */
+  el.parentElement.querySelectorAll('.pl-pick').forEach(function(d){d.classList.remove('pl-on');});
+  el.classList.add('pl-on');
+  var d=document.getElementById('ai-detected');
+  if(d&&name)d.textContent=name;
 }
 function showAIResult(){
   var r=document.getElementById('ai-result');r.style.display='flex';r.style.flexDirection='column';r.style.gap='11px';
   setTimeout(function(){r.scrollIntoView({behavior:'smooth'});},100);
 }
 function doVoice(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){document.getElementById('voice-status').textContent='Użyj Chrome.';return;}
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var r=new SR();r.lang='pl-PL';r.continuous=false;r.interimResults=false;
   var btn=document.getElementById('voice-btn'),st=document.getElementById('voice-status');
-  btn.style.background='linear-gradient(135deg,#dc2626,#b91c1c)';btn.textContent='🔴';st.textContent='Słucham...';
-  r.onresult=function(e){var txt=e.results[0][0].transcript;document.getElementById('voice-text').textContent=txt;document.getElementById('voice-result').style.display='block';var rf=document.getElementById('rfq-txt');if(rf)rf.value=txt;btn.style.background='linear-gradient(135deg,#e8601c,#c94e10)';btn.textContent='🎤';st.textContent='Gotowe!';};
-  r.onerror=r.onend=function(){btn.style.background='linear-gradient(135deg,#e8601c,#c94e10)';btn.textContent='🎤';if(st.textContent==='Słucham...')st.textContent='Naciśnij aby mówić';};
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    st.textContent='Rozpoznawanie mowy dziala w przegladarce Chrome.';return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var r=new SR();
+  r.lang='pl-PL';r.continuous=false;r.interimResults=false;
+  /* Stan nagrywania to klasa .pl-rec (pulsujaca obwodka w CSS), nie kolory inline. */
+  function idle(){btn.classList.remove('pl-rec');btn.innerHTML=plIco('mic',38,1.9);}
+  btn.classList.add('pl-rec');btn.innerHTML=plIco('x',38,2.2);st.textContent='Slucham…';
+  r.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    document.getElementById('voice-text').textContent=txt;
+    document.getElementById('voice-result').style.display='block';
+    var rf=document.getElementById('rfq-txt');if(rf)rf.value=txt;
+    idle();st.textContent='Gotowe — sprawdz tekst ponizej.';
+  };
+  r.onerror=r.onend=function(){idle();if(st.textContent==='Slucham…')st.textContent='Nacisnij, aby mowic';};
   r.start();
 }
 var offerSec=6120;
