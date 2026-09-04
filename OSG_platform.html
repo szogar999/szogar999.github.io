@@ -594,6 +594,254 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .tl-dot{position:absolute;left:-32px;top:0;width:26px;height:26px;border-radius:50%;
   background:var(--surface);border:1px solid var(--border);color:var(--text-3);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ============================================================
+   OSG PLATFORM — DESIGN SYSTEM v2  (prefiks pl-)
+   Warstwa rynkowa produktu. Rodzina ta sama co Command,
+   ale lżejsza, jaśniejsza i bardziej "SaaS" niż operacyjny workspace.
+   Wszystko pod klasą .pl — ekrany jeszcze nieprzeprojektowane
+   i caly Command pozostaja nietkniete.
+   ============================================================ */
+.pl{
+  --pl-bg:#fbfbfd; --pl-surface:#fff; --pl-surface-2:#f6f7f9; --pl-surface-3:#edeff4;
+  --pl-line:#e6e8ee; --pl-line-2:#f0f1f5; --pl-line-3:#d7dbe4;
+  --pl-ink:#0d1420; --pl-ink-2:#4d5768; --pl-ink-3:#8b95a7;
+  --pl-brand:#e8601c; --pl-brand-2:#ff8c42; --pl-brand-deep:#b8480f; --pl-brand-soft:#fff3ec;
+  --pl-ok:#0f8a4d; --pl-ok-soft:#e7f5ed;
+  --pl-warn:#b26a00; --pl-warn-soft:#fff3df;
+  --pl-info:#1d4ed8; --pl-info-soft:#e9f0fe;
+  --pl-err:#c62828; --pl-err-soft:#fdecec;
+  --pl-navy:#101a28;
+  --pl-r-sm:10px; --pl-r:14px; --pl-r-lg:20px; --pl-r-xl:28px;
+  --pl-sh:0 1px 2px rgba(13,20,32,.05),0 6px 18px rgba(13,20,32,.05);
+  --pl-sh-lg:0 2px 6px rgba(13,20,32,.06),0 20px 48px rgba(13,20,32,.10);
+  --pl-e:cubic-bezier(.22,.61,.36,1);
+  background:var(--pl-bg); color:var(--pl-ink);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; letter-spacing:-.006em;
+}
+.pl *{box-sizing:border-box;}
+.pl ::selection{background:var(--pl-brand-soft);color:var(--pl-brand-deep);}
+
+/* ---------- rytm i siatka ---------- */
+.pl-wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+.pl-sec{margin-top:38px;}
+.pl-sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:14px;}
+.pl-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--pl-ink-3);}
+.pl-link{font-size:13.5px;font-weight:650;color:var(--pl-brand);cursor:pointer;background:none;border:none;padding:0;
+  display:inline-flex;align-items:center;gap:5px;transition:gap 160ms var(--pl-e),opacity 160ms;}
+.pl-link:hover{gap:9px;} .pl-link:active{opacity:.6;}
+
+/* ---------- typografia ---------- */
+.pl-d1{font-size:44px;line-height:1.06;font-weight:800;letter-spacing:-.032em;margin:0;}
+.pl-h1{font-size:30px;line-height:1.14;font-weight:800;letter-spacing:-.026em;margin:0;}
+.pl-h2{font-size:19px;line-height:1.25;font-weight:750;letter-spacing:-.016em;margin:0;}
+.pl-h3{font-size:15.5px;line-height:1.3;font-weight:700;letter-spacing:-.01em;margin:0;}
+.pl-lead{font-size:16.5px;line-height:1.5;color:var(--pl-ink-2);margin:0;}
+.pl-body{font-size:14px;line-height:1.55;color:var(--pl-ink-2);margin:0;}
+.pl-meta{font-size:12.5px;line-height:1.45;color:var(--pl-ink-3);margin:0;}
+.pl-num{font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+
+/* ---------- karty ---------- */
+.pl-card{background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r-lg);
+  box-shadow:var(--pl-sh);overflow:hidden;transition:box-shadow 220ms var(--pl-e),transform 160ms var(--pl-e),border-color 200ms;}
+.pl-card-p{padding:22px 24px;}
+.pl-card-t{padding:16px 24px;border-top:1px solid var(--pl-line-2);}
+button.pl-card,.pl-card[onclick]{cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;display:block;}
+button.pl-card:hover,.pl-card[onclick]:hover{box-shadow:var(--pl-sh-lg);border-color:var(--pl-line-3);}
+button.pl-card:active,.pl-card[onclick]:active{transform:translateY(1px) scale(.996);}
+
+/* ---------- ikony ---------- */
+.pl-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;background:var(--pl-surface-2);color:var(--pl-ink-2);}
+.pl-ico.pl-brand{background:var(--pl-brand-soft);color:var(--pl-brand);}
+.pl-ico.pl-ok{background:var(--pl-ok-soft);color:var(--pl-ok);}
+.pl-ico.pl-warn{background:var(--pl-warn-soft);color:var(--pl-warn);}
+.pl-ico.pl-info{background:var(--pl-info-soft);color:var(--pl-info);}
+.pl-ico.pl-sm{width:34px;height:34px;border-radius:10px;}
+.pl-ico.pl-lg{width:52px;height:52px;border-radius:15px;}
+
+/* ---------- chipy / statusy ---------- */
+.pl-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;
+  font-size:12px;font-weight:700;letter-spacing:-.005em;white-space:nowrap;
+  background:var(--pl-surface-2);color:var(--pl-ink-2);}
+.pl-chip.pl-brand{background:var(--pl-brand-soft);color:var(--pl-brand-deep);}
+.pl-chip.pl-ok{background:var(--pl-ok-soft);color:var(--pl-ok);}
+.pl-chip.pl-warn{background:var(--pl-warn-soft);color:var(--pl-warn);}
+.pl-chip.pl-info{background:var(--pl-info-soft);color:var(--pl-info);}
+.pl-chip.pl-err{background:var(--pl-err-soft);color:var(--pl-err);}
+.pl-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.pl-dot.pl-live{animation:plPulse 2s ease-in-out infinite;}
+@keyframes plPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(.82);}}
+
+/* ---------- przyciski ---------- */
+.pl-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  border-radius:12px;padding:13px 20px;font-size:14.5px;font-weight:700;letter-spacing:-.01em;
+  border:1px solid transparent;cursor:pointer;font-family:inherit;
+  transition:transform 150ms var(--pl-e),box-shadow 200ms var(--pl-e),background-color 160ms,border-color 160ms;}
+.pl-btn.pl-pri{background:var(--pl-brand);color:#fff;box-shadow:0 1px 2px rgba(184,72,15,.2),0 8px 20px rgba(232,96,28,.24);}
+.pl-btn.pl-pri:hover{background:#f06a24;box-shadow:0 2px 6px rgba(184,72,15,.22),0 14px 30px rgba(232,96,28,.3);}
+.pl-btn.pl-sec2{background:var(--pl-surface);border-color:var(--pl-line-3);color:var(--pl-ink);}
+.pl-btn.pl-sec2:hover{background:var(--pl-surface-2);}
+.pl-btn.pl-ghost{background:transparent;color:var(--pl-ink-2);}
+.pl-btn.pl-ghost:hover{background:var(--pl-surface-2);color:var(--pl-ink);}
+.pl-btn.pl-sm{padding:9px 14px;font-size:13px;border-radius:10px;gap:6px;}
+.pl-btn.pl-lg{padding:16px 26px;font-size:16px;border-radius:14px;}
+.pl-btn:active{transform:scale(.975);}
+.pl-btn.pl-block{width:100%;}
+
+/* ---------- wiersze list ---------- */
+.pl-row{display:flex;align-items:center;gap:14px;width:100%;padding:15px 24px;text-align:left;
+  background:none;border:none;border-bottom:1px solid var(--pl-line-2);font:inherit;color:inherit;
+  transition:background-color 150ms var(--pl-e);}
+.pl-row:last-child{border-bottom:none;}
+button.pl-row{cursor:pointer;}
+button.pl-row:hover{background:var(--pl-surface-2);}
+button.pl-row:active{background:var(--pl-surface-3);}
+.pl-row-m{flex:1;min-width:0;}
+.pl-row-t{font-size:14.5px;font-weight:650;color:var(--pl-ink);line-height:1.3;}
+.pl-row-s{font-size:12.5px;color:var(--pl-ink-3);margin-top:3px;line-height:1.35;}
+.pl-row-v{font-size:14.5px;font-weight:750;white-space:nowrap;}
+.pl-chev{color:var(--pl-ink-3);flex-shrink:0;display:flex;transition:transform 180ms var(--pl-e);}
+button.pl-row:hover .pl-chev{transform:translateX(3px);}
+
+/* ---------- pasek gorny ---------- */
+.pl-top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--pl-line);}
+.pl-top-in{max-width:1180px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:14px;}
+.pl-top img{height:24px;width:auto;display:block;}
+.pl-top-ctx{font-size:12.5px;color:var(--pl-ink-3);padding-left:14px;margin-left:2px;border-left:1px solid var(--pl-line);}
+.pl-icobtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--pl-line);background:var(--pl-surface);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--pl-ink-2);position:relative;
+  transition:background-color 150ms,border-color 150ms,transform 150ms var(--pl-e);}
+.pl-icobtn:hover{background:var(--pl-surface-2);border-color:var(--pl-line-3);}
+.pl-icobtn:active{transform:scale(.94);}
+.pl-badge{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;
+  background:var(--pl-brand);border:2px solid var(--pl-surface);}
+.pl-avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-2));
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:750;flex-shrink:0;}
+
+/* ---------- pasek DEMO ---------- */
+.pl-demo{background:var(--pl-navy);color:#fff;text-align:center;padding:9px 16px;
+  font-size:11.5px;font-weight:650;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:8px;}
+.pl-demo b{color:var(--pl-brand-2);font-weight:750;}
+
+/* ---------- wejscie ekranu ---------- */
+.pl-in{animation:plIn 340ms var(--pl-e) backwards;}
+.pl-in-2{animation:plIn 340ms var(--pl-e) 60ms backwards;}
+.pl-in-3{animation:plIn 340ms var(--pl-e) 120ms backwards;}
+.pl-in-4{animation:plIn 340ms var(--pl-e) 180ms backwards;}
+@keyframes plIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* ---------- dolna nawigacja w nowej skorce ---------- */
+.pl .nav{background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(14px);
+  border-top:1px solid var(--pl-line);max-width:none;}
+.pl .nb{color:var(--pl-ink-3);font-size:10.5px;font-weight:650;text-transform:none;letter-spacing:0;gap:5px;padding:11px 4px;}
+.pl .nb.on{color:var(--pl-brand);}
+.pl .nb::before{content:'';position:absolute;top:0;left:50%;width:24px;height:2.5px;border-radius:0 0 3px 3px;
+  background:var(--pl-brand);transform:translateX(-50%) scaleX(0);transition:transform 200ms var(--pl-e);}
+.pl .nb.on::before{transform:translateX(-50%) scaleX(1);}
+.pl .bnav{display:none;}
+@media(min-width:900px){ .pl .nav{display:none;} .pl.screen{padding-bottom:56px;} }
+
+@media(prefers-reduced-motion:reduce){
+  .pl *,.pl *::before,.pl *::after{animation-duration:.001ms!important;transition-duration:.001ms!important;}
+}
+
+
+/* ---------- ikona w dolnej nawigacji (SVG zamiast emoji) ---------- */
+.nb .ic{display:flex;align-items:center;justify-content:center;}
+
+/* ---------- PICKER ---------- */
+.pl-ob{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:56px 0 72px;}
+.pl-ob-in{width:100%;text-align:center;}
+.pl-ob img{max-width:216px;width:58%;height:auto;margin:0 auto 26px;display:block;}
+.pl-ob .pl-d1{max-width:15ch;margin:0 auto;}
+.pl-ob .pl-lead{margin-top:14px;}
+.pl-profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;text-align:left;}
+.pl-prof{display:flex;flex-direction:column;gap:14px;padding:24px;position:relative;}
+.pl-prof .pl-ico{transition:transform 220ms var(--pl-e);}
+button.pl-prof:hover .pl-ico{transform:scale(1.06) rotate(-3deg);}
+.pl-prof>.pl-h2{display:block;}
+.pl-prof>.pl-body{display:block;margin-top:-4px;}
+.pl-feat .pl-row-m,.pl-ai .pl-row-m{flex:1;min-width:0;}
+.pl-tile .pl-row-s{margin-top:2px;}
+.pl-save>.pl-eyebrow{display:block;}
+.pl-prof-a{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;
+  font-size:13.5px;font-weight:700;color:var(--pl-brand);transition:gap 180ms var(--pl-e);}
+button.pl-prof:hover .pl-prof-a{gap:12px;}
+.pl-proof{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;
+  margin-top:30px;padding-top:26px;border-top:1px solid var(--pl-line);}
+.pl-proof>div{padding:0 26px;border-right:1px solid var(--pl-line);}
+.pl-proof>div:last-child{border-right:none;}
+.pl-proof b{display:block;font-size:21px;font-weight:800;letter-spacing:-.02em;}
+.pl-proof span{display:block;font-size:12px;color:var(--pl-ink-3);margin-top:3px;}
+
+/* ---------- HERO ---------- */
+.pl-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-top:34px;align-items:stretch;}
+.pl-hero-main{background:linear-gradient(150deg,#12203a 0%,#0e1626 58%,#1c1208 100%);
+  border-radius:var(--pl-r-xl);padding:38px 40px;color:#fff;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;}
+.pl-hero-main::after{content:'';position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,96,28,.42),transparent 68%);pointer-events:none;}
+.pl-hero-main .pl-eyebrow{color:var(--pl-brand-2);position:relative;}
+.pl-hero-main h1{color:#fff;margin:14px 0 12px;position:relative;font-size:38px;line-height:1.1;
+  font-weight:800;letter-spacing:-.03em;}
+.pl-hero-main p{color:rgba(255,255,255,.7);font-size:15.5px;line-height:1.5;margin:0 0 26px;position:relative;max-width:44ch;}
+.pl-hero-main .pl-btn{position:relative;align-self:flex-start;}
+.pl-hero-side{display:flex;flex-direction:column;gap:14px;}
+.pl-save{flex:1;background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r-lg);
+  box-shadow:var(--pl-sh);padding:24px;display:flex;flex-direction:column;justify-content:center;}
+.pl-save-n{font-size:36px;font-weight:800;letter-spacing:-.032em;color:var(--pl-ok);line-height:1;margin-top:10px;}
+.pl-mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pl-stat{background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r);
+  box-shadow:var(--pl-sh);padding:16px 18px;}
+.pl-stat b{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;line-height:1;}
+.pl-stat span{display:block;font-size:12px;color:var(--pl-ink-3);margin-top:6px;}
+
+/* ---------- dwie kolumny ---------- */
+.pl-cols{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start;margin-top:34px;}
+.pl-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pl-tile{padding:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}
+.pl-tile .pl-row-t{font-size:14px;}
+.pl-feat{padding:22px 24px;display:flex;align-items:center;gap:16px;}
+.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:none;color:#fff;padding:22px 24px;
+  display:flex;align-items:center;gap:16px;}
+.pl-ai .pl-row-t{color:#fff;} .pl-ai .pl-row-s{color:rgba(255,255,255,.55);}
+.pl-ai .pl-ico{background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-2));color:#fff;}
+
+/* ---------- RESPONSYWNOSC ---------- */
+@media(max-width:1000px){
+  .pl-hero,.pl-cols{grid-template-columns:1fr;}
+  .pl-hero-main{padding:32px 28px;}
+  .pl-hero-main h1{font-size:32px;}
+}
+@media(max-width:720px){
+  .pl-profiles{grid-template-columns:1fr;gap:12px;}
+  .pl-proof{gap:0;}
+  .pl-proof>div{padding:10px 18px;border-right:none;}
+  .pl-proof>div:not(:last-child){border-bottom:1px solid var(--pl-line);width:100%;}
+}
+@media(max-width:640px){
+  .pl-wrap,.pl-top-in{padding-left:16px;padding-right:16px;}
+  .pl-d1{font-size:31px;}
+  .pl-h1{font-size:24px;}
+  .pl-lead{font-size:15px;}
+  .pl-ob{padding:34px 0 40px;min-height:0;}
+  .pl-ob img{width:64%;max-width:190px;margin-bottom:20px;}
+  .pl-hero{margin-top:22px;}
+  .pl-hero-main{padding:26px 22px;border-radius:var(--pl-r-lg);}
+  .pl-hero-main h1{font-size:27px;}
+  .pl-hero-main p{font-size:14.5px;margin-bottom:20px;}
+  .pl-hero-main .pl-btn{align-self:stretch;}
+  .pl-cols,.pl-sec{margin-top:26px;}
+  .pl-card-p{padding:18px;}
+  .pl-row{padding:14px 18px;gap:12px;}
+  .pl-save-n{font-size:30px;}
+  .pl-feat,.pl-ai{padding:18px;}
+  .pl-tiles{gap:10px;}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -616,92 +864,151 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
-<div class="screen sc-w" id="s-onboarding">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;text-align:center;">
-  <img id="logo-onboarding" style="max-width:230px;width:80%;height:auto;margin-bottom:22px;" alt="OSG Platform">
-  <div style="font-size:13px;color:#8a9ab0;margin-bottom:28px;line-height:1.5;">Jedno zapytanie. 17 dostawców.<br>Najlepsza cena w 5 minut.</div>
-  <div style="font-size:14px;font-weight:700;margin-bottom:14px;">Wybierz profil</div>
-  <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
-    <button onclick="go('s-home')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(232,96,28,.4);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
-      <span style="font-size:29px;">🦺</span><div style="flex:1;"><div style="font-size:15px;font-weight:800;">Budowa</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Zamawiaj materiały · porównuj oferty</div></div><span style="color:#e8601c;font-size:16px;">→</span>
+<div class="screen pl" id="s-onboarding">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<div class="pl-ob"><div class="pl-wrap"><div class="pl-ob-in pl-in">
+  <img id="logo-onboarding" alt="OSG Platform">
+  <h1 class="pl-d1">Jedno zapytanie.<br>Siedemnastu dostawców.</h1>
+  <p class="pl-lead">Najlepsza cena materiałów budowlanych w pięć minut &mdash; bez obdzwaniania hurtowni.</p>
+
+  <div class="pl-sec-h" style="margin-top:38px;justify-content:center;"><span class="pl-eyebrow">Wybierz profil</span></div>
+  <div class="pl-profiles">
+    <button class="pl-card pl-prof pl-in-2" onclick="go('s-home')">
+      <span class="pl-ico pl-lg pl-brand"><i data-pl-ico="hardhat" data-pl-s="26"></i></span>
+      <span class="pl-h2">Budowa</span>
+      <span class="pl-body">Zamawiaj materiały i porównuj oferty z jednego miejsca.</span>
+      <span class="pl-prof-a">Wejdź jako kierownik budowy <i data-pl-ico="arrow" data-pl-s="16"></i></span>
     </button>
-    <button onclick="go('s-supplier')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
-      <span style="font-size:29px;">🏪</span><div style="flex:1;"><div style="font-size:15px;font-weight:800;">Dostawca</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Gotowe leady · składaj oferty</div></div><span style="color:#8a9ab0;font-size:16px;">→</span>
+    <button class="pl-card pl-prof pl-in-3" onclick="go('s-supplier')">
+      <span class="pl-ico pl-lg pl-info"><i data-pl-ico="store" data-pl-s="26"></i></span>
+      <span class="pl-h2">Dostawca</span>
+      <span class="pl-body">Gotowe leady zakupowe zamiast zimnych kontaktów.</span>
+      <span class="pl-prof-a">Wejdź jako hurtownia <i data-pl-ico="arrow" data-pl-s="16"></i></span>
     </button>
-    <button id="nav-zarzadzanie" onclick="go('s-director')" style="width:100%;padding:17px 19px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;">
-      <span style="font-size:29px;">📊</span><div style="flex:1;"><div style="font-size:15px;font-weight:800;">Zarządzanie</div><div style="font-size:11px;color:#8a9ab0;margin-top:2px;">Wydatki · oszczędności · raporty</div></div><span style="color:#8a9ab0;font-size:16px;">→</span>
+    <button class="pl-card pl-prof pl-in-4" id="nav-zarzadzanie" onclick="go('s-director')">
+      <span class="pl-ico pl-lg pl-ok"><i data-pl-ico="chart" data-pl-s="26"></i></span>
+      <span class="pl-h2">Zarządzanie</span>
+      <span class="pl-body">Wydatki, oszczędności i rankingi w jednym panelu.</span>
+      <span class="pl-prof-a">Wejdź jako zarząd <i data-pl-ico="arrow" data-pl-s="16"></i></span>
     </button>
   </div>
-  <div onclick="go('s-how')" style="font-size:12px;color:#8a9ab0;margin-top:18px;cursor:pointer;">ℹ️ Jak działa OSG Platform? →</div>
-</div>
+
+  <div class="pl-proof pl-in-4">
+    <div><b class="pl-num">17</b><span>dostawców w sieci</span></div>
+    <div><b class="pl-num">126</b><span>aktywnych budów</span></div>
+    <div><b class="pl-num" style="color:var(--pl-ok);">7,8 mln zł</b><span>zaoszczędzone przez klientów</span></div>
+  </div>
+
+  <div style="margin-top:28px;"><button class="pl-link" onclick="go('s-how')">Jak działa OSG Platform <i data-pl-ico="arrow" data-pl-s="15"></i></button></div>
+</div></div></div>
 </div>
 
-<div class="screen sc-w" id="s-home">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr">
-  <div style="display:flex;align-items:center;gap:8px;"><img id="logo-home-badge" style="height:22px;width:auto;" alt="OSG Platform"></div>
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;"><div style="width:30px;height:30px;background:#1e2f42;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative;">🔔<div style="position:absolute;top:4px;right:4px;width:7px;height:7px;background:#e8601c;border-radius:50%;border:2px solid #0f1923;"></div></div><div style="width:30px;height:30px;background:#e8601c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;">KM</div></div>
-</div>
-<div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
-  <button onclick="go('s-rfq')" style="width:100%;background:linear-gradient(135deg,#e8601c,#c94e10);border:none;border-radius:15px;padding:22px 18px;cursor:pointer;text-align:center;box-shadow:0 8px 28px rgba(232,96,28,.45);">
-    <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;">📨 Nowe zapytanie</div>
-    <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:11px;">Jedno zapytanie.<br>17 dostawców.<br>Najlepsza cena.</div>
-    <div style="background:rgba(255,255,255,.25);border-radius:9px;padding:11px 18px;"><span style="font-size:15px;font-weight:800;color:#fff;">🚀 DODAJ ZAPYTANIE</span></div>
-  </button>
-  <div style="background:linear-gradient(135deg,#1a2a1a,#1a3a2a);border:1px solid rgba(34,197,94,.3);border-radius:13px;padding:13px;">
-    <div style="text-align:center;margin-bottom:9px;">
-      <div style="font-size:10px;color:#22c55e;font-weight:700;text-transform:uppercase;margin-bottom:3px;">💰 Łącznie zaoszczędzono</div>
-      <div style="font-size:32px;font-weight:800;color:#22c55e;line-height:1;" id="global-saved">7 842 000 zł</div>
+<div class="screen pl" id="s-home">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <img id="logo-home-badge" alt="OSG Platform">
+  <span class="pl-top-ctx">Osiedle Bemowo &middot; etap 2</span>
+  <span style="flex:1;"></span>
+  <button class="pl-icobtn" onclick="go('s-building')" title="Powiadomienia"><i data-pl-ico="bell" data-pl-s="18"></i><span class="pl-badge"></span></button>
+  <span class="pl-avatar">KM</span>
+</div></header>
+
+<div class="pl-wrap">
+  <section class="pl-hero">
+    <div class="pl-hero-main pl-in">
+      <span class="pl-eyebrow">Nowe zapytanie</span>
+      <h1>Jedno zapytanie.<br>Najlepsza cena w 5 minut.</h1>
+      <p>Wyślij listę materiałów do siedemnastu hurtowni naraz. Oferty wracają w kilka minut, porównane co do złotówki.</p>
+      <button class="pl-btn pl-pri pl-lg" onclick="go('s-rfq')"><i data-pl-ico="send" data-pl-s="18"></i>Dodaj zapytanie</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:9px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#3b82f6;">126</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">🏗️ Aktywne budowy</div></div>
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:9px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#e8601c;" id="stat-s">17</div><div style="font-size:9px;color:#8a9ab0;margin-top:2px;">🚚 Aktywne dostawy</div></div>
+    <div class="pl-hero-side pl-in-2">
+      <div class="pl-save">
+        <span class="pl-eyebrow">Łącznie zaoszczędzono</span>
+        <div class="pl-save-n pl-num" id="global-saved">7 842 000 zł</div>
+        <p class="pl-meta" style="margin-top:10px;">Na wszystkich budowach obsługiwanych przez OSG.</p>
+      </div>
+      <div class="pl-mini">
+        <div class="pl-stat"><b class="pl-num" id="stat-q">48</b><span>zapytań dziś</span></div>
+        <div class="pl-stat"><b class="pl-num" id="stat-s">17</b><span>dostaw w toku</span></div>
+      </div>
     </div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#e8601c;" id="stat-q">48</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🔥 Zapytań dziś</div></div>
-    <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:9px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#22c55e;">17</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🏪 Dostawców</div></div>
-  </div>
-  <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden;">
-    <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;"><div style="font-size:13px;font-weight:800;">🔔 Powiadomienia cenowe</div><div style="background:#e8601c;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;">3 nowe</div></div>
-    <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;flex:1;">🟢 <strong>SMS30</strong> spadł dziś o 4%</div><button onclick="go('s-rfq')" style="background:#22c55e;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Kup teraz</button></div>
-    <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;flex:1;">🟢 <strong>CT17</strong> najniższa cena od 30 dni</div><button onclick="go('s-rfq')" style="background:#22c55e;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Kup teraz</button></div>
-    <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;"><div style="font-size:12px;flex:1;">🔴 <strong>Styropian</strong> wzrósł o 6%</div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;">Kup teraz</button></div>
-  </div>
-  <div onclick="go('s-building')" style="background:#162130;border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;">
-    <div style="width:40px;height:40px;background:rgba(232,96,28,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏗️</div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Centrum budowy</div><div style="font-size:11px;color:#8a9ab0;">Bemowo · 2 dostawy · ⚠️ 1 opóźniona</div></div>
-    <div style="background:#e8601c;color:#fff;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;">Otwórz →</div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-    <div onclick="go('s-delivery')" style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:22px;margin-bottom:5px;">🚚</div><div style="font-size:12px;font-weight:700;">Centrum dostaw</div><div style="font-size:10px;color:#3b82f6;margin-top:2px;">Przyjazd 08:47 →</div></div>
-    <div onclick="go('s-map')" style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:22px;margin-bottom:5px;">🗺️</div><div style="font-size:12px;font-weight:700;">Mapa budów</div><div style="font-size:10px;color:#3b82f6;margin-top:2px;">126 aktywnych →</div></div>
-    <div onclick="go('s-ranking')" style="background:#162130;border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:22px;margin-bottom:5px;">🏆</div><div style="font-size:12px;font-weight:700;">Ranking dostawców</div><div style="font-size:10px;color:#f59e0b;margin-top:2px;">Top 5 →</div></div>
-    <div onclick="go('s-prices')" style="background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:22px;margin-bottom:5px;">📉</div><div style="font-size:12px;font-weight:700;">Historia cen</div><div style="font-size:10px;color:#22c55e;margin-top:2px;">SMS30 −4% →</div></div>
-  </div>
-  <div style="font-size:14px;font-weight:800;">🛒 Stałe koszyki</div>
-  <div style="display:flex;flex-direction:column;gap:7px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">GK i profile</div><div style="font-size:10px;color:#8a9ab0;">Płyta GK × 80 · CD60 × 120mb · ~4 800 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">🔁 Zamów</button></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">Chemia budowlana</div><div style="font-size:10px;color:#8a9ab0;">SMS30 × 40 · CT17 × 20 · ~5 500 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">🔁 Zamów</button></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">BHP tygodniowy</div><div style="font-size:10px;color:#8a9ab0;">Rękawice × 30 · Kaski × 5 · ~840 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">🔁 Zamów</button></div>
-  </div>
-  <div style="font-size:14px;font-weight:800;">🏷️ Tablica okazji</div>
-  <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">200 płyt GK −12%</div><div style="font-size:10px;color:#8a9ab0;">Baumit Partner · ważne 6h</div></div><button onclick="go('s-rfq')" style="background:#22c55e;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">Kup →</button></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">50 palet styropianu −8%</div><div style="font-size:10px;color:#8a9ab0;">3W Budowlana</div></div><button onclick="go('s-rfq')" style="background:#22c55e;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">Kup →</button></div>
-  </div>
-  <div onclick="go('s-smart')" style="background:linear-gradient(135deg,#1a1a2e,#1a2040);border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px;cursor:pointer;display:flex;align-items:center;gap:13px;">
-    <div style="width:42px;height:42px;background:linear-gradient(135deg,#e8601c,#ff8c42);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:700;margin-bottom:2px;">OSG AI</div><div style="font-size:11px;color:#8a9ab0;">Opisz budowę → lista materiałów + wycena</div></div>
-    <span style="color:#3b82f6;font-size:16px;">→</span>
-  </div>
-  <div onclick="go('s-money')" style="background:#162130;border:1px solid rgba(255,255,255,.05);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
-    <span>💰</span><span style="font-size:11px;color:#8a9ab0;">Dla inwestorów: model zarabiania →</span>
+  </section>
+
+  <div class="pl-cols">
+    <div>
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Powiadomienia cenowe</span>
+          <span class="pl-chip pl-brand">3 nowe</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm pl-ok"><i data-pl-ico="trend" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">Baumit SMS30 &mdash; klej 25 kg</span><span class="pl-row-s">Cena spadła dziś o 4%</span></span><span class="pl-chip pl-ok">39,90 zł</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm pl-ok"><i data-pl-ico="trend" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">Baumit CT17 &mdash; tynk 25 kg</span><span class="pl-row-s">Najniższa cena od 30 dni</span></span><span class="pl-chip pl-ok">38,90 zł</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm pl-warn"><i data-pl-ico="alert" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">Styropian EPS 100</span><span class="pl-row-s">Cena wzrosła o 6% &mdash; rozważ zamówienie później</span></span><span class="pl-chip pl-warn">+6%</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Stałe koszyki</span>
+          <button class="pl-link" onclick="go('s-rfq')">Nowy koszyk <i data-pl-ico="plus" data-pl-s="15"></i></button></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">Płyty GK i profile</span><span class="pl-row-s">80 szt. &middot; 120 mb</span></span><span class="pl-row-v pl-num">~4 800 zł</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">Chemia budowlana</span><span class="pl-row-s">SMS30 &times; 40 &middot; CT17 &times; 20</span></span><span class="pl-row-v pl-num">~5 500 zł</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">BHP tygodniowy</span><span class="pl-row-s">Rękawice &times; 30 &middot; kaski &times; 5</span></span><span class="pl-row-v pl-num">~840 zł</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Tablica okazji</span>
+          <span class="pl-chip pl-warn"><span class="pl-dot pl-live"></span>ważne dziś</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm pl-warn"><i data-pl-ico="tag" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">200 płyt GK &minus;12%</span><span class="pl-row-s">Baumit Partner &middot; oferta ważna 6 godzin</span></span><span class="pl-chip pl-ok">&minus;12%</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-rfq')"><span class="pl-ico pl-sm pl-warn"><i data-pl-ico="tag" data-pl-s="17"></i></span><span class="pl-row-m"><span class="pl-row-t">50 palet styropianu &minus;8%</span><span class="pl-row-s">3W Budowlana &middot; dostępne od ręki</span></span><span class="pl-chip pl-ok">&minus;8%</span><span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Twoja budowa</span></div>
+        <button class="pl-card pl-feat" onclick="go('s-building')">
+          <span class="pl-ico pl-lg pl-brand"><i data-pl-ico="building" data-pl-s="24"></i></span>
+          <span class="pl-row-m"><span class="pl-row-t" style="font-size:16px;">Centrum budowy</span>
+            <span class="pl-row-s">Bemowo &middot; 2 dostawy w toku &middot; 1 opóźniona</span></span>
+          <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="18"></i></span>
+        </button>
+        <div class="pl-tiles" style="margin-top:12px;">
+          <button class="pl-card pl-tile" onclick="go('s-delivery')">
+            <span class="pl-ico pl-info"><i data-pl-ico="truck" data-pl-s="20"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Centrum dostaw</span>
+              <span class="pl-row-s">Przyjazd 08:47</span></span></button>
+          <button class="pl-card pl-tile" onclick="go('s-map')">
+            <span class="pl-ico pl-info"><i data-pl-ico="map" data-pl-s="20"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Mapa budów</span>
+              <span class="pl-row-s">126 aktywnych</span></span></button>
+          <button class="pl-card pl-tile" onclick="go('s-ranking')">
+            <span class="pl-ico pl-warn"><i data-pl-ico="trophy" data-pl-s="20"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Ranking dostawców</span>
+              <span class="pl-row-s">Top 5 w Twoim rejonie</span></span></button>
+          <button class="pl-card pl-tile" onclick="go('s-prices')">
+            <span class="pl-ico pl-ok"><i data-pl-ico="trend" data-pl-s="20"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Historia cen</span>
+              <span class="pl-row-s">SMS30 &minus;4%</span></span></button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Asystent</span></div>
+        <button class="pl-card pl-ai" onclick="go('s-smart')">
+          <span class="pl-ico pl-lg"><i data-pl-ico="spark" data-pl-s="24"></i></span>
+          <span class="pl-row-m"><span class="pl-row-t" style="font-size:16px;">OSG AI</span>
+            <span class="pl-row-s">Opisz zakres prac &mdash; dostaniesz listę materiałów i wycenę.</span></span>
+          <span class="pl-chev" style="color:rgba(255,255,255,.45);"><i data-pl-ico="chev" data-pl-s="18"></i></span>
+        </button>
+        <button class="pl-link" style="margin-top:16px;" onclick="go('s-money')">Dla inwestorów: model zarabiania <i data-pl-ico="arrow" data-pl-s="15"></i></button>
+      </section>
+    </div>
   </div>
 </div>
 <div class="nav"></div>
-<button class="bnav" onclick="go('s-rfq')">📨 Szybkie zapytanie</button>
 </div>
 
 <div class="screen sc-w" id="s-rfq">
@@ -6927,12 +7234,61 @@ window.addEventListener('resize',function(){
    a s-director i s-money podswietlaly "Start", mimo ze to inny profil.
    Teraz jest jedna funkcja i jedna mapa. Router bez zmian — paintNav jest
    dopisane na koncu go(), bramki rol i sbSync zostaja nietkniete. */
+
+/* ============================================================
+   OSG Platform — zestaw ikon SVG (prefiks PL_).
+   Zastepuje emoji tam, gdzie wygladaly amatorsko. Stroke 1.75,
+   dziedziczy currentColor, wiec chip/kafel steruje kolorem.
+   ============================================================ */
+var PL_ICO={
+ home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>',
+ send:'<path d="M21.5 2.5 11 13"/><path d="M21.5 2.5 15 21.5l-4-8.5-8.5-4z"/>',
+ scale:'<path d="M12 3v18"/><path d="M7 6h10"/><path d="M5 6 2 13h6z"/><path d="M19 6l-3 7h6z"/><path d="M8 21h8"/>',
+ store:'<path d="M3 9.5 4.5 4h15L21 9.5"/><path d="M3 9.5h18a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/>',
+ sliders:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
+ truck:'<path d="M2 7.5A1.5 1.5 0 0 1 3.5 6H14a1 1 0 0 1 1 1v9H2z"/><path d="M15 10h3.6a1 1 0 0 1 .82.43L22 14v2h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',
+ map:'<path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6z"/><path d="M9 3v15M15 6v15"/>',
+ trophy:'<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5A1.5 1.5 0 0 0 3 7.5C3 9.5 4.5 11 7 11"/><path d="M17 6h2.5A1.5 1.5 0 0 1 21 7.5c0 2-1.5 3.5-4 3.5"/><path d="M12 14v3"/><path d="M8.5 21h7l-.8-3.2a1 1 0 0 0-1-.8h-3.4a1 1 0 0 0-1 .8z"/>',
+ trend:'<path d="M3 17.5 9.5 11l4 4L21 7.5"/><path d="M21 12.5v-5h-5"/>',
+ cart:'<path d="M2.5 3.5h2.2l2.3 11.3a1.5 1.5 0 0 0 1.5 1.2h8.8a1.5 1.5 0 0 0 1.5-1.2L20.5 7H6"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/>',
+ tag:'<path d="M20.5 12.7 12.9 20.3a1.6 1.6 0 0 1-2.3 0l-7-7A1.6 1.6 0 0 1 3.2 12l.5-7a1.6 1.6 0 0 1 1.5-1.5l7-.5a1.6 1.6 0 0 1 1.2.5l7.1 7.1a1.6 1.6 0 0 1 0 2.3z"/><circle cx="8.6" cy="8.6" r="1.6"/>',
+ spark:'<path d="M12 3.5 13.7 9l5.5 1.7-5.5 1.7L12 18l-1.7-5.6L4.8 10.7 10.3 9z"/><path d="M18.5 3.5v3M20 5h-3"/>',
+ bell:'<path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6z"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/>',
+ building:'<path d="M4 21V6.5a1 1 0 0 1 .6-.9l7-3a1 1 0 0 1 1.4.9V21"/><path d="M13 10.5h6a1 1 0 0 1 1 1V21"/><path d="M2 21h20"/><path d="M7.5 9.5v0M7.5 13.5v0M7.5 17.5v0"/>',
+ alert:'<path d="M10.3 3.9 2.4 17.5A1.9 1.9 0 0 0 4 20.4h16a1.9 1.9 0 0 0 1.6-2.9L13.7 3.9a1.9 1.9 0 0 0-3.4 0z"/><path d="M12 9.5v4"/><path d="M12 17.2v0"/>',
+ coins:'<ellipse cx="12" cy="6" rx="8" ry="3.2"/><path d="M4 6v5c0 1.8 3.6 3.2 8 3.2s8-1.4 8-3.2V6"/><path d="M4 11v5c0 1.8 3.6 3.2 8 3.2s8-1.4 8-3.2v-5"/>',
+ arrow:'<path d="M4 12h15"/><path d="M13.5 6.5 20 12l-6.5 5.5"/>',
+ chev:'<path d="M9 5.5 15.5 12 9 18.5"/>',
+ shield:'<path d="M12 2.8 4.5 6v6c0 4.6 3.2 8 7.5 9.2 4.3-1.2 7.5-4.6 7.5-9.2V6z"/><path d="M9 12.2l2.2 2.2 4-4.4"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/>',
+ hardhat:'<path d="M3.5 17.5h17"/><path d="M5.5 17.5v-3a6.5 6.5 0 0 1 13 0v3"/><path d="M10 8.2V4.6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3.6"/>',
+ chart:'<path d="M3 21h18"/><rect x="4.5" y="12" width="4" height="6" rx="1"/><rect x="10" y="7.5" width="4" height="10.5" rx="1"/><rect x="15.5" y="4" width="4" height="14" rx="1"/>'
+};
+/* Ekrany showcase sa statycznym HTML, wiec ikony wstrzykujemy raz po starcie:
+   <i data-pl-ico="truck" data-pl-s="20"></i>  ->  inline SVG. */
+function plIcons(root){
+  (root||document).querySelectorAll('[data-pl-ico]').forEach(function(el){
+    if(el.firstElementChild)return;
+    el.innerHTML=plIco(el.getAttribute('data-pl-ico'),+el.getAttribute('data-pl-s')||20,
+                       parseFloat(el.getAttribute('data-pl-w'))||1.75);
+    el.style.display='inline-flex';
+  });
+}
+function plIco(n,size,sw){
+  var d=PL_ICO[n]; if(!d)return '';
+  return '<svg width="'+(size||20)+'" height="'+(size||20)+'" viewBox="0 0 24 24" fill="none" '
+    +'stroke="currentColor" stroke-width="'+(sw||1.75)+'" stroke-linecap="round" stroke-linejoin="round" '
+    +'aria-hidden="true">'+d+'</svg>';
+}
+
+plIcons();
 var NAV_TABS=[
-  ['s-home','🏠','Start'],
-  ['s-rfq','📨','Zapytanie'],
-  ['s-compare','⚖️','Oferty'],
-  ['s-supplier','🏪','Dostawca'],
-  ['s-command','🎛️','Command']
+  ['s-home','home','Start'],
+  ['s-rfq','send','Zapytanie'],
+  ['s-compare','scale','Oferty'],
+  ['s-supplier','store','Dostawca'],
+  ['s-command','sliders','Command']
 ];
 /* Ekrany podrzedne dziedzicza podswietlenie po swojej galezi.
    Ekrany spoza glownego przeplywu (s-director, s-money, s-how, s-onboarding)
@@ -6950,7 +7306,7 @@ function paintNav(screenId){
   document.querySelectorAll('.nav').forEach(function(box){
     if(box.children.length!==NAV_TABS.length){
       box.innerHTML=NAV_TABS.map(function(t){
-        return '<button class="nb" onclick="go(\''+t[0]+'\')"><span class="ic">'+t[1]+'</span>'+t[2]+'</button>';
+        return '<button class="nb" onclick="go(\''+t[0]+'\')"><span class="ic">'+plIco(t[1],20)+'</span>'+t[2]+'</button>';
       }).join('');
     }
     [].forEach.call(box.children,function(el,i){
