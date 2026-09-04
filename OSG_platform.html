@@ -717,6 +717,7 @@ button.pl-row:hover .pl-chev{transform:translateX(3px);}
 .pl-top-in{max-width:1180px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:14px;}
 .pl-top img{height:23px;width:auto;display:block;filter:brightness(0);opacity:.9;}
 .pl-top-ctx{font-size:12.5px;color:var(--pl-ink-3);padding-left:14px;margin-left:2px;border-left:1px solid var(--pl-line);}
+.pl-top-in>.pl-top-ctx:last-child{border-left:none;padding-left:0;}
 .pl-icobtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--pl-line);background:var(--pl-surface);
   display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--pl-ink-2);position:relative;
   transition:background-color 150ms,border-color 150ms,transform 150ms var(--pl-e);}
@@ -819,9 +820,137 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 .pl-ai .pl-chev{color:rgba(255,255,255,.5);}
 .pl-ai .pl-ico{background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-2));color:#fff;}
 
+/* ---------- naglowek ekranu wewnetrznego ---------- */
+.pl-back{width:38px;height:38px;border-radius:11px;border:1px solid var(--pl-line);background:var(--pl-surface);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--pl-ink-2);flex-shrink:0;
+  transition:background-color 150ms var(--pl-e),color 150ms,transform 140ms var(--pl-e);}
+.pl-back:hover{background:var(--pl-surface-2);color:var(--pl-ink);}
+.pl-back:active{transform:scale(.94);}
+.pl-top-h{font-size:15.5px;font-weight:750;letter-spacing:-.02em;color:var(--pl-ink);}
+
+/* ---------- naglowek tresci ---------- */
+.pl-head{margin-top:32px;}
+.pl-head h1{font-size:31px;font-weight:800;letter-spacing:-.032em;line-height:1.12;margin:9px 0 0;}
+.pl-head p{margin:11px 0 0;font-size:15px;color:var(--pl-ink-2);line-height:1.5;max-width:56ch;}
+
+/* ---------- segmentowany przelacznik ---------- */
+.pl-seg{display:flex;gap:9px;}
+.pl-segb{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--pl-line);background:var(--pl-surface);
+  font:inherit;font-size:13.5px;font-weight:700;color:var(--pl-ink-2);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:8px;box-shadow:var(--pl-sh);
+  transition:background-color 160ms var(--pl-e),color 160ms,border-color 160ms,transform 140ms var(--pl-e);}
+.pl-segb:hover{border-color:var(--pl-line-3);color:var(--pl-ink);}
+.pl-segb:active{transform:scale(.98);}
+.pl-segb.pl-on{background:var(--pl-brand);border-color:var(--pl-brand);color:#fff;}
+.pl-segb.pl-hot.pl-on{background:var(--pl-err);border-color:var(--pl-err);}
+
+/* ---------- wybieralna opcja ---------- */
+.pl-opt{display:flex;align-items:center;gap:13px;width:100%;padding:14px 16px;border-radius:12px;
+  border:1px solid var(--pl-line);background:var(--pl-surface);font:inherit;text-align:left;cursor:pointer;
+  color:var(--pl-ink);box-shadow:var(--pl-sh);
+  transition:border-color 160ms,background-color 160ms var(--pl-e),transform 140ms var(--pl-e);}
+.pl-opt:hover{border-color:var(--pl-line-3);}
+.pl-opt:active{transform:scale(.995);}
+.pl-opt-t{flex:1;min-width:0;font-size:14px;font-weight:650;}
+.pl-opt-s{font-size:12.5px;color:var(--pl-ink-3);white-space:nowrap;}
+.pl-mark{width:21px;height:21px;border-radius:50%;border:1.6px solid var(--pl-line-3);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  transition:background-color 160ms,border-color 160ms;}
+.pl-mark svg{opacity:0;transition:opacity 140ms;}
+.pl-opt.pl-on{border-color:var(--pl-brand);background:var(--pl-brand-soft);}
+.pl-opt.pl-on .pl-mark{background:var(--pl-brand);border-color:var(--pl-brand);}
+.pl-opt.pl-on .pl-mark svg{opacity:1;}
+.pl-opt.pl-on .pl-opt-s{color:var(--pl-brand);font-weight:650;}
+
+/* ---------- pola ---------- */
+.pl-inp,.pl-ta{width:100%;background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:11px;
+  padding:11px 13px;font:inherit;font-size:14px;color:var(--pl-ink);outline:none;
+  transition:border-color 150ms,box-shadow 150ms;}
+.pl-inp::placeholder,.pl-ta::placeholder{color:var(--pl-ink-3);}
+.pl-inp:focus,.pl-ta:focus{border-color:var(--pl-brand);box-shadow:0 0 0 3px var(--pl-brand-soft);}
+.pl-ta{min-height:84px;resize:vertical;line-height:1.55;display:block;}
+.pl-del{width:34px;height:34px;flex-shrink:0;border-radius:10px;border:1px solid var(--pl-line);
+  background:var(--pl-surface);color:var(--pl-ink-3);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:color 150ms,border-color 150ms,background-color 150ms;}
+.pl-del:hover{color:var(--pl-err);border-color:var(--pl-err);background:var(--pl-err-soft);}
+
+/* ---------- podsumowania ---------- */
+.pl-tot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 24px;
+  border-bottom:1px solid var(--pl-line-2);font-size:13.5px;}
+.pl-tot:last-child{border-bottom:none;}
+.pl-tot>span{color:var(--pl-ink-3);}
+.pl-tot>b{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.pl-tot-g{padding:17px 24px;background:var(--pl-surface-2);border-top:1px solid var(--pl-line);
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;}
+.pl-tot-g>span{font-size:14px;font-weight:700;}
+.pl-tot-g>b{font-size:25px;font-weight:800;letter-spacing:-.03em;color:var(--pl-brand);
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+/* ---------- karta oszczednosci ---------- */
+.pl-savebox{background:var(--pl-ok-soft);border:1px solid rgba(15,138,77,.25);border-radius:var(--pl-r-lg);padding:22px;}
+.pl-savebox .pl-tot{padding:0 0 10px;border-bottom:none;}
+.pl-savebox-n{font-size:36px;font-weight:800;letter-spacing:-.034em;color:var(--pl-ok);line-height:1;
+  font-variant-numeric:tabular-nums;}
+.pl-strike{text-decoration:line-through;color:var(--pl-ink-3);}
+
+/* ---------- karta oferty ---------- */
+.pl-offer{overflow:hidden;}
+.pl-offer-r{padding:9px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:11px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--pl-surface-2);color:var(--pl-ink-3);}
+.pl-offer-b{padding:18px 20px;}
+.pl-offer-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.pl-offer-n{font-size:16px;font-weight:750;letter-spacing:-.018em;}
+.pl-offer-p{font-size:22px;font-weight:800;letter-spacing:-.032em;text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.pl-offer-f{display:flex;gap:20px;margin-top:14px;padding-top:13px;border-top:1px solid var(--pl-line-2);
+  font-size:12.5px;color:var(--pl-ink-3);}
+.pl-offer-f b{color:var(--pl-ink);font-weight:700;}
+.pl-offer.pl-best{border-color:var(--pl-brand);}
+.pl-offer.pl-best .pl-offer-r{background:var(--pl-brand-soft);color:var(--pl-brand);}
+.pl-offer.pl-best .pl-offer-p{color:var(--pl-brand);}
+.pl-offer.pl-fast .pl-offer-r{background:var(--pl-ok-soft);color:var(--pl-ok);}
+
+/* ---------- licytacja na zywo ---------- */
+.pl-live-l{font-size:13.5px;color:var(--pl-ink-2);display:flex;gap:10px;align-items:flex-start;line-height:1.45;}
+.pl-live-l b{color:var(--pl-ink);font-weight:700;}
+.pl-live-l>i{flex-shrink:0;margin-top:1px;}
+
+/* ---------- sukces ---------- */
+.pl-succ{max-width:520px;margin:0 auto;text-align:center;padding:54px 0 44px;}
+.pl-succ-c{width:78px;height:78px;margin:0 auto 22px;border-radius:50%;background:var(--pl-ok-soft);
+  color:var(--pl-ok);display:flex;align-items:center;justify-content:center;animation:plPop 520ms var(--pl-e) both;}
+@keyframes plPop{0%{transform:scale(.6);opacity:0;}60%{transform:scale(1.06);}100%{transform:scale(1);opacity:1;}}
+.pl-succ h1{font-size:29px;font-weight:800;letter-spacing:-.032em;margin:0;}
+.pl-succ>p{font-size:15px;color:var(--pl-ink-2);line-height:1.55;margin:11px 0 28px;}
+.pl-ordno{font-size:25px;font-weight:800;letter-spacing:-.015em;color:var(--pl-brand);
+  font-variant-numeric:tabular-nums;margin-top:4px;}
+
+/* ---------- os czasu ---------- */
+.pl-tl{display:flex;flex-direction:column;text-align:left;}
+.pl-tl-i{display:flex;gap:13px;align-items:flex-start;position:relative;padding-bottom:17px;}
+.pl-tl-i:last-child{padding-bottom:0;}
+.pl-tl-i::before{content:'';position:absolute;left:10px;top:23px;bottom:0;width:1.5px;background:var(--pl-line);}
+.pl-tl-i:last-child::before{display:none;}
+.pl-tl-d{width:21px;height:21px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;background:var(--pl-ok);color:#fff;position:relative;z-index:1;}
+.pl-tl-d.pl-wait{background:var(--pl-warn-soft);color:var(--pl-warn);box-shadow:inset 0 0 0 1.5px var(--pl-warn);}
+.pl-tl-d.pl-idle{background:var(--pl-surface-3);color:var(--pl-ink-3);}
+.pl-tl-i>span:last-child{flex:1;min-width:0;}
+.pl-tl-t{display:block;font-size:13.5px;font-weight:650;line-height:1.35;padding-top:2px;}
+.pl-tl-s{display:block;font-size:12.5px;color:var(--pl-ink-3);margin-top:3px;line-height:1.4;}
+
+/* ---------- pasek akcji / panel boczny ---------- */
+.pl-acts{display:flex;gap:10px;}
+.pl-acts>.pl-btn{flex:1;}
+.pl-side{position:sticky;top:86px;display:flex;flex-direction:column;gap:14px;}
+
 /* ---------- RESPONSYWNOSC ---------- */
 @media(max-width:1000px){
   .pl-hero,.pl-cols{grid-template-columns:1fr;}
+  /* Na mobile dowod wartosci ma isc PRZED lista ofert, nie na samym dole. */
+  .pl-cols.pl-flip>div:first-child{order:2;}
+  .pl-cols.pl-flip>div:last-child{order:1;margin-bottom:8px;}
   .pl-hero-main{padding:32px 28px;}
   .pl-hero-main h1{font-size:32px;}
 }
@@ -849,6 +978,23 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-save-n{font-size:30px;}
   .pl-feat,.pl-ai{padding:18px;}
   .pl-tiles{gap:10px;}
+  .pl-head{margin-top:24px;}
+  .pl-head h1{font-size:25px;}
+  .pl-head p{font-size:14.5px;}
+  .pl-tot,.pl-tot-g{padding-left:18px;padding-right:18px;}
+  .pl-tot-g>b{font-size:22px;}
+  .pl-offer-r{padding-left:18px;padding-right:18px;}
+  .pl-offer-b{padding:16px 18px;}
+  .pl-offer-p{font-size:20px;}
+  .pl-offer-f{gap:16px;}
+  .pl-savebox{padding:18px;}
+  .pl-savebox-n{font-size:31px;}
+  .pl-succ{padding:36px 0 32px;}
+  .pl-succ h1{font-size:25px;}
+  .pl-seg{gap:8px;}
+  .pl-segb{padding:11px 10px;font-size:13px;}
+  .pl-acts{flex-direction:column;}
+  .pl-side{position:static;}
 }
 
 </style>
@@ -1020,188 +1166,341 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-rfq">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Nowe zapytanie</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="display:flex;gap:8px;">
-    <div onclick="setUrg(0)" id="u0" style="flex:1;padding:9px;background:#e8601c;border-radius:9px;text-align:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Standardowe</div>
-    <div onclick="setUrg(1)" id="u1" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;text-align:center;font-size:12px;font-weight:700;color:#8a9ab0;cursor:pointer;">🔴 PILNE — dziś</div>
+<div class="screen pl" id="s-rfq">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Nowe zapytanie</span>
+  <span style="flex:1;"></span>
+  <span class="pl-top-ctx">Osiedle Bemowo &middot; etap 2</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Krok 1 z 3</span>
+    <h1>Czego potrzebujesz na budowę?</h1>
+    <p>Jedna lista trafia do siedemnastu hurtowni naraz. Oferty wracają porównane co do złotówki &mdash; bez jednego telefonu.</p>
   </div>
-  <div class="card">
-    <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;">📦 Lista materiałów</div>
-      <div onclick="rfqAddItem()" style="font-size:11px;color:#e8601c;font-weight:700;cursor:pointer;">+ Dodaj</div>
-    </div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">SMS30 Klej 25kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 🔥 zamówiono dziś 324 worki</div></div><div style="font-size:14px;font-weight:800;">40 szt.</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">CT17 Tynk 25kg</div><div style="font-size:10px;color:#8a9ab0;">Kupowałeś 17x · śr. 39,80 zł · dziś 38,90 zł ↓</div></div><div style="font-size:14px;font-weight:800;">20 szt.</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div><div style="font-size:10px;color:#8a9ab0;">Knauf</div></div><div style="font-size:14px;font-weight:800;">80 szt.</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil CD60/3m</div></div><div style="font-size:14px;font-weight:800;">120 mb</div></div>
-    <div id="rfq-total-row" style="padding:10px 14px;display:flex;justify-content:space-between;"><span style="font-size:12px;color:#8a9ab0;">Szacowana wartość</span><span style="font-size:14px;font-weight:800;color:#e8601c;">~12 400 zł</span></div>
-  </div>
-  <div class="card" style="padding:12px 14px;">
-    <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:8px;">✍️ Lub opisz słownie</div>
-    <textarea id="rfq-txt" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px;color:#fff;font-size:13px;line-height:1.6;resize:none;outline:none;min-height:60px;" placeholder="np. Brakuje mi styropianu i kleju..."></textarea>
-    <div style="margin-top:8px;display:flex;gap:7px;">
-      <button onclick="go('s-smart')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(59,130,246,.4);border-radius:8px;color:#3b82f6;font-size:12px;font-weight:700;cursor:pointer;">🤖 AI — Brakuje mi...</button>
-      <button onclick="go('s-voice')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(232,96,28,.4);border-radius:8px;color:#e8601c;font-size:12px;font-weight:700;cursor:pointer;">🎤 Głos</button>
-    </div>
-  </div>
-  <div class="card" style="padding:12px 14px;">
-    <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:9px;">🚚 Termin dostawy</div>
-    <div style="display:flex;flex-direction:column;gap:7px;">
-      <div onclick="selD(1)" id="d1" style="display:flex;justify-content:space-between;align-items:center;background:#e8601c;border-radius:9px;padding:10px 12px;cursor:pointer;"><span style="font-size:13px;font-weight:700;">🔴 PILNE — dziś do 14:00</span><span style="font-size:11px;color:rgba(255,255,255,.8);">+ekspres</span></div>
-      <div onclick="selD(2)" id="d2" style="display:flex;justify-content:space-between;align-items:center;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:10px 12px;cursor:pointer;"><span style="font-size:13px;font-weight:600;">🚚 Jutro rano 7:00–9:00</span><span style="font-size:11px;color:#8a9ab0;">standard</span></div>
-      <div onclick="selD(3)" id="d3" style="display:flex;justify-content:space-between;align-items:center;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:10px 12px;cursor:pointer;"><span style="font-size:13px;font-weight:600;">🏪 Odbiór własny</span><span style="font-size:11px;color:#8a9ab0;">gratis</span></div>
-    </div>
-  </div>
-  <button class="btn" onclick="showSent()">📨 Wyślij do 17 dostawców</button>
-  <div id="rfq-sent" style="display:none;flex-direction:column;gap:11px;">
-    <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.05));border:1px solid rgba(232,96,28,.4);border-radius:13px;padding:16px;text-align:center;">
-      <div style="font-size:36px;margin-bottom:7px;">🚀</div>
-      <div style="font-size:16px;font-weight:800;margin-bottom:5px;">Wysłano do 17 dostawców!</div>
-      <div style="font-size:26px;font-weight:800;color:#e8601c;margin:7px 0;" id="rfq-timer">00:00</div>
-      <div style="font-size:11px;color:#8a9ab0;">Pierwsza oferta po śr. 3 min</div>
-      <div style="margin-top:10px;background:rgba(255,255,255,.06);border-radius:9px;padding:10px;text-align:left;">
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Baumit Partner</span><span style="color:#22c55e;font-weight:700;">✅ Odpowiedział</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>SIG Warszawa</span><span style="color:#22c55e;font-weight:700;">✅ Odpowiedział</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;opacity:.5;"><span>+ 15 innych</span><span style="color:#8a9ab0;">⏳</span></div>
+
+  <div class="pl-cols pl-in-2" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Priorytet</span></div>
+        <div class="pl-seg">
+          <button class="pl-segb pl-on" id="u0" onclick="setUrg(0)"><i data-pl-ico="clock" data-pl-s="16"></i>Standardowe</button>
+          <button class="pl-segb pl-hot" id="u1" onclick="setUrg(1)"><i data-pl-ico="alert" data-pl-s="16"></i>Pilne &mdash; dziś</button>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Lista materiałów</span>
+          <button class="pl-link" onclick="rfqAddItem()">Dodaj pozycję <i data-pl-ico="plus" data-pl-s="15"></i></button></div>
+        <div class="pl-card">
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">SMS30 Klej 25 kg</span>
+              <span class="pl-row-s">Baumit &middot; zamówiono dziś 324 worki</span></span>
+            <span class="pl-row-v pl-num">40 szt.</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">CT17 Tynk 25 kg</span>
+              <span class="pl-row-s">Kupowałeś 17&times; &middot; śr. 39,80 zł &middot; dziś 38,90 zł</span></span>
+            <span class="pl-row-v pl-num">20 szt.</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span>
+              <span class="pl-row-s">Knauf</span></span>
+            <span class="pl-row-v pl-num">80 szt.</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Profil CD 60 / 3 m</span>
+              <span class="pl-row-s">Knauf</span></span>
+            <span class="pl-row-v pl-num">120 mb</span></div>
+          <div class="pl-tot-g" id="rfq-total-row"><span>Szacowana wartość</span><b>~12 400 zł</b></div>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Albo opisz to słowami</span></div>
+        <div class="pl-card pl-card-p">
+          <textarea id="rfq-txt" class="pl-ta" placeholder="np. Brakuje mi styropianu i kleju na jutro rano…"></textarea>
+          <div class="pl-acts" style="margin-top:12px;">
+            <button class="pl-btn pl-ghost" onclick="go('s-smart')"><i data-pl-ico="spark" data-pl-s="16"></i>Rozpisz przez AI</button>
+            <button class="pl-btn pl-ghost" onclick="go('s-voice')"><i data-pl-ico="mic" data-pl-s="16"></i>Podyktuj głosem</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Termin dostawy</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <button class="pl-opt" id="d1" onclick="selD(1)"><span class="pl-mark"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-opt-t">Pilne &mdash; dziś do 14:00</span><span class="pl-opt-s">+ ekspres</span></button>
+          <button class="pl-opt pl-on" id="d2" onclick="selD(2)"><span class="pl-mark"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-opt-t">Jutro rano 7:00&ndash;9:00</span><span class="pl-opt-s">standard</span></button>
+          <button class="pl-opt" id="d3" onclick="selD(3)"><span class="pl-mark"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-opt-t">Odbiór własny</span><span class="pl-opt-s">gratis</span></button>
+        </div>
+      </section>
+
+      <button class="pl-btn pl-pri pl-lg pl-block" style="margin-top:24px;" onclick="showSent()"><i data-pl-ico="send" data-pl-s="18"></i>Wyślij do 17 dostawców</button>
+
+      <div id="rfq-sent" style="display:none;flex-direction:column;gap:14px;margin-top:16px;">
+        <div class="pl-card pl-card-p" style="text-align:center;">
+          <span class="pl-eyebrow" style="display:block;">Zapytanie w drodze</span>
+          <div class="pl-num" id="rfq-timer" style="font-size:40px;font-weight:800;letter-spacing:-.035em;color:var(--pl-brand);margin:10px 0 4px;">00:00</div>
+          <p class="pl-meta">Pierwsza oferta wraca średnio po 3 minutach.</p>
+          <div class="pl-tl" style="margin-top:18px;">
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+              <span><span class="pl-tl-t">Baumit Partner</span><span class="pl-tl-s">Odpowiedział</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+              <span><span class="pl-tl-t">SIG Warszawa</span><span class="pl-tl-s">Odpowiedział</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d pl-wait"><i data-pl-ico="clock" data-pl-s="12"></i></span>
+              <span><span class="pl-tl-t">15 pozostałych hurtowni</span><span class="pl-tl-s">Liczy ofertę</span></span></div>
+          </div>
+        </div>
+        <button class="pl-btn pl-pri pl-lg pl-block" onclick="go('s-compare')"><i data-pl-ico="scale" data-pl-s="18"></i>Porównaj oferty</button>
       </div>
     </div>
-    <button class="btn" onclick="go('s-compare')">⚖️ Porównaj oferty</button>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Co się stanie po wysłaniu</span>
+          <div class="pl-tl" style="margin-top:16px;">
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="send" data-pl-s="11"></i></span>
+              <span><span class="pl-tl-t">Lista trafia do 17 hurtowni</span><span class="pl-tl-s">Warszawa, Pruszków, Grodzisk</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d pl-wait"><i data-pl-ico="clock" data-pl-s="11"></i></span>
+              <span><span class="pl-tl-t">Wyceniają równolegle</span><span class="pl-tl-s">Pierwsza oferta po ok. 3 minutach</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d pl-idle"><i data-pl-ico="scale" data-pl-s="11"></i></span>
+              <span><span class="pl-tl-t">Dostajesz jedno porównanie</span><span class="pl-tl-s">Cena, termin, dostępność, terminowość</span></span></div>
+          </div>
+        </div>
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Ostatnie zapytanie</span>
+          <p class="pl-meta" style="margin-top:9px;">Podobna lista, 12 dni temu.</p>
+          <div class="pl-tot" style="padding:14px 0 0;border-bottom:none;"><span>Rynek</span><b class="pl-strike">12 450 zł</b></div>
+          <div class="pl-tot" style="padding:6px 0 0;border-bottom:none;"><span>Zapłaciłeś</span><b style="color:var(--pl-ok);">11 380 zł</b></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-compare">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Porównaj oferty</span></div>
-<div style="padding:10px 16px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
-  <div style="font-size:11px;color:#3b82f6;margin-bottom:3px;">📍 Warszawa (8) · Pruszków (3) · Grodzisk (2) · dalej (4)</div>
-  <div style="font-size:12px;font-weight:800;color:#e8601c;">🔥 17 dostawców walczy o Twoje zamówienie</div>
-</div>
-<div style="margin:8px 16px;background:linear-gradient(135deg,rgba(232,96,28,.08),rgba(232,96,28,.02));border:1px solid rgba(232,96,28,.35);border-radius:13px;padding:12px 14px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
-    <div style="font-size:12px;font-weight:800;color:#e8601c;">🔥 Trwa licytacja</div>
-    <div style="font-size:11px;color:#f59e0b;font-weight:700;">⏳ <span id="offer-timer">1:42:00</span></div>
+<div class="screen pl" id="s-compare">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-rfq')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Oferty</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-warn"><span class="pl-dot pl-live"></span>licytacja trwa</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Krok 2 z 3</span>
+    <h1>17 hurtowni policzyło Twoją listę.</h1>
+    <p>Ceny są porównywalne co do złotówki &mdash; ta sama lista, ten sam termin, ta sama dostawa.</p>
   </div>
-  <div style="font-size:12px;color:#22c55e;margin-bottom:3px;">▼ <strong>Baumit Partner</strong> właśnie obniżył ofertę o <strong>120 zł</strong></div>
-  <div style="font-size:12px;color:#e8601c;">🔥 <strong>3W Budowlana</strong> walczy o Twoje zamówienie</div>
-</div>
-<div style="margin:0 16px 8px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35);border-radius:13px;padding:12px 14px;">
-  <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;color:#8a9ab0;">Średnia cena rynkowa</span><span style="font-size:13px;font-weight:700;text-decoration:line-through;color:#8a9ab0;">12 450 zł</span></div>
-  <div style="display:flex;justify-content:space-between;margin-bottom:9px;"><span style="font-size:12px;color:#8a9ab0;">Najlepsza oferta</span><span style="font-size:13px;font-weight:700;color:#22c55e;">11 380 zł</span></div>
-  <div style="background:rgba(34,197,94,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
-    <span style="font-size:14px;font-weight:800;">✅ Zaoszczędzisz</span>
-    <div style="text-align:right;"><div style="font-size:24px;font-weight:800;color:#22c55e;">1 070 zł</div><div style="font-size:10px;color:#22c55e;">8,6% poniżej rynku</div></div>
-  </div>
-</div>
-<div style="padding:0 16px 14px;display:flex;flex-direction:column;gap:7px;">
-  <div onclick="go('s-order')" style="background:#162130;border:2px solid #e8601c;border-radius:13px;overflow:hidden;cursor:pointer;">
-    <div style="background:rgba(232,96,28,.12);padding:6px 13px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:11px;font-weight:800;color:#e8601c;">🏆 OSG POLECA</span>
-      <span style="font-size:10px;color:#22c55e;font-weight:700;">🛡️ Verified · ✅ Zaoszczędzisz 1 070 zł</span>
+
+  <div class="pl-cols pl-flip pl-in-2" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Oferty</span>
+          <span class="pl-chip">4 z 17 &middot; reszta w drodze</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+
+          <button class="pl-card pl-offer pl-best" onclick="go('s-order')">
+            <span class="pl-offer-r"><span>OSG poleca</span><span>oszczędzasz 1 070 zł</span></span>
+            <span class="pl-offer-b" style="display:block;">
+              <span class="pl-offer-top">
+                <span class="pl-row-m"><span class="pl-offer-n">Baumit Partner</span>
+                  <span class="pl-row-s">OSG Verified &middot; kupowałeś tu 4&times;</span></span>
+                <span><span class="pl-offer-p">11 380 zł</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-brand);font-weight:650;">Jutro 7:00&ndash;9:00</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-ok);">Wszystko na stanie</span></span>
+              </span>
+              <span class="pl-offer-f"><span><b>4.8</b> oceny</span><span><b>96%</b> terminowo</span><span><b>843</b> dostawy</span></span>
+            </span>
+          </button>
+
+          <button class="pl-card pl-offer pl-fast" onclick="go('s-order')">
+            <span class="pl-offer-r"><span>Najszybciej</span><span>dziś</span></span>
+            <span class="pl-offer-b" style="display:block;">
+              <span class="pl-offer-top">
+                <span class="pl-row-m"><span class="pl-offer-n">SIG Warszawa</span>
+                  <span class="pl-row-s">OSG Verified</span></span>
+                <span><span class="pl-offer-p">11 420 zł</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-ok);font-weight:650;">Dziś 15:00</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-ok);">Na stanie</span></span>
+              </span>
+              <span class="pl-offer-f"><span><b>4.7</b> oceny</span><span><b>94%</b> terminowo</span><span><b>621</b> dostaw</span></span>
+            </span>
+          </button>
+
+          <button class="pl-card pl-offer" onclick="go('s-order')">
+            <span class="pl-offer-b" style="display:block;">
+              <span class="pl-offer-top">
+                <span class="pl-row-m"><span class="pl-offer-n">Adamex</span>
+                  <span class="pl-row-s">Pierwszy raz w Twoim zapytaniu</span></span>
+                <span><span class="pl-offer-p">11 540 zł</span>
+                  <span class="pl-row-s" style="text-align:right;">Jutro 9:00</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-ok);">Na stanie</span></span>
+              </span>
+              <span class="pl-offer-f"><span><b>4.3</b> oceny</span><span><b>88%</b> terminowo</span><span><b>412</b> dostaw</span></span>
+            </span>
+          </button>
+
+          <button class="pl-card pl-offer" onclick="go('s-order')">
+            <span class="pl-offer-b" style="display:block;">
+              <span class="pl-offer-top">
+                <span class="pl-row-m"><span class="pl-offer-n">3W Budowlana</span>
+                  <span class="pl-row-s">Największa sieć w rejonie</span></span>
+                <span><span class="pl-offer-p">11 980 zł</span>
+                  <span class="pl-row-s" style="text-align:right;">Jutro rano</span>
+                  <span class="pl-row-s" style="text-align:right;color:var(--pl-warn);">2 pozycje na zamówienie</span></span>
+              </span>
+              <span class="pl-offer-f"><span><b>4.6</b> oceny</span><span><b>91%</b> terminowo</span><span><b>2 140</b> dostaw</span></span>
+            </span>
+          </button>
+
+        </div>
+        <div class="pl-acts" style="margin-top:20px;">
+          <button class="pl-btn pl-pri pl-lg" onclick="go('s-order')"><i data-pl-ico="check" data-pl-s="18"></i>Wybierz Baumit Partner</button>
+          <button class="pl-btn pl-ghost pl-lg" onclick="go('s-rfq')"><i data-pl-ico="send" data-pl-s="17"></i>Nowe zapytanie</button>
+        </div>
+      </section>
     </div>
-    <div style="padding:12px 13px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
-        <div><div style="font-size:14px;font-weight:700;">Baumit Partner</div><div style="font-size:10px;color:#8a9ab0;margin-top:2px;">terminowość 96% · historia: 4x</div></div>
-        <div style="text-align:right;"><div style="font-size:19px;font-weight:800;color:#e8601c;">11 380 zł</div><div style="font-size:11px;font-weight:700;color:#e8601c;">Jutro 7:00–9:00</div><div style="font-size:10px;color:#22c55e;margin-top:2px;">🟢 Wszystko na stanie</div></div>
-      </div>
-      <div style="display:flex;gap:10px;font-size:11px;color:#8a9ab0;border-top:1px solid rgba(255,255,255,.06);padding-top:7px;">
-        <span>⭐ <strong style="color:#fff;">4.8</strong></span><span>🚚 <strong style="color:#fff;">96%</strong></span><span>📦 <strong style="color:#fff;">843</strong> dostaw</span>
-      </div>
-    </div>
-  </div>
-  <div onclick="go('s-order')" style="background:#162130;border:1px solid rgba(34,197,94,.35);border-radius:13px;overflow:hidden;cursor:pointer;">
-    <div style="background:rgba(34,197,94,.07);padding:4px 13px;"><span style="font-size:10px;font-weight:700;color:#22c55e;">⚡ NAJSZYBCIEJ</span></div>
-    <div style="padding:12px 13px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
-        <div><div style="font-size:14px;font-weight:700;">SIG Warszawa</div><div style="font-size:10px;color:#3b82f6;margin-top:2px;">🛡️ OSG Verified</div></div>
-        <div style="text-align:right;"><div style="font-size:19px;font-weight:800;">11 420 zł</div><div style="font-size:11px;font-weight:700;color:#22c55e;">Dziś 15:00</div><div style="font-size:10px;color:#22c55e;margin-top:2px;">🟢 Na stanie</div></div>
-      </div>
-      <div style="display:flex;gap:10px;font-size:11px;color:#8a9ab0;border-top:1px solid rgba(255,255,255,.06);padding-top:7px;">
-        <span>⭐ <strong style="color:#fff;">4.7</strong></span><span>🚚 <strong style="color:#fff;">94%</strong></span><span>📦 <strong style="color:#fff;">621</strong> dostaw</span>
-      </div>
-    </div>
-  </div>
-  <div onclick="go('s-order')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden;cursor:pointer;">
-    <div style="padding:12px 13px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
-        <div><div style="font-size:14px;font-weight:700;">Adamex</div></div>
-        <div style="text-align:right;"><div style="font-size:19px;font-weight:800;">11 540 zł</div><div style="font-size:11px;">Jutro 9:00</div><div style="font-size:10px;color:#22c55e;margin-top:2px;">🟢 Na stanie</div></div>
-      </div>
-      <div style="display:flex;gap:10px;font-size:11px;color:#8a9ab0;border-top:1px solid rgba(255,255,255,.06);padding-top:7px;">
-        <span>⭐ <strong style="color:#fff;">4.3</strong></span><span>🚚 <strong style="color:#fff;">88%</strong></span><span>📦 <strong style="color:#fff;">412</strong> dostaw</span>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-savebox">
+          <span class="pl-eyebrow" style="display:block;color:var(--pl-ok);">Zaoszczędzisz</span>
+          <div class="pl-savebox-n" style="margin-top:10px;">1 070 zł</div>
+          <p class="pl-meta" style="margin-top:9px;color:var(--pl-ok);">8,6% poniżej średniej rynkowej.</p>
+          <div class="pl-tot" style="margin-top:16px;padding:14px 0 0;border-top:1px solid rgba(15,138,77,.2);border-bottom:none;">
+            <span>Średnia rynkowa</span><b class="pl-strike">12 450 zł</b></div>
+          <div class="pl-tot" style="padding:7px 0 0;border-bottom:none;">
+            <span>Najlepsza oferta</span><b style="color:var(--pl-ok);">11 380 zł</b></div>
+        </div>
+
+        <div class="pl-card pl-card-p">
+          <div class="pl-sec-h" style="margin-bottom:12px;">
+            <span class="pl-eyebrow">Licytacja</span>
+            <span class="pl-chip pl-warn"><i data-pl-ico="clock" data-pl-s="13"></i><span id="offer-timer">1:42:00</span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div class="pl-live-l"><i data-pl-ico="trend" data-pl-s="16" style="color:var(--pl-ok);"></i>
+              <span><b>Baumit Partner</b> obniżył ofertę o <b>120 zł</b></span></div>
+            <div class="pl-live-l"><i data-pl-ico="flame" data-pl-s="16" style="color:var(--pl-brand);"></i>
+              <span><b>3W Budowlana</b> przygotowuje kontrofertę</span></div>
+          </div>
+          <p class="pl-meta" style="margin-top:14px;padding-top:13px;border-top:1px solid var(--pl-line-2);">
+            Warszawa (8) &middot; Pruszków (3) &middot; Grodzisk (2) &middot; dalej (4)</p>
+        </div>
       </div>
     </div>
   </div>
-  <div onclick="go('s-order')" style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden;cursor:pointer;">
-    <div style="padding:12px 13px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;">
-        <div><div style="font-size:14px;font-weight:700;">3W Budowlana</div></div>
-        <div style="text-align:right;"><div style="font-size:19px;font-weight:800;">11 980 zł</div><div style="font-size:11px;">Jutro rano</div><div style="font-size:10px;color:#f59e0b;margin-top:2px;">🟡 2 pozycje na zam.</div></div>
-      </div>
-      <div style="display:flex;gap:10px;font-size:11px;color:#8a9ab0;border-top:1px solid rgba(255,255,255,.06);padding-top:7px;">
-        <span>⭐ <strong style="color:#fff;">4.6</strong></span><span>🚚 <strong style="color:#fff;">91%</strong></span><span>📦 <strong style="color:#fff;">2 140</strong> dostaw</span>
-      </div>
-    </div>
-  </div>
-  <div style="font-size:11px;color:#8a9ab0;text-align:center;padding:4px 0;">+ 13 kolejnych ofert oczekuje</div>
-  <button class="btn" onclick="go('s-order')">✅ Wybierz najlepszą ofertę</button>
-  <button class="btn ghost" onclick="go('s-rfq')">📨 Nowe zapytanie</button>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-order">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-compare')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Twoje zamówienie</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="background:rgba(232,96,28,.08);border:1px solid rgba(232,96,28,.3);border-radius:12px;padding:11px 13px;">
-    <div style="font-weight:700;margin-bottom:2px;">🏆 Wybrałeś: Baumit Partner · 🛡️ OSG Verified</div>
-    <div style="font-size:11px;color:#8a9ab0;">⭐ 4.8 · Dostawa jutro 7:00–9:00 · 🟢 Na stanie</div>
+<div class="screen pl" id="s-order">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-compare')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Twoje zamówienie</span>
+  <span style="flex:1;"></span>
+  <span class="pl-top-ctx">Osiedle Bemowo &middot; etap 2</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Krok 3 z 3</span>
+    <h1>Sprawdź i potwierdź.</h1>
+    <p>Po potwierdzeniu hurtownia dostaje zamówienie od razu &mdash; nie musisz do nikogo dzwonić.</p>
   </div>
-  <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">SMS30 Klej 25kg</div><div style="font-size:10px;color:#8a9ab0;">dziś 39,90 zł (↓ od 42,30)</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">× 40</div><div style="font-size:10px;color:#8a9ab0;">1 596 zł</div></div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">CT17 Tynk 25kg</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">× 20</div><div style="font-size:10px;color:#8a9ab0;">1 840 zł</div></div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">× 80</div><div style="font-size:10px;color:#8a9ab0;">4 240 zł</div></div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil CD60/3m</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;">× 40</div><div style="font-size:10px;color:#8a9ab0;">1 704 zł</div></div></div>
+
+  <div class="pl-cols pl-in-2" style="margin-top:26px;">
+    <div>
+      <div class="pl-card pl-feat" style="cursor:default;">
+        <span class="pl-ico pl-lg pl-brand"><i data-pl-ico="shield" data-pl-s="24"></i></span>
+        <span class="pl-row-m"><span class="pl-row-t" style="font-size:16px;">Baumit Partner &middot; OSG Verified</span>
+          <span class="pl-row-s">Ocena 4.8 &middot; dostawa jutro 7:00&ndash;9:00 &middot; wszystko na stanie</span></span>
+      </div>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Pozycje</span>
+          <span class="pl-chip">4 pozycje</span></div>
+        <div class="pl-card">
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">SMS30 Klej 25 kg</span>
+              <span class="pl-row-s">39,90 zł / szt. &middot; spadło z 42,30 zł</span></span>
+            <span class="pl-row-v pl-num">&times; 40</span>
+            <span class="pl-row-v pl-num" style="min-width:82px;text-align:right;color:var(--pl-ink-3);font-weight:600;">1 596 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">CT17 Tynk 25 kg</span>
+              <span class="pl-row-s">92,00 zł / szt.</span></span>
+            <span class="pl-row-v pl-num">&times; 20</span>
+            <span class="pl-row-v pl-num" style="min-width:82px;text-align:right;color:var(--pl-ink-3);font-weight:600;">1 840 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span>
+              <span class="pl-row-s">53,00 zł / szt.</span></span>
+            <span class="pl-row-v pl-num">&times; 80</span>
+            <span class="pl-row-v pl-num" style="min-width:82px;text-align:right;color:var(--pl-ink-3);font-weight:600;">4 240 zł</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Profil CD 60 / 3 m</span>
+              <span class="pl-row-s">39,40 zł / szt.</span></span>
+            <span class="pl-row-v pl-num">&times; 40</span>
+            <span class="pl-row-v pl-num" style="min-width:82px;text-align:right;color:var(--pl-ink-3);font-weight:600;">1 576 zł</span></div>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card">
+          <div class="pl-tot"><span>Produkty</span><b>9 252 zł</b></div>
+          <div class="pl-tot"><span>Dostawa</span><b style="color:var(--pl-ok);">gratis</b></div>
+          <div class="pl-tot"><span>VAT 23%</span><b>2 128 zł</b></div>
+          <div class="pl-tot-g"><span>Razem</span><b>11 380 zł</b></div>
+        </div>
+
+        <div class="pl-savebox">
+          <span class="pl-eyebrow" style="display:block;color:var(--pl-ok);">Oszczędność vs rynek</span>
+          <div class="pl-savebox-n" style="margin-top:10px;">1 070 zł</div>
+        </div>
+
+        <button class="pl-btn pl-pri pl-lg pl-block" onclick="go('s-confirm')"><i data-pl-ico="check" data-pl-s="18"></i>Potwierdź zamówienie</button>
+        <p class="pl-meta" style="text-align:center;">Bez zobowiązań &mdash; hurtownia potwierdza w ciągu kilku minut.</p>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <div class="row"><span style="font-size:13px;color:#8a9ab0;">Produkty</span><span>9 380 zł</span></div>
-    <div class="row"><span style="font-size:13px;color:#8a9ab0;">Dostawa</span><span style="color:#22c55e;">GRATIS</span></div>
-    <div class="row"><span style="font-size:13px;color:#8a9ab0;">VAT 23%</span><span>2 157 zł</span></div>
-    <div style="display:flex;justify-content:space-between;padding:12px 13px;font-size:15px;font-weight:700;"><span>Razem</span><span style="font-size:20px;color:#e8601c;">11 537 zł</span></div>
-  </div>
-  <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:11px;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;">
-    <span style="font-size:12px;color:#8a9ab0;">✅ Oszczędność vs rynek</span>
-    <span style="font-size:17px;font-weight:800;color:#22c55e;">1 070 zł</span>
-  </div>
-  <button class="btn" onclick="go('s-confirm')">✅ Potwierdź zamówienie</button>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-confirm">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;text-align:center;padding-bottom:80px;">
-  <div style="width:80px;height:80px;background:rgba(34,197,94,.1);border:2px solid #22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:18px;">✅</div>
-  <div style="font-size:26px;font-weight:800;margin-bottom:5px;">Zamówienie przyjęte!</div>
-  <div style="font-size:13px;color:#8a9ab0;margin-bottom:22px;line-height:1.5;">Baumit Partner potwierdził.<br>Dostawa jutro 7:00–9:00.</div>
-  <div class="card" style="width:100%;margin-bottom:16px;text-align:left;">
-    <div style="padding:14px;">
-      <div style="font-size:9px;color:#8a9ab0;text-transform:uppercase;margin-bottom:3px;">Numer zamówienia</div>
-      <div style="font-size:22px;font-weight:800;color:#e8601c;margin-bottom:12px;">#OSG-2026-0047</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;gap:8px;"><div style="width:18px;height:18px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><div style="font-size:12px;">Zamówienie przyjęte · 18:32</div></div>
-        <div style="display:flex;gap:8px;"><div style="width:18px;height:18px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><div style="font-size:12px;">Baumit Partner potwierdził</div></div>
-        <div style="display:flex;gap:8px;"><div style="width:18px;height:18px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">🕐</div><div style="font-size:12px;">Dostawa jutro 7:00–9:00</div></div>
+<div class="screen pl" id="s-confirm">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<div class="pl-wrap">
+  <div class="pl-succ">
+    <div class="pl-succ-c"><i data-pl-ico="check" data-pl-s="34" data-pl-w="2.6"></i></div>
+    <h1>Zamówienie przyjęte.</h1>
+    <p>Baumit Partner potwierdził. Dostawa jutro między 7:00 a 9:00 na Osiedle Bemowo, etap 2.</p>
+
+    <div class="pl-card pl-card-p pl-in" style="text-align:left;">
+      <span class="pl-eyebrow" style="display:block;">Numer zamówienia</span>
+      <div class="pl-ordno">#OSG-2026-0047</div>
+      <div class="pl-tl" style="margin-top:20px;padding-top:18px;border-top:1px solid var(--pl-line-2);">
+        <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+          <span><span class="pl-tl-t">Zamówienie przyjęte</span><span class="pl-tl-s">Dziś 18:32</span></span></div>
+        <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+          <span><span class="pl-tl-t">Baumit Partner potwierdził</span><span class="pl-tl-s">Dziś 18:34</span></span></div>
+        <div class="pl-tl-i"><span class="pl-tl-d pl-wait"><i data-pl-ico="truck" data-pl-s="12"></i></span>
+          <span><span class="pl-tl-t">Dostawa w drodze</span><span class="pl-tl-s">Jutro 7:00&ndash;9:00</span></span></div>
       </div>
     </div>
+
+    <div class="pl-acts pl-in-2" style="margin-top:20px;">
+      <button class="pl-btn pl-pri pl-lg" onclick="go('s-delivery')"><i data-pl-ico="truck" data-pl-s="18"></i>Śledź dostawę</button>
+      <button class="pl-btn pl-ghost pl-lg" onclick="go('s-home')"><i data-pl-ico="home" data-pl-s="17"></i>Wróć na start</button>
+    </div>
   </div>
-  <button class="btn" onclick="go('s-home')" style="margin-bottom:8px;width:100%;">🏠 Wróć do platformy</button>
-  <button class="btn ghost" onclick="go('s-delivery')" style="width:100%;">🚚 Śledź dostawę</button>
 </div>
 <div class="nav"></div>
 </div>
@@ -7272,6 +7571,14 @@ var PL_ICO={
  plus:'<path d="M12 5v14M5 12h14"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/>',
  hardhat:'<path d="M3.5 17.5h17"/><path d="M5.5 17.5v-3a6.5 6.5 0 0 1 13 0v3"/><path d="M10 8.2V4.6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3.6"/>',
+ back:'<path d="M20 12H5"/><path d="M10.5 5.5 4 12l6.5 6.5"/>',
+ check:'<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
+ mic:'<rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0"/><path d="M12 18.5V21.5"/>',
+ star:'<path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9z"/>',
+ x:'<path d="M6 6l12 12M18 6 6 18"/>',
+ box:'<path d="M21 8.2 12 3.4 3 8.2v7.6l9 4.8 9-4.8z"/><path d="M3 8.2 12 13l9-4.8"/><path d="M12 13v7.6"/>',
+ flame:'<path d="M12 21c3.6 0 6.2-2.4 6.2-5.7 0-4.4-4.6-5.9-3.6-11.3-3 1.3-5 4-5 6.6 0 1.3-1 1.9-1.7 1.1-.5-.5-.8-1.3-.8-2.2-1.4 1.6-2.3 3.6-2.3 5.8C4.8 18.6 8 21 12 21z"/>',
+ doc:'<path d="M13.5 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M13.5 3v5h5"/><path d="M9 13h6M9 17h4"/>',
  chart:'<path d="M3 21h18"/><rect x="4.5" y="12" width="4" height="6" rx="1"/><rect x="10" y="7.5" width="4" height="10.5" rx="1"/><rect x="15.5" y="4" width="4" height="14" rx="1"/>'
 };
 /* Ekrany showcase sa statycznym HTML, wiec ikony wstrzykujemy raz po starcie:
@@ -7340,19 +7647,18 @@ function go(id){
   if(typeof syncAiFab==='function') syncAiFab();
   if(typeof sbSync==='function') sbSync();
 }
+/* System pl- steruje stanem klasa .pl-on, nie kolorami inline.
+   Dzieki temu motyw siedzi w CSS, a JS tylko przelacza stan. */
 function setUrg(v){
-  document.getElementById('u0').style.background=v===0?'#e8601c':'#1e2f42';
-  document.getElementById('u0').style.color=v===0?'#fff':'#8a9ab0';
-  document.getElementById('u1').style.background=v===1?'#dc2626':'#1e2f42';
-  document.getElementById('u1').style.color=v===1?'#fff':'#8a9ab0';
+  [0,1].forEach(function(i){
+    var el=document.getElementById('u'+i);
+    if(el)el.classList.toggle('pl-on',i===v);
+  });
 }
 function selD(n){
   [1,2,3].forEach(function(i){
     var el=document.getElementById('d'+i);
-    if(!el)return;
-    el.style.background=i===n?'#e8601c':'#1e2f42';
-    el.style.color=i===n?'#fff':'#8a9ab0';
-    el.style.border=i===n?'none':'1px solid rgba(255,255,255,.1)';
+    if(el)el.classList.toggle('pl-on',i===n);
   });
 }
 var timerInt=null;
@@ -7442,16 +7748,15 @@ function scDelRow(btn){ var r=btn.parentNode; if(r&&r.parentNode)r.parentNode.re
 function rfqAddItem(){
   var anchor=document.getElementById('rfq-total-row'); if(!anchor)return;
   var row=document.createElement('div');
-  row.className='row';
-  row.style.gap='8px';
-  row.innerHTML='<input class="sc-i" placeholder="Nazwa materiału" style="flex:1;min-width:0;background:#1e2f42;'
-    +'border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 9px;color:#fff;font-size:12px;outline:none;">'
-    +'<input class="sc-i" type="number" min="0" placeholder="Ilość" style="width:74px;background:#1e2f42;'
-    +'border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 9px;color:#fff;font-size:12px;outline:none;">'
-    +'<button onclick="scDelRow(this)" title="Usuń pozycję" style="width:30px;height:30px;flex-shrink:0;'
-    +'background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#8a9ab0;font-size:13px;cursor:pointer;">✕</button>';
+  row.className='pl-row';
+  row.innerHTML='<span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>'
+    +'<input class="pl-inp" placeholder="Nazwa materiału" style="flex:1;min-width:0;">'
+    +'<input class="pl-inp pl-num" type="number" min="0" placeholder="Ilość" style="width:92px;flex-shrink:0;">'
+    +'<button class="pl-del" onclick="scDelRow(this)" title="Usuń pozycję">'
+    +'<i data-pl-ico="x" data-pl-s="15"></i></button>';
   anchor.parentNode.insertBefore(row,anchor);
-  var f=row.querySelector('.sc-i'); if(f)f.focus();
+  plIcons(row);
+  var f=row.querySelector('.pl-inp'); if(f)f.focus();
 }
 
 function showBidOk(){
