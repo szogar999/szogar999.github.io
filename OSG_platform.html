@@ -1143,12 +1143,70 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   box-shadow:0 0 0 0 rgba(198,40,40,.5);animation:plPulse 1.6s var(--pl-e) infinite;}
 @keyframes plPulse{0%{box-shadow:0 0 0 0 rgba(198,40,40,.45);}70%{box-shadow:0 0 0 22px rgba(198,40,40,0);}100%{box-shadow:0 0 0 0 rgba(198,40,40,0);}}
 
+/* ---------- schemat rejonu ---------- */
+.pl-map{position:relative;background:var(--pl-surface-2);border:1px solid var(--pl-line);
+  border-radius:var(--pl-r-lg);overflow:hidden;}
+.pl-map svg{display:block;width:100%;height:auto;}
+.pl-map-cap{position:absolute;left:16px;bottom:14px;font-size:11.5px;color:var(--pl-ink-3);
+  background:rgba(255,255,255,.82);backdrop-filter:blur(6px);padding:5px 10px;border-radius:9px;
+  border:1px solid var(--pl-line);}
+.pl-map-lg{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:12.5px;color:var(--pl-ink-3);}
+.pl-map-lg span{display:inline-flex;align-items:center;gap:7px;}
+.pl-map-lg i{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.pl-pin{cursor:pointer;transition:opacity 160ms;}
+.pl-map .pl-mt{font-size:13px;font-weight:700;fill:var(--pl-ink);}
+.pl-map .pl-ms{font-size:11.5px;font-weight:650;}
+.pl-map .pl-mw{font-size:11px;fill:var(--pl-ink-2);}
+.pl-map .pl-mc{font-size:13px;font-weight:600;fill:#1d4ed8;opacity:.55;}
+.pl-pin:hover{opacity:.75;}
+
+/* ---------- ranking ---------- */
+.pl-rank{padding:20px 22px;}
+.pl-rank-h{display:flex;align-items:flex-start;gap:15px;}
+.pl-rank-n{width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:16px;font-weight:800;background:var(--pl-surface-2);
+  color:var(--pl-ink-3);border:1px solid var(--pl-line);font-variant-numeric:tabular-nums;}
+.pl-rank.pl-p1 .pl-rank-n{background:var(--pl-brand);border-color:var(--pl-brand);color:#fff;}
+.pl-rank.pl-p2 .pl-rank-n{background:var(--pl-ink);border-color:var(--pl-ink);color:#fff;}
+.pl-rank.pl-p3 .pl-rank-n{background:var(--pl-surface-3);border-color:var(--pl-line-3);color:var(--pl-ink-2);}
+.pl-rank-m{flex:1;min-width:0;}
+.pl-rank-nm{display:flex;align-items:center;gap:9px;font-size:16.5px;font-weight:750;
+  letter-spacing:-.018em;flex-wrap:wrap;}
+.pl-rank-s{display:block;font-size:12.5px;color:var(--pl-ink-3);margin-top:4px;}
+.pl-rank-p{text-align:right;flex-shrink:0;}
+.pl-rank-why{margin-top:15px;padding-top:14px;border-top:1px solid var(--pl-line-2);
+  font-size:13.5px;line-height:1.5;color:var(--pl-ink-2);}
+.pl-rank-why b{color:var(--pl-ink);font-weight:700;}
+.pl-rank.pl-p1{border-color:var(--pl-brand);}
+.pl-ver{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  color:var(--pl-info);background:var(--pl-info-soft);padding:3px 9px;border-radius:20px;}
+
+/* ---------- Memory: separator dnia i wpis kluczowy ---------- */
+.pl-daysep{display:flex;align-items:center;gap:12px;margin:6px 0 14px;}
+.pl-daysep span{font-size:11.5px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--pl-ink-3);flex-shrink:0;}
+.pl-daysep::after{content:'';flex:1;height:1px;background:var(--pl-line);}
+.pl-mem.pl-key .pl-mem-d{background:var(--pl-brand-soft);border-color:var(--pl-brand);
+  color:var(--pl-brand);}
+.pl-mem.pl-key .pl-mem-b{border-left:3px solid var(--pl-brand);}
+.pl-mem-tag{font-size:10.5px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;background:var(--pl-brand-soft);color:var(--pl-brand);
+  margin-left:7px;white-space:nowrap;}
+.pl-mem-src{display:inline-flex;align-items:center;gap:6px;}
+.pl-mem-empty{text-align:center;padding:34px 20px;}
+
+/* ---------- kolumna z mapa: na mobile lista przed mapa ---------- */
+.pl-mapcol{display:flex;flex-direction:column;}
+
 /* ---------- RESPONSYWNOSC ---------- */
 @media(max-width:1000px){
   .pl-hero,.pl-cols{grid-template-columns:1fr;}
   /* Na mobile dowod wartosci ma isc PRZED lista ofert, nie na samym dole. */
   .pl-cols.pl-flip>div:first-child{order:2;}
   .pl-cols.pl-flip>div:last-child{order:1;margin-bottom:8px;}
+  /* Na waskim ekranie lista budow jest wazniejsza niz powierzchnia schematu. */
+  .pl-mapcol>.pl-map-sec{order:2;}
+  .pl-mapcol>.pl-list-sec{order:1;}
   .pl-hero-main{padding:32px 28px;}
   .pl-hero-main h1{font-size:32px;}
 }
@@ -1217,6 +1275,17 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-bar-v{width:66px;font-size:12px;}
   .pl-price{font-size:17px;}
   .pl-mic{width:92px;height:92px;}
+  .pl-rank{padding:17px 18px;}
+  .pl-rank-nm{font-size:15px;}
+  .pl-rank-h{gap:12px;}
+  .pl-rank-n{width:34px;height:34px;font-size:15px;}
+  .pl-map-lg{gap:12px;font-size:12px;}
+  .pl-map-cap{position:static;display:block;margin:0;padding:9px 14px 11px;font-size:11px;
+    background:none;border:none;border-top:1px solid var(--pl-line);border-radius:0;backdrop-filter:none;}
+  .pl-map .pl-mt{font-size:20px;}
+  .pl-map .pl-ms{font-size:17px;}
+  .pl-map .pl-mw{font-size:16px;}
+  .pl-map .pl-mc{font-size:19px;}
   /* Na 390 px iskierka zjada szerokosc nazwy materialu — nazwa jest wazniejsza. */
   .pl-spark{display:none;}
   /* Karta z akcja po prawej: przycisk schodzi do wlasnego wiersza zamiast dusic tytul. */
@@ -1875,6 +1944,7 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
     <input id="mem-search" class="pl-inp" oninput="renderMemory()" placeholder="Szukaj: Baumit, faktura, Jan K.…">
     <div style="display:flex;gap:7px;flex-wrap:wrap;">
       <div onclick="memFilterType('',this)" class="mf-pill pl-on" data-filter="" id="mf-all">Wszystko</div>
+      <div onclick="memFilterType('!',this)" class="mf-pill" data-filter="!">Kluczowe</div>
       <div onclick="memFilterType('📞',this)" class="mf-pill" data-filter="📞">Rozmowy</div>
       <div onclick="memFilterType('📄',this)" class="mf-pill" data-filter="📄">Oferty</div>
       <div onclick="memFilterType('📦',this)" class="mf-pill" data-filter="📦">Zamówienia</div>
@@ -2430,91 +2500,326 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-map">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Mapa budów</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="display:flex;gap:8px;">
-    <div style="flex:1;background:#162130;border:1px solid rgba(255,107,107,.3);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#ff6b6b;">126</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🔴 Budowy</div></div>
-    <div style="flex:1;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#22c55e;">17</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🟢 Dostawcy</div></div>
-    <div style="flex:1;background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#3b82f6;">8</div><div style="font-size:9px;color:#8a9ab0;margin-top:1px;">🔵 W trasie</div></div>
+<div class="screen pl" id="s-map">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Twoje budowy</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-warn">2 wymagają uwagi</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Sytuacja operacyjna</span>
+    <h1>Gdzie dziś dzieje się coś ważnego?</h1>
+    <p>Cztery budowy w obsłudze, dwie dostawy w trasie. Poniżej to, co wymaga Twojej decyzji.</p>
   </div>
-  <div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;">
-    <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:9px;">📍 Mazowsze i okolice</div>
-    <div style="position:relative;background:#1e2f42;border-radius:10px;height:230px;overflow:hidden;">
-      <svg width="100%" height="100%" style="position:absolute;top:0;left:0;opacity:.1;"><defs><pattern id="g" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M 25 0 L 0 0 0 25" fill="none" stroke="#8a9ab0" stroke-width=".5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
-      <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
-        <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#2a4060" stroke-width="2"/>
-        <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#2a4060" stroke-width="2"/>
-        <circle cx="50%" cy="50%" r="28" fill="rgba(59,130,246,.07)" stroke="rgba(59,130,246,.15)" stroke-width="1"/>
-        <text x="50%" y="53%" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Warszawa</text>
-        <circle cx="42%" cy="38%" r="7" fill="#ff6b6b" opacity=".9"/>
-        <circle cx="58%" cy="34%" r="7" fill="#ff6b6b" opacity=".9"/>
-        <circle cx="36%" cy="54%" r="7" fill="#ff6b6b" opacity=".9"/>
-        <circle cx="62%" cy="58%" r="7" fill="#ff6b6b" opacity=".9"/>
-        <circle cx="48%" cy="65%" r="6" fill="#ff6b6b" opacity=".8"/>
-        <circle cx="50%" cy="48%" r="9" fill="#22c55e" opacity=".9"/>
-        <circle cx="35%" cy="63%" r="8" fill="#22c55e" opacity=".9"/>
-        <circle cx="65%" cy="35%" r="8" fill="#22c55e" opacity=".9"/>
-        <line x1="35%" y1="63%" x2="42%" y2="38%" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,3" opacity=".7"/>
-        <line x1="50%" y1="48%" x2="58%" y2="34%" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,3" opacity=".7"/>
-        <circle cx="39%" cy="51%" r="5" fill="#3b82f6" opacity=".9"/>
-        <circle cx="54%" cy="41%" r="5" fill="#3b82f6" opacity=".9"/>
-        <text x="42%" y="31%" text-anchor="middle" fill="#fff" font-size="8" font-family="sans-serif" opacity=".8">Bemowo</text>
-        <text x="58%" y="27%" text-anchor="middle" fill="#fff" font-size="8" font-family="sans-serif" opacity=".8">Wola</text>
-        <text x="33%" y="59%" text-anchor="middle" fill="#fff" font-size="8" font-family="sans-serif" opacity=".8">Ursus</text>
-        <text x="64%" y="64%" text-anchor="middle" fill="#fff" font-size="8" font-family="sans-serif" opacity=".8">Ursynów</text>
-        <text x="48%" y="72%" text-anchor="middle" fill="#fff" font-size="8" font-family="sans-serif" opacity=".8">Pruszków</text>
-      </svg>
+
+  <div class="pl-insight pl-warn pl-in-2" style="margin-top:22px;">
+    <span class="pl-ico pl-warn"><i data-pl-ico="alert" data-pl-s="20"></i></span>
+    <span class="pl-insight-m">
+      <span class="pl-insight-k">Najpilniejsze</span>
+      <span class="pl-insight-t">Osiedle Bemowo &mdash; styropian nie wyjechał o czasie</span>
+      <span class="pl-insight-s">Adamex miał wysłać o 8:00, brak potwierdzenia. Ekipa elewacyjna wchodzi jutro rano &mdash; bez materiału stoi cały etap.</span>
+      <span class="pl-insight-a" style="display:block;">
+        <button class="pl-btn pl-pri pl-sm" onclick="go('s-building')"><i data-pl-ico="building" data-pl-s="15"></i>Otwórz budowę</button>
+      </span>
+    </span>
+  </div>
+
+  <div class="pl-mini3 pl-in-2" style="margin-top:14px;">
+    <div><b>4</b><span>budowy w obsłudze</span></div>
+    <div><b style="color:var(--pl-brand);">2</b><span>dostawy w trasie</span></div>
+    <div><b style="color:var(--pl-warn);">2</b><span>wymagają uwagi</span></div>
+  </div>
+
+  <div class="pl-cols" style="margin-top:26px;">
+    <div class="pl-mapcol">
+      <section class="pl-sec pl-map-sec" style="margin-top:22px;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Schemat rejonu</span>
+          <span class="pl-chip">Warszawa i okolice</span></div>
+        <div class="pl-map">
+          <svg viewBox="0 0 640 330" role="img" aria-label="Schemat rozmieszczenia budów i hurtowni w rejonie Warszawy">
+            <defs>
+              <pattern id="plgrid" width="32" height="32" patternUnits="userSpaceOnUse">
+                <path d="M32 0H0v32" fill="none" stroke="#d7dbe4" stroke-width="1"/></pattern>
+            </defs>
+            <rect width="640" height="330" fill="url(#plgrid)" opacity=".55"/>
+            <circle cx="320" cy="165" r="86" fill="#e9f0fe" opacity=".75"/>
+            <circle cx="320" cy="165" r="86" fill="none" stroke="#1d4ed8" stroke-opacity=".18"/>
+            <text class="pl-mc" x="320" y="155" text-anchor="middle">Warszawa</text>
+
+            <path d="M300 200 L232 108" stroke="#e8601c" stroke-width="2.5" stroke-dasharray="6 5" fill="none" opacity=".85"/>
+            <path d="M520 150 L404 96" stroke="#e8601c" stroke-width="2.5" stroke-dasharray="6 5" fill="none" opacity=".85"/>
+
+            <g class="pl-pin" onclick="go('s-building')">
+              <circle cx="232" cy="108" r="21" fill="#b26a00" opacity=".16"/>
+              <circle cx="232" cy="108" r="13" fill="#b26a00"/>
+              <text class="pl-mt" x="232" y="78" text-anchor="middle">Bemowo</text>
+              <text class="pl-ms" x="232" y="145" text-anchor="middle" fill="#b26a00">2 braki</text>
+            </g>
+            <g class="pl-pin" onclick="scSoon('Budowa Ursus: jedna pozycja czeka na uzupełnienie — otwórz Centrum budowy, żeby zobaczyć szczegóły.')">
+              <circle cx="168" cy="252" r="18" fill="#b26a00" opacity=".14"/>
+              <circle cx="168" cy="252" r="12" fill="#b26a00"/>
+              <text class="pl-mt" x="168" y="222" text-anchor="middle">Ursus</text>
+              <text class="pl-ms" x="168" y="288" text-anchor="middle" fill="#b26a00">1 brak</text>
+            </g>
+            <g class="pl-pin" onclick="scSoon('Budowa Wola nie ma dziś otwartych spraw — wszystko idzie zgodnie z planem.')">
+              <circle cx="404" cy="96" r="12" fill="#0f8a4d"/>
+              <text class="pl-mt" x="404" y="66" text-anchor="middle">Wola</text>
+              <text class="pl-ms" x="404" y="132" text-anchor="middle" fill="#0f8a4d">bez uwag</text>
+            </g>
+            <g class="pl-pin" onclick="scSoon('Budowa Ursynów nie ma dziś otwartych spraw.')">
+              <circle cx="440" cy="256" r="12" fill="#0f8a4d"/>
+              <text class="pl-mt" x="440" y="226" text-anchor="middle">Ursynów</text>
+              <text class="pl-ms" x="440" y="292" text-anchor="middle" fill="#0f8a4d">bez uwag</text>
+            </g>
+
+            <circle cx="300" cy="200" r="8" fill="#1d4ed8"/>
+            <text class="pl-mw" x="300" y="226" text-anchor="middle">Baumit Partner</text>
+            <circle cx="520" cy="150" r="8" fill="#1d4ed8"/>
+            <text class="pl-mw" x="520" y="176" text-anchor="middle">3W Budowlana</text>
+          </svg>
+          <span class="pl-map-cap">Schemat orientacyjny &mdash; nie mapa nawigacyjna</span>
+        </div>
+        <div class="pl-map-lg">
+          <span><i style="background:#b26a00;"></i>wymaga uwagi</span>
+          <span><i style="background:#0f8a4d;"></i>bez uwag</span>
+          <span><i style="background:#1d4ed8;"></i>hurtownia z dostawą w trasie</span>
+        </div>
+      </section>
+
+      <section class="pl-sec pl-list-sec" style="margin-top:22px;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Budowy</span>
+          <span class="pl-chip">4 aktywne</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-building')">
+            <span class="pl-ico pl-sm pl-warn"><i data-pl-ico="building" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Osiedle Bemowo &middot; etap 2</span>
+              <span class="pl-row-s">Jan K. &middot; 1 dostawa w trasie &middot; styropian opóźniony</span></span>
+            <span class="pl-chip pl-warn">2 braki</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="scSoon('Budowa Ursus: jedna pozycja czeka na uzupełnienie.')">
+            <span class="pl-ico pl-sm pl-warn"><i data-pl-ico="building" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Budowa Ursus</span>
+              <span class="pl-row-s">Piotr W. &middot; dostawa jutro rano</span></span>
+            <span class="pl-chip pl-warn">1 brak</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="scSoon('Budowa Wola nie ma dziś otwartych spraw.')">
+            <span class="pl-ico pl-sm pl-ok"><i data-pl-ico="building" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Budowa Wola</span>
+              <span class="pl-row-s">Adam P. &middot; 1 dostawa w trasie</span></span>
+            <span class="pl-chip pl-ok">bez uwag</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="scSoon('Budowa Ursynów nie ma dziś otwartych spraw.')">
+            <span class="pl-ico pl-sm pl-ok"><i data-pl-ico="building" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Budowa Ursynów</span>
+              <span class="pl-row-s">Marta S. &middot; następna dostawa w piątek</span></span>
+            <span class="pl-chip pl-ok">bez uwag</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
     </div>
-    <div style="display:flex;gap:13px;margin-top:9px;font-size:11px;color:#8a9ab0;">
-      <span><span style="color:#ff6b6b;">●</span> Budowy</span><span><span style="color:#22c55e;">●</span> Dostawcy</span><span><span style="color:#3b82f6;">●</span> W trasie</span>
+
+    <div>
+      <div class="pl-side">
+        <section class="pl-sec" style="margin-top:22px;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Dostawy w trasie</span>
+            <span class="pl-chip pl-brand"><span class="pl-dot pl-live"></span>2</span></div>
+          <div class="pl-card">
+            <button class="pl-row" onclick="go('s-delivery')">
+              <span class="pl-ico pl-sm pl-brand"><i data-pl-ico="truck" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Baumit Partner &rarr; Bemowo</span>
+                <span class="pl-row-s">Chemia i płyty &middot; 15 km</span></span>
+              <span class="pl-chip pl-brand">08:47</span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+            <button class="pl-row" onclick="scSoon('Szczegóły tej dostawy pojawią się, gdy kierowca ruszy z magazynu.')">
+              <span class="pl-ico pl-sm"><i data-pl-ico="truck" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">3W Budowlana &rarr; Wola</span>
+                <span class="pl-row-s">Profile i akcesoria &middot; 22 km</span></span>
+              <span class="pl-chip">11:20</span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          </div>
+        </section>
+
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Ten tydzień w rejonie</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Dostarczone zamówienia</span><b>11</b></div>
+          <div class="pl-kv"><span>Terminowo</span><b style="color:var(--pl-ok);">9 z 11</b></div>
+          <div class="pl-kv"><span>Średni czas dostawy</span><b>1,4 dnia</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Dwa opóźnienia dotyczyły jednego dostawcy &mdash; szczegóły w rankingu.</p>
+          <button class="pl-btn pl-ghost pl-block" style="margin-top:12px;" onclick="go('s-ranking')">
+            <i data-pl-ico="trophy" data-pl-s="16"></i>Zobacz ranking</button>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <div class="row" onclick="go('s-building')" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">📍 Osiedle Bemowo</div><div style="font-size:10px;color:#8a9ab0;">Jan K.</div></div><div style="background:rgba(255,107,107,.15);color:#ff6b6b;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">2 braki</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Wola</div><div style="font-size:10px;color:#8a9ab0;">Adam P.</div></div><div style="background:rgba(34,197,94,.15);color:#22c55e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">OK</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Ursus</div><div style="font-size:10px;color:#8a9ab0;">Piotr W.</div></div><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">1 brak</div></div>
-  </div>
-  <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-ranking">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Ranking dostawców</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="font-size:12px;color:#8a9ab0;">Na podstawie terminowości, ocen i liczby dostaw. Aktualizowany co 24h.</div>
-  <div class="card">
-    <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;">
-      <div style="width:32px;height:32px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;">1</div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">Baumit Partner <span style="font-size:10px;color:#3b82f6;">🛡️</span></div><div style="display:flex;gap:8px;font-size:11px;color:#8a9ab0;margin-top:3px;"><span>⭐ <strong style="color:#fff;">4.8</strong></span><span>🚚 <strong style="color:#fff;">96%</strong></span><span>📦 <strong style="color:#fff;">843</strong></span></div></div>
-      <div style="text-align:right;"><div style="font-size:10px;color:#8a9ab0;">odpowiedź</div><div style="font-size:13px;font-weight:800;color:#22c55e;">8 min</div></div>
+<div class="screen pl" id="s-ranking">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Ranking dostawców</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip"><i data-pl-ico="clock" data-pl-s="13"></i>co 24 h</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Twój rejon &middot; ostatnie 90 dni</span>
+    <h1>Kogo wybrać na następne zamówienie?</h1>
+    <p>Liczymy na Twoich zamówieniach: cena względem rynku, terminowość, czas odpowiedzi i dostępność towaru.</p>
+  </div>
+
+  <div class="pl-insight pl-info pl-in-2" style="margin-top:22px;">
+    <span class="pl-ico pl-info"><i data-pl-ico="spark" data-pl-s="20"></i></span>
+    <span class="pl-insight-m">
+      <span class="pl-insight-k">Rekomendacja na dziś</span>
+      <span class="pl-insight-t">Baumit Partner na standard, SIG Warszawa na pilne</span>
+      <span class="pl-insight-s">Baumit ma najlepszą cenę i 96% terminowości, ale wozi dopiero następnego dnia. Gdy termin jest na dziś, SIG dowozi tego samego dnia przy różnicy <b>40 zł</b> na całym zamówieniu.</span>
+    </span>
+  </div>
+
+  <div class="pl-cols" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Czołówka</span>
+          <span class="pl-chip">17 hurtowni w porównaniu</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div class="pl-card pl-rank pl-p1">
+            <div class="pl-rank-h">
+              <span class="pl-rank-n">1</span>
+              <span class="pl-rank-m">
+                <span class="pl-rank-nm">Baumit Partner <span class="pl-ver"><i data-pl-ico="shield" data-pl-s="12"></i>OSG Verified</span></span>
+                <span class="pl-rank-s">843 dostawy &middot; kupowałeś tu 4&times; &middot; ocena 4,8</span>
+              </span>
+              <span class="pl-rank-p">
+                <span class="pl-price" style="color:var(--pl-ok);">&minus;8,6%</span>
+                <span class="pl-row-s" style="text-align:right;">poniżej rynku</span>
+              </span>
+            </div>
+            <div class="pl-bars" style="margin-top:17px;">
+              <div class="pl-bar pl-cur"><span class="pl-bar-l">Terminowość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:96%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">96%</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Szybkość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:92%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">8 min</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Dostępność</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:94%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">94%</span></div>
+            </div>
+            <div class="pl-rank-why"><b>Dlaczego pierwszy:</b> najniższa cena na Twoim koszyku i najkrótszy czas odpowiedzi. Jedyny minus &mdash; wozi od jutra rana, nie tego samego dnia.</div>
+            <button class="pl-btn pl-pri pl-block" style="margin-top:15px;" onclick="go('s-rfq')">
+              <i data-pl-ico="send" data-pl-s="16"></i>Wyślij zapytanie</button>
+          </div>
+
+          <div class="pl-card pl-rank pl-p2">
+            <div class="pl-rank-h">
+              <span class="pl-rank-n">2</span>
+              <span class="pl-rank-m">
+                <span class="pl-rank-nm">SIG Warszawa <span class="pl-ver"><i data-pl-ico="shield" data-pl-s="12"></i>OSG Verified</span></span>
+                <span class="pl-rank-s">621 dostaw &middot; ocena 4,7 &middot; dowozi tego samego dnia</span>
+              </span>
+              <span class="pl-rank-p">
+                <span class="pl-price" style="color:var(--pl-ok);">&minus;8,3%</span>
+                <span class="pl-row-s" style="text-align:right;">poniżej rynku</span>
+              </span>
+            </div>
+            <div class="pl-bars" style="margin-top:17px;">
+              <div class="pl-bar pl-cur"><span class="pl-bar-l">Terminowość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:94%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">94%</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Szybkość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:86%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">12 min</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Dostępność</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:97%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">97%</span></div>
+            </div>
+            <div class="pl-rank-why"><b>Kiedy wybrać:</b> gdy materiał ma być na budowie dziś. Najlepsza dostępność z całej stawki &mdash; rzadko coś schodzi na zamówienie.</div>
+          </div>
+
+          <div class="pl-card pl-rank pl-p3">
+            <div class="pl-rank-h">
+              <span class="pl-rank-n">3</span>
+              <span class="pl-rank-m">
+                <span class="pl-rank-nm">3W Budowlana</span>
+                <span class="pl-rank-s">2 140 dostaw &middot; ocena 4,6 &middot; największa sieć w rejonie</span>
+              </span>
+              <span class="pl-rank-p">
+                <span class="pl-price">&minus;3,8%</span>
+                <span class="pl-row-s" style="text-align:right;">poniżej rynku</span>
+              </span>
+            </div>
+            <div class="pl-bars" style="margin-top:17px;">
+              <div class="pl-bar pl-cur"><span class="pl-bar-l">Terminowość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:91%;background:var(--pl-ok);"></span></span>
+                <span class="pl-bar-v">91%</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Szybkość</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:78%;background:var(--pl-warn);"></span></span>
+                <span class="pl-bar-v">15 min</span></div>
+              <div class="pl-bar"><span class="pl-bar-l">Dostępność</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:82%;background:var(--pl-warn);"></span></span>
+                <span class="pl-bar-v">82%</span></div>
+            </div>
+            <div class="pl-rank-why"><b>Kiedy wybrać:</b> przy dużych, nietypowych listach &mdash; ma najszerszy asortyment. Przy pilnych terminach sprawdź wcześniej dostępność.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Pozostali w Twoim rejonie</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="scSoon('Pełną kartę dostawcy z historią współpracy udostępnimy w kolejnej wersji portalu.')">
+            <span class="pl-rank-n" style="width:32px;height:32px;font-size:14px;">4</span>
+            <span class="pl-row-m"><span class="pl-row-t">Adamex</span>
+              <span class="pl-row-s">412 dostaw &middot; ocena 4,3 &middot; odpowiedź 24 min</span></span>
+            <span class="pl-delta pl-up"><i data-pl-ico="arrowdown" data-pl-s="12" data-pl-w="2.4"></i>88% term.</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="scSoon('Pełną kartę dostawcy z historią współpracy udostępnimy w kolejnej wersji portalu.')">
+            <span class="pl-rank-n" style="width:32px;height:32px;font-size:14px;">5</span>
+            <span class="pl-row-m"><span class="pl-row-t">PSB Mrówka</span>
+              <span class="pl-row-s">287 dostaw &middot; ocena 4,2 &middot; odpowiedź 31 min</span></span>
+            <span class="pl-delta pl-flat">85% term.</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+        <p class="pl-meta" style="margin-top:12px;">Pozostałych dwunastu dostawców dostaje Twoje zapytania, ale w ostatnich 90 dniach nie wygrało żadnej oferty.</p>
+      </section>
     </div>
-    <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;">
-      <div style="width:32px;height:32px;background:#1e2f42;border:2px solid #8a9ab0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;color:#8a9ab0;">2</div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">SIG Warszawa <span style="font-size:10px;color:#3b82f6;">🛡️</span></div><div style="display:flex;gap:8px;font-size:11px;color:#8a9ab0;margin-top:3px;"><span>⭐ <strong style="color:#fff;">4.7</strong></span><span>🚚 <strong style="color:#fff;">94%</strong></span><span>📦 <strong style="color:#fff;">621</strong></span></div></div>
-      <div style="text-align:right;"><div style="font-size:10px;color:#8a9ab0;">odpowiedź</div><div style="font-size:13px;font-weight:800;color:#22c55e;">12 min</div></div>
-    </div>
-    <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;">
-      <div style="width:32px;height:32px;background:#1e2f42;border:2px solid #cd7c2f;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;color:#cd7c2f;">3</div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">3W Budowlana</div><div style="display:flex;gap:8px;font-size:11px;color:#8a9ab0;margin-top:3px;"><span>⭐ <strong style="color:#fff;">4.6</strong></span><span>🚚 <strong style="color:#fff;">91%</strong></span><span>📦 <strong style="color:#fff;">2 140</strong></span></div></div>
-      <div style="text-align:right;"><div style="font-size:10px;color:#8a9ab0;">odpowiedź</div><div style="font-size:13px;font-weight:800;color:#22c55e;">15 min</div></div>
-    </div>
-    <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;">
-      <div style="width:32px;height:32px;background:#1e2f42;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;color:#8a9ab0;">4</div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">Adamex</div><div style="display:flex;gap:8px;font-size:11px;color:#8a9ab0;margin-top:3px;"><span>⭐ <strong style="color:#fff;">4.3</strong></span><span>🚚 <strong style="color:#fff;">88%</strong></span><span>📦 <strong style="color:#fff;">412</strong></span></div></div>
-      <div style="text-align:right;"><div style="font-size:10px;color:#8a9ab0;">odpowiedź</div><div style="font-size:13px;font-weight:800;color:#f59e0b;">24 min</div></div>
-    </div>
-    <div style="padding:13px;display:flex;align-items:center;gap:11px;">
-      <div style="width:32px;height:32px;background:#1e2f42;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;color:#8a9ab0;">5</div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">PSB Mrówka</div><div style="display:flex;gap:8px;font-size:11px;color:#8a9ab0;margin-top:3px;"><span>⭐ <strong style="color:#fff;">4.2</strong></span><span>🚚 <strong style="color:#fff;">85%</strong></span><span>📦 <strong style="color:#fff;">287</strong></span></div></div>
-      <div style="text-align:right;"><div style="font-size:10px;color:#8a9ab0;">odpowiedź</div><div style="font-size:13px;font-weight:800;color:#f59e0b;">31 min</div></div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-insight pl-warn">
+          <span class="pl-ico pl-warn"><i data-pl-ico="alert" data-pl-s="20"></i></span>
+          <span class="pl-insight-m">
+            <span class="pl-insight-k">Zmiana w rankingu</span>
+            <span class="pl-insight-t">Adamex spadł z miejsca 3 na 4</span>
+            <span class="pl-insight-s">Dwa opóźnienia w ostatnich pięciu dostawach zbiły terminowość z 93% do 88% &mdash; poniżej progu OSG Verified.</span>
+          </span>
+        </div>
+
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Jak liczymy ranking</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Cena względem rynku</span><b>35%</b></div>
+          <div class="pl-kv"><span>Terminowość dostaw</span><b>30%</b></div>
+          <div class="pl-kv"><span>Dostępność towaru</span><b>20%</b></div>
+          <div class="pl-kv"><span>Czas odpowiedzi</span><b>15%</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Liczymy wyłącznie na zamówieniach z Twojego rejonu z ostatnich 90 dni. Pozycja w rankingu nie jest na sprzedaż.</p>
+        </div>
+
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;"><span class="pl-ver"><i data-pl-ico="shield" data-pl-s="12"></i>OSG Verified</span></span>
+          <p class="pl-meta" style="margin-top:11px;">Znak dostają hurtownie z terminowością powyżej 93% w ostatnich 90 dniach. Status jest sprawdzany co dobę i można go stracić.</p>
+        </div>
+      </div>
     </div>
   </div>
-  <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:11px;padding:12px 13px;font-size:11px;color:#8a9ab0;">💡 🛡️ Verified = terminowość powyżej 93%. Wyższy ranking = więcej zapytań.</div>
-  <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
 <div class="nav"></div>
 </div>
@@ -8919,9 +9224,9 @@ var MEM_ICO={'\ud83d\udcde':'phone','\ud83d\udcc4':'doc','\ud83d\udce6':'box','\
 var memoryData=[
   {date:'05.07.2026 08:12',icon:'📞',type:'Rozmowa',desc:'Rozmowa z Janem K. — potwierdzenie terminu dostawy płyt GK na przyszły tydzień.',author:'Oskar',demo:true},
   {date:'04.07.2026 16:40',icon:'📄',type:'Oferta',desc:'Wysłana oferta: Baumit SMS30 × 40, CT17 × 20 — 5 520 zł.',author:'Oskar',demo:true},
-  {date:'03.07.2026 09:05',icon:'📦',type:'Zamówienie',desc:'Złożone zamówienie: Baumit SMS30, profile CD60, płyty GK × 80.',author:'System',demo:true},
-  {date:'02.07.2026 07:50',icon:'🚚',type:'Dostawa',desc:'Dostawa Baumit + BHP dotarła na Bemowo, odebrał Jan K.',author:'Kierowca',demo:true},
-  {date:'01.07.2026 12:30',icon:'💰',type:'Faktura',desc:'Wystawiona faktura #FV-2026-0047 na 11 380 zł.',author:'System',demo:true},
+  {date:'03.07.2026 09:05',icon:'📦',type:'Zamówienie',key:true,desc:'Złożone zamówienie: Baumit SMS30, profile CD60, płyty GK × 80.',author:'System',demo:true},
+  {date:'02.07.2026 07:50',icon:'🚚',type:'Dostawa',key:true,desc:'Dostawa Baumit + BHP dotarła na Bemowo, odebrał Jan K.',author:'Kierowca',demo:true},
+  {date:'01.07.2026 12:30',icon:'💰',type:'Faktura',key:true,desc:'Wystawiona faktura #FV-2026-0047 na 11 380 zł.',author:'System',demo:true},
   {date:'29.06.2026 18:02',icon:'📝',type:'Notatka',desc:'Klient pytał o rabat przy większych zamówieniach Baumit — sprawdzić próg u Marcina.',author:'Oskar',demo:true},
   {date:'27.06.2026 10:15',icon:'🎤',type:'Notatka głosowa',desc:'"Trzeba domówić drugą turę płyt GK na przyszły tydzień, klient przyśpiesza harmonogram."',author:'Oskar',demo:true},
   {date:'25.06.2026 14:00',icon:'📍',type:'Spotkanie',desc:'Spotkanie na budowie — przegląd postępu i potrzeb materiałowych na sierpień.',author:'Oskar',demo:true},
@@ -8972,28 +9277,52 @@ function memFilterType(icon,el){
 }
 function memEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function memDayLabel(d){
+  /* d ma postac 'dd.mm.rrrr'. Zamieniamy na 'Dziś' / 'Wczoraj' / nazwe dnia. */
+  var p=String(d||'').split('.'); if(p.length!==3)return d||'';
+  var dt=new Date(+p[2],+p[1]-1,+p[0]);
+  var t=new Date(); t.setHours(0,0,0,0);
+  var diff=Math.round((t-dt)/86400000);
+  if(diff===0)return 'Dziś';
+  if(diff===1)return 'Wczoraj';
+  try{ return dt.toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'}); }
+  catch(e){ return d; }
+}
 function renderMemory(){
   var q=(document.getElementById('mem-search').value||'').toLowerCase();
+  var onlyKey=memActiveIcon==='!';
   var list=memoryData.filter(function(e){
     var matchesText=(e.desc+' '+e.type+' '+e.author).toLowerCase().indexOf(q)>-1;
-    var matchesIcon=memActiveIcon===''||e.icon===memActiveIcon;
+      var matchesIcon;
+    if(onlyKey)matchesIcon=!!e.key;
+    else if(memActiveIcon==='')matchesIcon=true;
+    else matchesIcon=e.icon===memActiveIcon;
     return matchesText&&matchesIcon;
   });
   var el=document.getElementById('mem-timeline');
   if(list.length===0){
-    el.innerHTML='<div class="pl-card pl-card-p" style="text-align:center;">'
-      +'<p class="pl-meta">Brak wynikow dla tego wyszukiwania.</p></div>';
+    el.innerHTML='<div class="pl-card pl-card-p pl-mem-empty">'
+      +'<p class="pl-meta">Nic tu nie ma dla tego wyszukiwania. Spróbuj innego słowa albo wróć do „Wszystko".</p></div>';
     return;
   }
-  var html='';
+  var html='',day='';
   list.forEach(function(e){
+    var d=String(e.date||'').split(' ')[0];
+    if(d!==day){ day=d; html+='<div class="pl-daysep"><span>'+memEsc(memDayLabel(d))+'</span></div>'; }
     var ico=MEM_ICO[e.icon]||'doc';
-    html+='<div class="pl-mem"><span class="pl-mem-d"><i data-pl-ico="'+ico+'" data-pl-s="16"></i></span>'
+    var time=String(e.date||'').split(' ')[1]||'';
+    html+='<div class="pl-mem'+(e.key?' pl-key':'')+'">'
+      +'<span class="pl-mem-d"><i data-pl-ico="'+ico+'" data-pl-s="16"></i></span>'
       +'<div class="pl-mem-b"><div class="pl-mem-h">'
-      +'<span class="pl-mem-t">'+memEsc(e.type)+(e.demo?' <span class="pl-chip pl-warn" style="margin-left:4px;">demo</span>':'')+'</span>'
-      +'<span class="pl-mem-dt">'+memEsc(e.date)+'</span></div>'
+      +'<span class="pl-mem-t">'+memEsc(e.type)
+      +(e.key?'<span class="pl-mem-tag">kluczowe</span>':'')
+      +(e.demo?'<span class="pl-mem-tag" style="background:var(--pl-warn-soft);color:var(--pl-warn);">demo</span>':'')
+      +'</span>'
+      +'<span class="pl-mem-dt">'+memEsc(time)+'</span></div>'
       +'<div class="pl-mem-x">'+memEsc(e.desc)+'</div>'
-      +'<div class="pl-mem-a">'+memEsc(e.author)+'</div></div></div>';
+      +(e.author?'<div class="pl-mem-a"><span class="pl-mem-src">'
+        +'<i data-pl-ico="pencil" data-pl-s="13"></i>'+memEsc(e.author)+'</span></div>':'')
+      +'</div></div>';
   });
   el.innerHTML=html;
   plIcons(el);
