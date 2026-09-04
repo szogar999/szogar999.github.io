@@ -551,6 +551,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .bnav{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e8601c,#c94e10);color:#fff;border:none;border-radius:50px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;z-index:99;box-shadow:0 4px 20px rgba(232,96,28,.6);white-space:nowrap;}
 
 /* ============================================================
+   Final Pre-Demo Pack p.3 — showcase jako kolumna aplikacji.
+   Profile showcase sa projektowane mobile-first; bez ograniczenia
+   szerokosci na monitorze rozjezdzaly sie na 2000 px i czytaly sie
+   jak rozciagnieta strona mobilna. Command ma wlasny app-shell
+   i tej reguly nie dotyka — klasa sc-w jest tylko na ekranach showcase.
+   ============================================================ */
+.sc-w > *{max-width:600px;margin-left:auto;margin-right:auto;}
+.sc-w > div:first-child{max-width:none;}   /* pasek SHOWCASE/DEMO zostaje na pelna szerokosc */
+
+/* ============================================================
    Showcase Polish Pack p.12 — feedback dotyku.
    Klasy .card / .row / .btn / .nb sa wspoldzielone miedzy profilami
    showcase (motyw ciemny) a legacy panelami Commandu (motyw jasny),
@@ -606,7 +616,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
-<div class="screen" id="s-onboarding">
+<div class="screen sc-w" id="s-onboarding">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;text-align:center;">
   <img id="logo-onboarding" style="max-width:230px;width:80%;height:auto;margin-bottom:22px;" alt="OSG Platform">
@@ -627,7 +637,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 </div>
 
-<div class="screen" id="s-home">
+<div class="screen sc-w" id="s-home">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px;"><img id="logo-home-badge" style="height:22px;width:auto;" alt="OSG Platform"></div>
@@ -694,7 +704,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <button class="bnav" onclick="go('s-rfq')">📨 Szybkie zapytanie</button>
 </div>
 
-<div class="screen" id="s-rfq">
+<div class="screen sc-w" id="s-rfq">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Nowe zapytanie</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -748,7 +758,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-compare">
+<div class="screen sc-w" id="s-compare">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Porównaj oferty</span></div>
 <div style="padding:10px 16px;background:#162130;border-bottom:1px solid rgba(255,255,255,.07);">
@@ -828,7 +838,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-order">
+<div class="screen sc-w" id="s-order">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-compare')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Twoje zamówienie</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -857,7 +867,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-confirm">
+<div class="screen sc-w" id="s-confirm">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;text-align:center;padding-bottom:80px;">
   <div style="width:80px;height:80px;background:rgba(34,197,94,.1);border:2px solid #22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:18px;">✅</div>
@@ -880,7 +890,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-building">
+<div class="screen sc-w" id="s-building">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Centrum budowy</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -956,7 +966,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-delivery">
+<div class="screen sc-w" id="s-delivery">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Centrum dostaw</span><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;">3 dziś</div></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -999,7 +1009,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-supplier">
+<div class="screen sc-w" id="s-supplier">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Panel Dostawcy</span><div style="background:rgba(34,197,94,.15);color:#22c55e;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;">● ONLINE</div></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1050,7 +1060,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-bid">
+<div class="screen sc-w" id="s-bid">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-supplier')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Złóż ofertę</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1087,7 +1097,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-smart">
+<div class="screen sc-w" id="s-smart">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">OSG AI</span><div style="background:rgba(59,130,246,.15);color:#3b82f6;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;">✨ AI</div></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:13px;">
@@ -1128,7 +1138,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-prices">
+<div class="screen sc-w" id="s-prices">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Historia cen</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:13px;">
@@ -1182,7 +1192,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-map">
+<div class="screen sc-w" id="s-map">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Mapa budów</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1233,7 +1243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-ranking">
+<div class="screen sc-w" id="s-ranking">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Ranking dostawców</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1271,7 +1281,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-director">
+<div class="screen sc-w" id="s-director">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-onboarding')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Panel Dyrektora</span><div style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;">PRO</div></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1296,8 +1306,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="row"><div style="display:flex;align-items:center;gap:9px;"><div style="width:27px;height:27px;background:#1e2f42;border:2px solid #8a9ab0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#8a9ab0;">2</div><div><div style="font-size:13px;font-weight:700;">Adam Piotrowski</div><div style="font-size:10px;color:#8a9ab0;">Wola</div></div></div><div style="text-align:right;"><div style="font-size:12px;color:#22c55e;font-weight:700;">−3 200 zł</div><div style="font-size:10px;color:#8a9ab0;">oszczędności</div></div></div>
     <div class="row"><div style="display:flex;align-items:center;gap:9px;"><div style="width:27px;height:27px;background:#1e2f42;border:2px solid #cd7c2f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#cd7c2f;">3</div><div><div style="font-size:13px;font-weight:700;">Marek Sikorski</div><div style="font-size:10px;color:#8a9ab0;">Pruszków</div></div></div><div style="text-align:right;"><div style="font-size:12px;color:#22c55e;font-weight:700;">−2 700 zł</div><div style="font-size:10px;color:#8a9ab0;">oszczędności</div></div></div>
   </div>
-  <div onclick="renderPurchasing();go('s-purchasing')" style="background:#162130;border:1px solid rgba(232,96,28,.2);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
-    <span>🛒</span><span style="font-size:11px;color:#8a9ab0;">Otwórz Centrum Zakupów w Command — produkty i marże →</span>
+  <div onclick="go('s-command')" style="background:#162130;border:1px solid rgba(232,96,28,.2);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
+    <span>🎛️</span><span style="font-size:11px;color:#8a9ab0;">Otwórz OSG Command — system operacyjny firmy →</span>
   </div>
   <div onclick="go('s-money')" style="background:#162130;border:1px solid rgba(245,158,11,.2);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
     <span>💰</span><span style="font-size:11px;color:#8a9ab0;">Model zarabiania i potencjał skalowania →</span>
@@ -1307,7 +1317,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-money">
+<div class="screen sc-w" id="s-money">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-director')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Model zarabiania</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
@@ -1334,7 +1344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-how">
+<div class="screen sc-w" id="s-how">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-onboarding')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Jak działa OSG?</span></div>
 <div style="padding:18px 16px;display:flex;flex-direction:column;gap:9px;padding-bottom:40px;">
@@ -2482,7 +2492,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div class="nav"></div>
 </div>
 
-<div class="screen" id="s-voice">
+<div class="screen sc-w" id="s-voice">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
 <div class="hdr"><button class="back" onclick="go('s-rfq')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Zapytanie głosowe</span></div>
 <div style="padding:36px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding-bottom:80px;">
@@ -6962,6 +6972,7 @@ function go(id){
   var el=document.getElementById(id);
   if(el){el.classList.add('active');window.scrollTo(0,0);}
   paintNav(id);
+  if(typeof syncAiFab==='function') syncAiFab();
   if(typeof sbSync==='function') sbSync();
 }
 function setUrg(v){
@@ -7116,10 +7127,21 @@ setTimeout(function(){
    nie jak dane. Wartosci sa teraz stale i zgodne z tym, co mowi reszta ekranu. */
 var aiOpen=false,aiLoading=false,aiHist=[];
 var SYS='Jesteś OSG AI — asystentem budowlanym. Gdy użytkownik opisze zakres prac, odpowiedz listą materiałów: nazwa · ilość · ~cena. Na końcu powiedz "📋 Wyślij do 17 dostawców?" Odpowiadaj po polsku, krótko jak doświadczony majster.';
+/* Final Pre-Demo Pack p.4.
+   Pływający przycisk OSG AI zasłaniał treść na każdym ekranie showcase
+   (na Budowie zderzał się z drugim pływakiem "Szybkie zapytanie").
+   W showcase go chowamy — wejście w OSG AI zostaje przez kafel na
+   ekranie Start i przez ekran s-smart. W Commandzie działa jak dotąd. */
+function syncAiFab(){
+  var fab=document.getElementById('ai-fab'); if(!fab)return;
+  var akt=document.querySelector('.screen.active');
+  var wShowcase=!!(akt&&akt.classList.contains('sc-w'));
+  fab.style.display=(aiOpen||wShowcase)?'none':'flex';
+}
 function toggleAI(){
   aiOpen=!aiOpen;
   document.getElementById('ai-panel').style.display=aiOpen?'flex':'none';
-  document.getElementById('ai-fab').style.display=aiOpen?'none':'flex';
+  syncAiFab();
 }
 function aiSend(txt){
   var inp=document.getElementById('ai-in');var msg=txt||inp.value.trim();if(!msg||aiLoading)return;inp.value='';
