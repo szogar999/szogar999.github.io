@@ -693,6 +693,7 @@ button.pl-card:active,.pl-card[onclick]:active{transform:translateY(1px) scale(.
 .pl-btn.pl-lg{padding:16px 26px;font-size:16px;border-radius:14px;}
 .pl-btn:active{transform:scale(.975);}
 .pl-btn.pl-block{width:100%;}
+a.pl-btn,a.pl-link{text-decoration:none;}
 
 /* ---------- wiersze list ---------- */
 .pl-row{display:flex;align-items:center;gap:14px;width:100%;padding:15px 24px;text-align:left;
@@ -945,6 +946,123 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 .pl-acts>.pl-btn{flex:1;}
 .pl-side{position:sticky;top:86px;display:flex;flex-direction:column;gap:14px;}
 
+/* ---------- os realizacji zamowienia (wspolna dla Budowy i Dostawy) ---------- */
+.pl-steps{display:flex;}
+.pl-step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:8px;
+  position:relative;text-align:center;}
+.pl-step::before{content:'';position:absolute;top:11px;left:-50%;width:100%;height:2px;background:var(--pl-line);}
+.pl-step:first-child::before{display:none;}
+.pl-step-d{width:23px;height:23px;border-radius:50%;background:var(--pl-surface);
+  box-shadow:inset 0 0 0 2px var(--pl-line);color:var(--pl-ink-3);display:flex;align-items:center;
+  justify-content:center;position:relative;z-index:1;flex-shrink:0;}
+.pl-step-l{display:block;font-size:11px;line-height:1.25;color:var(--pl-ink-3);}
+.pl-step.pl-done::before,.pl-step.pl-cur::before{background:var(--pl-ok);}
+.pl-step.pl-done .pl-step-d{background:var(--pl-ok);box-shadow:none;color:#fff;}
+.pl-step.pl-done .pl-step-l{color:var(--pl-ink-2);}
+.pl-step.pl-cur .pl-step-d{background:var(--pl-brand);box-shadow:0 0 0 4px var(--pl-brand-soft);color:#fff;}
+.pl-step.pl-cur .pl-step-l{color:var(--pl-brand);font-weight:750;}
+
+/* ---------- panel „co dzieje sie teraz” ---------- */
+.pl-track{background:linear-gradient(150deg,#12203a 0%,#0e1626 55%,#1c1208 100%);
+  border-radius:var(--pl-r-xl);padding:26px 28px;color:#fff;position:relative;overflow:hidden;}
+.pl-track::after{content:'';position:absolute;right:-70px;top:-80px;width:290px;height:290px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,96,28,.4),transparent 68%);pointer-events:none;}
+.pl-track>*{position:relative;z-index:1;}
+.pl-track .pl-eyebrow{color:var(--pl-brand-2);}
+.pl-track .pl-meta{color:rgba(255,255,255,.6);}
+.pl-eta{font-size:52px;font-weight:800;letter-spacing:-.042em;line-height:1;font-variant-numeric:tabular-nums;}
+.pl-eta-s{display:block;font-size:14.5px;color:rgba(255,255,255,.68);margin-top:9px;line-height:1.45;}
+.pl-track-r{text-align:right;}
+.pl-nowh{display:flex;align-items:center;gap:16px;padding:20px 22px 16px;}
+.pl-nowt{text-align:right;flex-shrink:0;}
+.pl-track .pl-step::before{background:rgba(255,255,255,.16);}
+.pl-track .pl-step-d{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);
+  color:rgba(255,255,255,.45);}
+.pl-track .pl-step-l{color:rgba(255,255,255,.45);}
+.pl-track .pl-step.pl-done::before,.pl-track .pl-step.pl-cur::before{background:var(--pl-brand);}
+.pl-track .pl-step.pl-done .pl-step-d{background:var(--pl-brand);box-shadow:none;color:#fff;}
+.pl-track .pl-step.pl-done .pl-step-l{color:rgba(255,255,255,.78);}
+.pl-track .pl-step.pl-cur .pl-step-d{background:#fff;color:var(--pl-brand);box-shadow:0 0 0 5px rgba(232,96,28,.34);}
+.pl-track .pl-step.pl-cur .pl-step-l{color:#fff;font-weight:750;}
+
+/* ---------- kierowca / kontakt ---------- */
+.pl-drv{display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.11);border-radius:var(--pl-r);padding:12px 14px;}
+.pl-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;background:linear-gradient(135deg,var(--pl-brand),var(--pl-brand-deep));
+  color:#fff;font-weight:800;font-size:15px;letter-spacing:-.01em;}
+.pl-drv-m{flex:1;min-width:0;}
+.pl-drv-n{display:block;font-size:14px;font-weight:700;}
+.pl-drv-s{display:block;font-size:12.5px;color:rgba(255,255,255,.62);margin-top:3px;}
+.pl-drv-x{display:none;text-align:right;padding-right:6px;}
+@media(min-width:760px){ .pl-drv-x{display:block;} }
+.pl-call{flex-shrink:0;padding:10px 15px;border-radius:11px;background:#fff;color:var(--pl-navy);
+  font-size:13px;font-weight:750;text-decoration:none;display:flex;align-items:center;gap:7px;
+  transition:transform 140ms var(--pl-e),opacity 140ms;}
+.pl-call:hover{opacity:.9;}
+.pl-call:active{transform:scale(.95);}
+
+/* ---------- rzecz wymagajaca decyzji ---------- */
+.pl-alert{display:flex;align-items:center;gap:13px;padding:15px 18px;border-radius:var(--pl-r-lg);
+  background:var(--pl-warn-soft);border:1px solid rgba(178,106,0,.3);}
+.pl-alert .pl-ico{background:rgba(178,106,0,.14);color:var(--pl-warn);}
+.pl-alert-m{flex:1;min-width:0;}
+.pl-alert-t{display:block;font-size:14px;font-weight:700;color:var(--pl-warn);}
+.pl-alert-s{display:block;font-size:12.5px;color:var(--pl-ink-2);margin-top:3px;line-height:1.4;}
+.pl-alert-a{flex-shrink:0;padding:9px 15px;border-radius:11px;background:var(--pl-warn);color:#fff;
+  font-size:13px;font-weight:750;text-decoration:none;display:flex;align-items:center;gap:7px;
+  transition:transform 140ms var(--pl-e);}
+.pl-alert-a:active{transform:scale(.95);}
+
+/* ---------- zakladki ---------- */
+.pl-tabs{display:flex;gap:4px;padding:4px;background:var(--pl-surface-2);
+  border:1px solid var(--pl-line);border-radius:13px;}
+.pl-tab{flex:1;padding:10px 14px;border-radius:10px;border:none;background:none;font:inherit;
+  font-size:13.5px;font-weight:700;color:var(--pl-ink-3);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;gap:8px;
+  transition:background-color 170ms var(--pl-e),color 170ms;}
+.pl-tab:hover{color:var(--pl-ink);}
+.pl-tab.pl-on{background:var(--pl-surface);color:var(--pl-ink);box-shadow:var(--pl-sh);}
+
+/* ---------- pigulki filtrow Memory (klasa .mf-pill zostaje — uzywa jej JS) ---------- */
+.mf-pill{font-size:12px;font-weight:650;padding:7px 13px;border-radius:20px;background:var(--pl-surface);
+  border:1px solid var(--pl-line);color:var(--pl-ink-2);cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background-color 150ms,color 150ms,border-color 150ms;}
+.mf-pill:hover{border-color:var(--pl-line-3);}
+.mf-pill.pl-on{background:var(--pl-brand);border-color:var(--pl-brand);color:#fff;}
+
+/* ---------- wpis Memory ---------- */
+.pl-mem{display:flex;gap:13px;padding-bottom:15px;position:relative;}
+.pl-mem:last-child{padding-bottom:0;}
+.pl-mem::before{content:'';position:absolute;left:16px;top:38px;bottom:0;width:1.5px;background:var(--pl-line);}
+.pl-mem:last-child::before{display:none;}
+.pl-mem-d{width:33px;height:33px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;background:var(--pl-surface-2);border:1px solid var(--pl-line);
+  position:relative;z-index:1;color:var(--pl-ink-2);}
+.pl-mem-b{flex:1;min-width:0;background:var(--pl-surface);border:1px solid var(--pl-line);
+  border-radius:var(--pl-r);padding:12px 14px;box-shadow:var(--pl-sh);}
+.pl-mem-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;}
+.pl-mem-t{font-size:12px;font-weight:750;color:var(--pl-brand);}
+.pl-mem-dt{font-size:11.5px;color:var(--pl-ink-3);white-space:nowrap;}
+.pl-mem-x{font-size:13px;line-height:1.5;color:var(--pl-ink);}
+.pl-mem-a{font-size:11.5px;color:var(--pl-ink-3);margin-top:7px;}
+
+/* ---------- pary klucz/wartosc ---------- */
+.pl-kv{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-size:13.5px;
+  padding:10px 0;border-bottom:1px solid var(--pl-line-2);}
+.pl-kv:last-child{border-bottom:none;}
+.pl-kv>span{color:var(--pl-ink-3);}
+.pl-kv>b{font-weight:700;font-variant-numeric:tabular-nums;text-align:right;}
+
+/* ---------- mini-statystyki w rzedzie ---------- */
+.pl-mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.pl-mini3>*{background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r);
+  box-shadow:var(--pl-sh);padding:14px;text-align:center;}
+.pl-mini3 b{display:block;font-size:22px;font-weight:800;letter-spacing:-.028em;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.pl-mini3 span{display:block;font-size:11.5px;color:var(--pl-ink-3);margin-top:6px;}
+
 /* ---------- RESPONSYWNOSC ---------- */
 @media(max-width:1000px){
   .pl-hero,.pl-cols{grid-template-columns:1fr;}
@@ -995,6 +1113,29 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-segb{padding:11px 10px;font-size:13px;}
   .pl-acts{flex-direction:column;}
   .pl-side{position:static;}
+  .pl-track{padding:22px 20px;border-radius:var(--pl-r-lg);}
+  .pl-eta{font-size:44px;}
+  .pl-eta-s{font-size:13.5px;}
+  .pl-step-l{font-size:10px;}
+  .pl-drv{padding:11px 12px;gap:11px;}
+  .pl-call{padding:9px 12px;font-size:12.5px;}
+  .pl-alert{padding:13px 14px;gap:11px;}
+  .pl-alert-a{padding:8px 12px;font-size:12.5px;}
+  .pl-mini3{gap:8px;}
+  .pl-mini3>*{padding:12px 8px;}
+  .pl-mini3 b{font-size:20px;}
+  .pl-mini3 span{font-size:10.5px;}
+  .pl-tab{padding:9px 8px;font-size:12.5px;gap:6px;}
+  .pl-track-r{text-align:left;}
+  /* Pasek gorny: na waskim ekranie kontekst schodzi, tytul nie moze sie lamac. */
+  .pl-top-ctx{display:none;}
+  .pl-top-h{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  /* Karta „teraz": godzina schodzi do wlasnego wiersza zamiast dusic tytul. */
+  .pl-nowh{flex-wrap:wrap;gap:12px;padding:18px 18px 14px;}
+  .pl-nowh>.pl-ico{order:1;}
+  .pl-nowh>.pl-row-m{order:2;flex:1 1 0;min-width:0;}
+  .pl-nowh>.pl-chev{order:3;}
+  .pl-nowt{order:4;flex:1 0 100%;text-align:left;}
 }
 
 </style>
@@ -1505,120 +1646,288 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-building">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Centrum budowy</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="display:flex;gap:8px;">
-    <button id="bldtab-overview" onclick="bldTab('overview')" style="flex:1;padding:9px;background:#e8601c;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">📊 Przegląd</button>
-    <button id="bldtab-memory" onclick="bldTab('memory')" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#8a9ab0;font-size:12px;font-weight:700;cursor:pointer;">🧠 Memory</button>
-  </div>
-  <div id="bld-overview" style="display:flex;flex-direction:column;gap:11px;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-    <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.3);border-radius:12px;padding:12px;text-align:center;">
-      <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Koszt miesiąca</div>
-      <div style="font-size:21px;font-weight:800;color:#e8601c;">38 450 zł</div>
-    </div>
-    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:12px;text-align:center;">
-      <div style="font-size:10px;color:#8a9ab0;margin-bottom:3px;">Zaoszczędzono OSG</div>
-      <div style="font-size:21px;font-weight:800;color:#22c55e;">4 840 zł</div>
-    </div>
-  </div>
-  <div style="background:linear-gradient(135deg,rgba(232,96,28,.1),rgba(232,96,28,.03));border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:13px;">
-    <div style="font-size:15px;font-weight:800;margin-bottom:3px;">📍 Osiedle Bemowo etap 2</div>
-    <div style="font-size:11px;color:#8a9ab0;margin-bottom:10px;">ul. Prosta 12 · Kierownik: Jan K.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
-      <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#e8601c;">14</div><div style="font-size:9px;color:#8a9ab0;">zamówień</div></div>
-      <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#22c55e;">56</div><div style="font-size:9px;color:#8a9ab0;">ofert</div></div>
-      <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#3b82f6;">3</div><div style="font-size:9px;color:#8a9ab0;">aktywne</div></div>
-    </div>
-  </div>
-  <div style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.04));border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px;display:flex;align-items:center;gap:12px;">
-    <div style="width:44px;height:44px;background:#e8601c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;">O</div>
-    <div style="flex:1;"><div style="font-size:10px;color:#3b82f6;font-weight:700;text-transform:uppercase;margin-bottom:2px;">👤 Twój opiekun</div><div style="font-size:14px;font-weight:800;">Oskar Hołyński</div><div style="font-size:11px;color:#8a9ab0;">OSG Logistics · odpowiada w 5 min</div></div>
-    <div style="display:flex;flex-direction:column;gap:6px;">
-      <a href="tel:+48887507056" style="background:#e8601c;color:#fff;border-radius:8px;padding:6px 11px;font-size:11px;font-weight:700;text-decoration:none;text-align:center;display:block;">📞 Zadzwoń</a>
-      <a href="https://wa.me/48887507056" style="background:#22c55e;color:#fff;border-radius:8px;padding:6px 11px;font-size:11px;font-weight:700;text-decoration:none;text-align:center;display:block;">💬 WhatsApp</a>
-    </div>
-  </div>
-  <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.4);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;">
-    <span style="font-size:20px;">⚠️</span>
-    <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#f59e0b;">Dostawa opóźniona</div><div style="font-size:11px;color:#8a9ab0;">Styropian · Adamex · plan. 8:00</div></div>
-    <a href="tel:+48887507056" style="background:#f59e0b;color:#000;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;">Dzwoń</a>
-  </div>
-  <div style="display:flex;gap:8px;">
-    <div onclick="go('s-delivery')" style="flex:1;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:11px;padding:10px;text-align:center;cursor:pointer;"><div style="font-size:17px;font-weight:800;color:#22c55e;">2</div><div style="font-size:9px;color:#8a9ab0;">🚚 W drodze</div></div>
-    <div style="flex:1;background:#162130;border:1px solid rgba(245,158,11,.3);border-radius:11px;padding:10px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#f59e0b;">1</div><div style="font-size:9px;color:#8a9ab0;">⚠️ Opóźniona</div></div>
-    <div style="flex:1;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px;text-align:center;"><div style="font-size:17px;font-weight:800;color:#3b82f6;">11</div><div style="font-size:9px;color:#8a9ab0;">✅ Dostarczone</div></div>
-  </div>
-  <div style="font-size:14px;font-weight:800;">🔄 Zamów ponownie</div>
-  <div style="display:flex;flex-direction:column;gap:7px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">🟢 Płyta GK + Profile</div><div style="font-size:10px;color:#8a9ab0;">× 80 szt. + 120 mb · 4 240 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">🟢 Chemia budowlana</div><div style="font-size:10px;color:#8a9ab0;">SMS30 × 40, CT17 × 20 · 5 520 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;"><div><div style="font-size:13px;font-weight:700;">🟢 BHP i odzież</div><div style="font-size:10px;color:#8a9ab0;">Rękawice × 30, Kaski × 5 · 840 zł</div></div><button onclick="go('s-rfq')" style="background:#e8601c;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Zamów</button></div>
-  </div>
-  <button class="btn" onclick="go('s-rfq')">📨 Nowe zapytanie</button>
-  <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+<div class="screen pl" id="s-building">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-home')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Osiedle Bemowo &middot; etap 2</span>
+  <span style="flex:1;"></span>
+  <span class="pl-top-ctx">ul. Prosta 12 &middot; Jan K.</span>
+</div></header>
+
+<div class="pl-wrap">
+  <button class="pl-card pl-in" onclick="go('s-delivery')"
+    style="display:block;width:100%;margin-top:24px;border-color:var(--pl-brand);cursor:pointer;">
+    <span class="pl-nowh">
+      <span class="pl-ico pl-lg pl-brand"><i data-pl-ico="truck" data-pl-s="24"></i></span>
+      <span class="pl-row-m">
+        <span class="pl-eyebrow" style="display:block;color:var(--pl-brand);">Teraz na budowie</span>
+        <span class="pl-row-t" style="font-size:16px;margin-top:5px;">Baumit Partner jedzie do Ciebie</span>
+        <span class="pl-row-s">SMS30 &times; 40 &middot; CT17 &times; 20 &middot; GK &times; 80</span>
+      </span>
+      <span class="pl-nowt">
+        <span class="pl-num" style="display:block;font-size:32px;font-weight:800;letter-spacing:-.035em;line-height:1;color:var(--pl-brand);">08:47</span>
+        <span class="pl-row-s">za 23 min &middot; 15 km</span>
+      </span>
+      <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="18"></i></span>
+    </span>
+    <span style="display:block;padding:4px 22px 20px;">
+      <span class="pl-steps">
+        <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Zamówione</span></span>
+        <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Kompletowane</span></span>
+        <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Gotowe</span></span>
+        <span class="pl-step pl-cur"><span class="pl-step-d"><i data-pl-ico="truck" data-pl-s="12"></i></span><span class="pl-step-l">W trasie</span></span>
+        <span class="pl-step"><span class="pl-step-d"></span><span class="pl-step-l">Dostarczone</span></span>
+      </span>
+    </span>
+  </button>
+
+  <div class="pl-alert pl-in-2" style="margin-top:14px;">
+    <span class="pl-ico"><i data-pl-ico="alert" data-pl-s="20"></i></span>
+    <span class="pl-alert-m">
+      <span class="pl-alert-t">Styropian nie wyjechał o czasie</span>
+      <span class="pl-alert-s">Adamex &middot; plan 8:00 &middot; brak potwierdzenia wysyłki. Czeka na Twoją decyzję.</span>
+    </span>
+    <a class="pl-alert-a" href="tel:+48887507056"><i data-pl-ico="phone" data-pl-s="15"></i>Zadzwoń</a>
   </div>
 
-  <div id="bld-memory" style="display:none;flex-direction:column;gap:11px;">
-    <input id="mem-search" oninput="renderMemory()" placeholder="🔎 Szukaj np. Baumit, faktura, Jan K." style="width:100%;padding:11px 13px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;font-size:13px;outline:none;">
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <div onclick="memFilterType('',this)" class="mf-pill" data-filter="" id="mf-all" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#e8601c;color:#fff;cursor:pointer;">Wszystko</div>
-      <div onclick="memFilterType('📞',this)" class="mf-pill" data-filter="📞" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📞 Rozmowy</div>
-      <div onclick="memFilterType('📄',this)" class="mf-pill" data-filter="📄" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📄 Oferty</div>
-      <div onclick="memFilterType('📦',this)" class="mf-pill" data-filter="📦" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">📦 Zamówienia</div>
-      <div onclick="memFilterType('💰',this)" class="mf-pill" data-filter="💰" style="font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;background:#1e2f42;color:#8a9ab0;cursor:pointer;">💰 Faktury</div>
+  <div class="pl-mini3 pl-in-2" style="margin-top:14px;">
+    <div><b style="color:var(--pl-brand);">2</b><span>w drodze</span></div>
+    <div><b style="color:var(--pl-warn);">1</b><span>opóźniona</span></div>
+    <div><b style="color:var(--pl-ok);">11</b><span>dostarczonych</span></div>
+  </div>
+
+  <div class="pl-tabs" style="margin-top:22px;">
+    <button class="pl-tab pl-on" id="bldtab-overview" onclick="bldTab('overview')"><i data-pl-ico="chart" data-pl-s="16"></i>Przegląd</button>
+    <button class="pl-tab" id="bldtab-memory" onclick="bldTab('memory')"><i data-pl-ico="spark" data-pl-s="16"></i>Memory</button>
+  </div>
+
+  <div id="bld-overview" style="display:flex;flex-direction:column;">
+    <div class="pl-cols" style="margin-top:22px;">
+      <div>
+        <section class="pl-sec" style="margin-top:0;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Aktywne zamówienia</span>
+            <span class="pl-chip">3</span></div>
+          <div class="pl-card">
+            <button class="pl-row" onclick="go('s-delivery')">
+              <span class="pl-ico pl-sm pl-brand"><i data-pl-ico="truck" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Baumit Partner &middot; #OSG-0047</span>
+                <span class="pl-row-s">Chemia i płyty &middot; 11 380 zł</span></span>
+              <span class="pl-chip pl-brand">W trasie &middot; 08:47</span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+            <button class="pl-row" onclick="scSoon('Szczegóły tej dostawy pokażemy, gdy Adamex potwierdzi wysyłkę.')">
+              <span class="pl-ico pl-sm pl-warn"><i data-pl-ico="alert" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Adamex &middot; #OSG-0046</span>
+                <span class="pl-row-s">Styropian EPS 100 &middot; 6 240 zł</span></span>
+              <span class="pl-chip pl-warn">Opóźnione</span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+            <button class="pl-row" onclick="scSoon('Zamówienie jest kompletowane w magazynie — status zmieni się automatycznie.')">
+              <span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">SIG Warszawa &middot; #OSG-0045</span>
+                <span class="pl-row-s">Profile i akcesoria &middot; 3 180 zł</span></span>
+              <span class="pl-chip">Kompletowane</span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          </div>
+        </section>
+
+        <section class="pl-sec">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Zamów ponownie</span>
+            <button class="pl-link" onclick="go('s-rfq')">Nowe zapytanie <i data-pl-ico="plus" data-pl-s="15"></i></button></div>
+          <div class="pl-card">
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Płyta GK i profile</span>
+                <span class="pl-row-s">80 szt. + 120 mb &middot; ostatnio 4 240 zł</span></span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-rfq')">Zamów</button></div>
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Chemia budowlana</span>
+                <span class="pl-row-s">SMS30 &times; 40, CT17 &times; 20 &middot; ostatnio 5 520 zł</span></span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-rfq')">Zamów</button></div>
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="cart" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">BHP i odzież</span>
+                <span class="pl-row-s">Rękawice &times; 30, kaski &times; 5 &middot; ostatnio 840 zł</span></span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-rfq')">Zamów</button></div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <div class="pl-side">
+          <div class="pl-card pl-card-p">
+            <span class="pl-eyebrow" style="display:block;">Ta budowa w tym miesiącu</span>
+            <div class="pl-kv" style="margin-top:12px;"><span>Wydane na materiały</span><b>38 450 zł</b></div>
+            <div class="pl-kv"><span>Zaoszczędzone przez OSG</span><b style="color:var(--pl-ok);">4 840 zł</b></div>
+            <div class="pl-kv"><span>Zamówienia / oferty</span><b>14 / 56</b></div>
+          </div>
+
+          <div class="pl-card pl-card-p">
+            <span class="pl-eyebrow" style="display:block;">Twój opiekun</span>
+            <div style="display:flex;align-items:center;gap:13px;margin-top:13px;">
+              <span class="pl-av">OH</span>
+              <span class="pl-row-m"><span class="pl-row-t">Oskar Hołyński</span>
+                <span class="pl-row-s">OSG Logistics &middot; odpowiada w 5 minut</span></span>
+            </div>
+            <div class="pl-acts" style="margin-top:14px;">
+              <a class="pl-btn pl-pri" href="tel:+48887507056"><i data-pl-ico="phone" data-pl-s="16"></i>Zadzwoń</a>
+              <a class="pl-btn pl-ghost" href="https://wa.me/48887507056"><i data-pl-ico="send" data-pl-s="16"></i>WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;gap:6px;">
-      <input id="mem-new-note" placeholder="📝 Dodaj szybką notatkę…" style="flex:1;padding:10px 12px;background:#162130;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:12px;outline:none;">
-      <button onclick="addMemoryNote()" style="background:#e8601c;color:#fff;border:none;border-radius:10px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;">Dodaj</button>
+  </div>
+
+  <div id="bld-memory" style="display:none;flex-direction:column;gap:14px;margin-top:22px;">
+    <input id="mem-search" class="pl-inp" oninput="renderMemory()" placeholder="Szukaj: Baumit, faktura, Jan K.…">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <div onclick="memFilterType('',this)" class="mf-pill pl-on" data-filter="" id="mf-all">Wszystko</div>
+      <div onclick="memFilterType('📞',this)" class="mf-pill" data-filter="📞">Rozmowy</div>
+      <div onclick="memFilterType('📄',this)" class="mf-pill" data-filter="📄">Oferty</div>
+      <div onclick="memFilterType('📦',this)" class="mf-pill" data-filter="📦">Zamówienia</div>
+      <div onclick="memFilterType('💰',this)" class="mf-pill" data-filter="💰">Faktury</div>
+    </div>
+    <div style="display:flex;gap:9px;">
+      <input id="mem-new-note" class="pl-inp" placeholder="Dodaj szybką notatkę…" style="flex:1;min-width:0;">
+      <button class="pl-btn pl-pri" onclick="addMemoryNote()" style="flex-shrink:0;"><i data-pl-ico="plus" data-pl-s="16"></i>Dodaj</button>
     </div>
     <div id="mem-timeline"></div>
-    <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
   </div>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-delivery">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Centrum dostaw</span><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;">3 dziś</div></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.4);border-radius:13px;overflow:hidden;">
-    <div style="background:rgba(232,96,28,.1);padding:8px 14px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:12px;font-weight:800;color:#e8601c;">🚚 DOSTAWA W DRODZE</span><span style="font-size:10px;color:#8a9ab0;">#OSG-0047</span>
-    </div>
-    <div style="padding:13px;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px;">SMS30 × 40, CT17 × 20, GK × 80</div>
-      <div style="font-size:11px;color:#8a9ab0;margin-bottom:11px;">Baumit Partner → ul. Prosta 12, Bemowo</div>
-      <div style="background:#162130;border-radius:10px;padding:11px;margin-bottom:11px;display:flex;align-items:center;gap:11px;">
-        <div style="width:46px;height:46px;background:linear-gradient(135deg,#e8601c,#c94e10);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;">MK</div>
-        <div style="flex:1;"><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Marek Kowalski</div><div style="font-size:12px;color:#e8601c;font-weight:700;">15 km · Przyjazd <strong>08:47</strong></div></div>
-        <a href="tel:+48887507056" style="background:#e8601c;color:#fff;border-radius:8px;padding:6px 11px;font-size:11px;font-weight:700;text-decoration:none;">Zadzwoń</a>
+<div class="screen pl" id="s-delivery">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-building')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Dostawa #OSG-2026-0047</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-brand"><span class="pl-dot pl-live"></span>w trasie</span>
+</div></header>
+
+<div class="pl-wrap">
+  <section class="pl-track pl-in" style="margin-top:24px;">
+    <span class="pl-eyebrow">Przyjazd na budowę</span>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:10px;">
+      <div>
+        <div class="pl-eta">08:47</div>
+        <span class="pl-eta-s">za 23 minuty &middot; 15 km od Osiedla Bemowo</span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:5px;">
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Zamówienie przyjęte · 06:15</span></div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Kierowca wyjechał · 07:02</span></div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">🚛</div><span style="font-weight:700;">W drodze na budowę</span></div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;opacity:.4;"><div style="width:15px;height:15px;border-radius:50%;background:#1e2f42;flex-shrink:0;"></div><span style="color:#8a9ab0;">Dostarczono</span></div>
+      <div class="pl-track-r">
+        <span class="pl-eta-s" style="margin-top:0;">Baumit Partner<br>ul. Prosta 12, Bemowo</span>
+      </div>
+    </div>
+
+    <div class="pl-steps" style="margin-top:26px;">
+      <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Zamówione</span></span>
+      <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Kompletowane</span></span>
+      <span class="pl-step pl-done"><span class="pl-step-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span><span class="pl-step-l">Gotowe</span></span>
+      <span class="pl-step pl-cur"><span class="pl-step-d"><i data-pl-ico="truck" data-pl-s="12"></i></span><span class="pl-step-l">W trasie</span></span>
+      <span class="pl-step"><span class="pl-step-d"></span><span class="pl-step-l">Dostarczone</span></span>
+    </div>
+
+    <div class="pl-drv" style="margin-top:24px;">
+      <span class="pl-av">MK</span>
+      <span class="pl-drv-m">
+        <span class="pl-drv-n">Marek Kowalski</span>
+        <span class="pl-drv-s">Mercedes Atego &middot; WZ 4821G &middot; HDS</span>
+      </span>
+      <span class="pl-drv-x">
+        <span class="pl-drv-s" style="margin-top:0;">Ostatnia aktualizacja pozycji</span>
+        <span class="pl-drv-n">08:24 &middot; al. Jerozolimskie</span>
+      </span>
+      <a class="pl-call" href="tel:+48887507056"><i data-pl-ico="phone" data-pl-s="15"></i>Zadzwoń</a>
+    </div>
+  </section>
+
+  <div class="pl-cols pl-in-2" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Co jedzie</span>
+          <span class="pl-chip">3 pozycje &middot; 11 380 zł</span></div>
+        <div class="pl-card">
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">SMS30 Klej 25 kg</span>
+              <span class="pl-row-s">Baumit &middot; 2 palety</span></span>
+            <span class="pl-row-v pl-num">&times; 40</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">CT17 Tynk 25 kg</span>
+              <span class="pl-row-s">Baumit &middot; 1 paleta</span></span>
+            <span class="pl-row-v pl-num">&times; 20</span></div>
+          <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span>
+              <span class="pl-row-s">Knauf &middot; rozładunek HDS</span></span>
+            <span class="pl-row-v pl-num">&times; 80</span></div>
+        </div>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Przebieg</span></div>
+        <div class="pl-card pl-card-p">
+          <div class="pl-tl">
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+              <span><span class="pl-tl-t">Zamówienie przyjęte</span><span class="pl-tl-s">Wczoraj 18:32 &middot; potwierdzone przez Baumit Partner</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+              <span><span class="pl-tl-t">Skompletowane w magazynie</span><span class="pl-tl-s">Dziś 06:15 &middot; 3 palety, waga 2 140 kg</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d"><i data-pl-ico="check" data-pl-s="12" data-pl-w="3"></i></span>
+              <span><span class="pl-tl-t">Kierowca wyjechał</span><span class="pl-tl-s">Dziś 07:02 &middot; Marek Kowalski, WZ 4821G</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d pl-wait"><i data-pl-ico="truck" data-pl-s="12"></i></span>
+              <span><span class="pl-tl-t">W trasie na budowę</span><span class="pl-tl-s">15 km &middot; przyjazd ok. 08:47</span></span></div>
+            <div class="pl-tl-i"><span class="pl-tl-d pl-idle"><i data-pl-ico="pin" data-pl-s="12"></i></span>
+              <span><span class="pl-tl-t">Rozładunek i podpis</span><span class="pl-tl-s">Odbiera Jan K. &middot; zdjęcie trafi tutaj automatycznie</span></span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Odbiór</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Adres</span><b>ul. Prosta 12, Bemowo</b></div>
+          <div class="pl-kv"><span>Odbiera</span><b>Jan K.</b></div>
+          <div class="pl-kv"><span>Okno dostawy</span><b>07:00&ndash;09:00</b></div>
+          <div class="pl-kv"><span>Rozładunek</span><b>HDS, po stronie kierowcy</b></div>
+        </div>
+
+        <section class="pl-sec" style="margin-top:0;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Dokumenty</span></div>
+          <div class="pl-card">
+            <button class="pl-row" onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')">
+              <span class="pl-ico pl-sm"><i data-pl-ico="doc" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Faktura #FV-2026-0047</span>
+                <span class="pl-row-s">Baumit &middot; 11 380 zł</span></span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+            <button class="pl-row" onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')">
+              <span class="pl-ico pl-sm"><i data-pl-ico="doc" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">WZ #0047</span>
+                <span class="pl-row-s">Wystawi się po rozładunku</span></span>
+              <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          </div>
+        </section>
+
+        <section class="pl-sec" style="margin-top:0;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Poprzednia dostawa</span>
+            <span class="pl-chip pl-ok">dostarczona</span></div>
+          <div class="pl-card pl-card-p">
+            <div style="display:flex;align-items:center;gap:13px;">
+              <span class="pl-ico pl-lg pl-ok"><i data-pl-ico="camera" data-pl-s="22"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Rękawice &times; 30, kaski &times; 5</span>
+                <span class="pl-row-s">Glovex &middot; dziś 09:15 &middot; paleta przy wejściu</span></span>
+            </div>
+            <div class="pl-kv" style="margin-top:14px;"><span>Podpisał</span><b>Jan K.</b></div>
+            <div class="pl-kv"><span>Uwagi</span><b style="color:var(--pl-ok);">bez zastrzeżeń</b></div>
+            <button class="pl-btn pl-ghost pl-block" style="margin-top:14px;"
+              onclick="scSoon('Podgląd zdjęć z dostawy udostępnimy w kolejnej wersji portalu.')">
+              <i data-pl-ico="camera" data-pl-s="16"></i>Zobacz zdjęcie</button>
+          </div>
+        </section>
       </div>
     </div>
   </div>
-  <div style="font-size:14px;font-weight:800;">📂 Centrum dokumentów</div>
-  <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Faktura #FV-2026-0047</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 11 380 zł · 19 cze</div></div><div onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">WZ #0047</div><div style="font-size:10px;color:#8a9ab0;">Potwierdzenie dostawy</div></div><div onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">📷 Zdjęcie dostawy</div><div style="font-size:10px;color:#8a9ab0;">09:15 · Podpis: Jan K. · ✅ Odebrano</div></div><div onclick="scSoon('Podgląd zdjęć z dostawy udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Podgląd</div></div>
-  </div>
-  <div class="card">
-    <div style="padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:13px;font-weight:700;">Rękawice × 30, Kaski × 5</div><div style="font-size:10px;color:#8a9ab0;">Glovex · dziś 09:15</div></div><div style="font-size:11px;color:#22c55e;font-weight:700;">✅ Dostarczone</div></div>
-    <div style="padding:12px 13px;">
-      <div style="background:#1e2f42;border-radius:9px;padding:10px;display:flex;align-items:center;gap:10px;">
-        <div style="width:48px;height:48px;background:#162130;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid rgba(255,255,255,.07);">📷</div>
-        <div><div style="font-size:12px;font-weight:700;color:#22c55e;margin-bottom:2px;">📷 Zdjęcie dostawy</div><div style="font-size:11px;color:#8a9ab0;">Paleta przy wejściu · 09:15</div><div style="font-size:10px;color:#8a9ab0;">✅ Podpisano: Jan K.</div></div>
-      </div>
-    </div>
+
+  <div class="pl-acts" style="margin-top:24px;">
+    <button class="pl-btn pl-ghost pl-lg" onclick="go('s-building')"><i data-pl-ico="building" data-pl-s="17"></i>Centrum budowy</button>
+    <button class="pl-btn pl-ghost pl-lg" onclick="go('s-rfq')"><i data-pl-ico="send" data-pl-s="17"></i>Nowe zapytanie</button>
   </div>
 </div>
 <div class="nav"></div>
@@ -7571,6 +7880,10 @@ var PL_ICO={
  plus:'<path d="M12 5v14M5 12h14"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/>',
  hardhat:'<path d="M3.5 17.5h17"/><path d="M5.5 17.5v-3a6.5 6.5 0 0 1 13 0v3"/><path d="M10 8.2V4.6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3.6"/>',
+ phone:'<path d="M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 5.6 5.6l1.4-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5C11.4 18.9 5.1 12.6 4.5 5.1A1.5 1.5 0 0 1 6 3.5z"/>',
+ pin:'<path d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10.2" r="2.6"/>',
+ camera:'<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.6l1.3-2.2h7.2L16.9 7h2.6A1.5 1.5 0 0 1 21 8.5v10A1.5 1.5 0 0 1 19.5 20h-15A1.5 1.5 0 0 1 3 18.5z"/><circle cx="12" cy="13" r="3.6"/>',
+ pencil:'<path d="M16.4 3.6a2 2 0 0 1 2.8 2.8L7.6 18H4.8v-2.8z"/><path d="M14.2 5.8 17 8.6"/>',
  back:'<path d="M20 12H5"/><path d="M10.5 5.5 4 12l6.5 6.5"/>',
  check:'<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>',
  mic:'<rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0"/><path d="M12 18.5V21.5"/>',
@@ -8244,10 +8557,14 @@ function bldTab(tab){
   document.getElementById('bld-overview').style.display=tab==='overview'?'flex':'none';
   document.getElementById('bld-memory').style.display=tab==='memory'?'flex':'none';
   var ov=document.getElementById('bldtab-overview'),mm=document.getElementById('bldtab-memory');
-  ov.style.background=tab==='overview'?'#e8601c':'#1e2f42';ov.style.color=tab==='overview'?'#fff':'#8a9ab0';ov.style.border=tab==='overview'?'none':'1px solid rgba(255,255,255,.1)';
-  mm.style.background=tab==='memory'?'#e8601c':'#1e2f42';mm.style.color=tab==='memory'?'#fff':'#8a9ab0';mm.style.border=tab==='memory'?'none':'1px solid rgba(255,255,255,.1)';
+  if(ov)ov.classList.toggle('pl-on',tab==='overview');
+  if(mm)mm.classList.toggle('pl-on',tab==='memory');
   if(tab==='memory')loadMemory(DEMO_CLIENT_ID);
 }
+/* Memory trzyma typy jako emoji (tak przychodza z bazy i tak filtruje UI).
+   Do rysowania mapujemy je na ikony SVG — emoji nie wchodza na ekran. */
+var MEM_ICO={'\ud83d\udcde':'phone','\ud83d\udcc4':'doc','\ud83d\udce6':'box','\ud83d\ude9a':'truck',
+  '\ud83d\udcb0':'coins','\ud83d\udcdd':'pencil','\ud83c\udfa4':'mic','\ud83d\udccd':'pin','\ud83d\udcf7':'camera'};
 var memoryData=[
   {date:'05.07.2026 08:12',icon:'📞',type:'Rozmowa',desc:'Rozmowa z Janem K. — potwierdzenie terminu dostawy płyt GK na przyszły tydzień.',author:'Oskar',demo:true},
   {date:'04.07.2026 16:40',icon:'📄',type:'Oferta',desc:'Wysłana oferta: Baumit SMS30 × 40, CT17 × 20 — 5 520 zł.',author:'Oskar',demo:true},
@@ -8293,16 +8610,17 @@ function addMemoryNote(){
 var memActiveIcon='';
 function memFilterType(icon,el){
   /* Naprawa kruchej zaleznosci UI (P1, vol6): pigulki maja klase .mf-pill
-     i data-filter zamiast selektora po strukturze DOM i tekscie
-     'flex-wrap' w atrybucie style; klikniety element przychodzi jako
-     argument, nie z globalnego event.target. Logika — BEZ ZMIAN. */
+     i data-filter zamiast selektora po strukturze DOM. Stan przelaczamy
+     klasa .pl-on, nie kolorami inline. Logika filtrowania — BEZ ZMIAN. */
   memActiveIcon=icon;
-  document.querySelectorAll('#bld-memory .mf-pill').forEach(function(d){d.style.background='#1e2f42';d.style.color='#8a9ab0';});
+  document.querySelectorAll('#bld-memory .mf-pill').forEach(function(d){d.classList.remove('pl-on');});
   var target=el||document.querySelector('#bld-memory .mf-pill[data-filter="'+icon+'"]')
              ||document.getElementById('mf-all');
-  if(target){target.style.background='#e8601c';target.style.color='#fff';}
+  if(target)target.classList.add('pl-on');
   renderMemory();
 }
+function memEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function renderMemory(){
   var q=(document.getElementById('mem-search').value||'').toLowerCase();
   var list=memoryData.filter(function(e){
@@ -8311,13 +8629,23 @@ function renderMemory(){
     return matchesText&&matchesIcon;
   });
   var el=document.getElementById('mem-timeline');
-  if(list.length===0){el.innerHTML='<div style="text-align:center;color:#8a9ab0;font-size:12px;padding:24px 0;">Brak wyników dla tego wyszukiwania.</div>';return;}
-  var html='<div class="tl-wrap">';
+  if(list.length===0){
+    el.innerHTML='<div class="pl-card pl-card-p" style="text-align:center;">'
+      +'<p class="pl-meta">Brak wynikow dla tego wyszukiwania.</p></div>';
+    return;
+  }
+  var html='';
   list.forEach(function(e){
-    html+='<div class="tl-item"><div class="tl-dot">'+e.icon+'</div><div style="background:#162130;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="font-size:11px;font-weight:700;color:#e8601c;">'+e.icon+' '+e.type+(e.demo?' <span style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:8px;padding:1px 5px;border-radius:5px;margin-left:4px;">DEMO</span>':'')+'</span><span style="font-size:10px;color:#8a9ab0;white-space:nowrap;">'+e.date+'</span></div><div style="font-size:12px;line-height:1.5;margin-bottom:5px;">'+e.desc+'</div><div style="font-size:10px;color:#8a9ab0;">✍️ '+e.author+'</div></div></div>';
+    var ico=MEM_ICO[e.icon]||'doc';
+    html+='<div class="pl-mem"><span class="pl-mem-d"><i data-pl-ico="'+ico+'" data-pl-s="16"></i></span>'
+      +'<div class="pl-mem-b"><div class="pl-mem-h">'
+      +'<span class="pl-mem-t">'+memEsc(e.type)+(e.demo?' <span class="pl-chip pl-warn" style="margin-left:4px;">demo</span>':'')+'</span>'
+      +'<span class="pl-mem-dt">'+memEsc(e.date)+'</span></div>'
+      +'<div class="pl-mem-x">'+memEsc(e.desc)+'</div>'
+      +'<div class="pl-mem-a">'+memEsc(e.author)+'</div></div></div>';
   });
-  html+='</div>';
   el.innerHTML=html;
+  plIcons(el);
 }
 function cmdStartDay(){
   renderPlanDay();
