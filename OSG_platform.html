@@ -6379,7 +6379,12 @@ function afterAuthReady(){
     loadDeliveries();
     return;
   }
-  go('s-command');
+  /* Jednorazowy odczyt ?demo=showcase przy starcie — nic poza ekranem
+     startowym. Bez parametru zachowanie jest identyczne jak dotad.
+     Nie jest to routing: query czytamy raz, nigdzie nie zapisujemy,
+     nie reagujemy na zmiany adresu. Auth, role i bramki bez zmian. */
+  var startShowcase=/(^|[?&])demo=showcase(&|$)/.test(location.search);
+  go(startShowcase ? 's-onboarding' : 's-command');
   loadTasks();
   loadCommandStats();
 }
