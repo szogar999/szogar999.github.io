@@ -661,13 +661,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <span>💰</span><span style="font-size:11px;color:#8a9ab0;">Dla inwestorów: model zarabiania →</span>
   </div>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 <button class="bnav" onclick="go('s-rfq')">📨 Szybkie zapytanie</button>
 </div>
 
@@ -682,13 +676,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div class="card">
     <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;">
       <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;">📦 Lista materiałów</div>
-      <div style="font-size:11px;color:#e8601c;font-weight:700;">+ Dodaj</div>
+      <div onclick="rfqAddItem()" style="font-size:11px;color:#e8601c;font-weight:700;cursor:pointer;">+ Dodaj</div>
     </div>
     <div class="row"><div><div style="font-size:13px;font-weight:700;">SMS30 Klej 25kg</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 🔥 zamówiono dziś 324 worki</div></div><div style="font-size:14px;font-weight:800;">40 szt.</div></div>
     <div class="row"><div><div style="font-size:13px;font-weight:700;">CT17 Tynk 25kg</div><div style="font-size:10px;color:#8a9ab0;">Kupowałeś 17x · śr. 39,80 zł · dziś 38,90 zł ↓</div></div><div style="font-size:14px;font-weight:800;">20 szt.</div></div>
     <div class="row"><div><div style="font-size:13px;font-weight:700;">Płyta GK 12,5mm</div><div style="font-size:10px;color:#8a9ab0;">Knauf</div></div><div style="font-size:14px;font-weight:800;">80 szt.</div></div>
     <div class="row"><div><div style="font-size:13px;font-weight:700;">Profil CD60/3m</div></div><div style="font-size:14px;font-weight:800;">120 mb</div></div>
-    <div style="padding:10px 14px;display:flex;justify-content:space-between;"><span style="font-size:12px;color:#8a9ab0;">Szacowana wartość</span><span style="font-size:14px;font-weight:800;color:#e8601c;">~12 400 zł</span></div>
+    <div id="rfq-total-row" style="padding:10px 14px;display:flex;justify-content:space-between;"><span style="font-size:12px;color:#8a9ab0;">Szacowana wartość</span><span style="font-size:14px;font-weight:800;color:#e8601c;">~12 400 zł</span></div>
   </div>
   <div class="card" style="padding:12px 14px;">
     <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:8px;">✍️ Lub opisz słownie</div>
@@ -722,13 +716,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button class="btn" onclick="go('s-compare')">⚖️ Porównaj oferty</button>
   </div>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb on" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-compare">
@@ -808,13 +796,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="btn" onclick="go('s-order')">✅ Wybierz najlepszą ofertę</button>
   <button class="btn ghost" onclick="go('s-rfq')">📨 Nowe zapytanie</button>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb on" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-order">
@@ -843,13 +825,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <button class="btn" onclick="go('s-confirm')">✅ Potwierdź zamówienie</button>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb on" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-confirm">
@@ -872,6 +848,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <button class="btn" onclick="go('s-home')" style="margin-bottom:8px;width:100%;">🏠 Wróć do platformy</button>
   <button class="btn ghost" onclick="go('s-delivery')" style="width:100%;">🚚 Śledź dostawę</button>
 </div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-building">
@@ -913,7 +890,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.4);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;">
     <span style="font-size:20px;">⚠️</span>
     <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#f59e0b;">Dostawa opóźniona</div><div style="font-size:11px;color:#8a9ab0;">Styropian · Adamex · plan. 8:00</div></div>
-    <button style="background:#f59e0b;color:#000;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;">Dzwoń</button>
+    <a href="tel:+48887507056" style="background:#f59e0b;color:#000;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;">Dzwoń</a>
   </div>
   <div style="display:flex;gap:8px;">
     <div onclick="go('s-delivery')" style="flex:1;background:#162130;border:1px solid rgba(34,197,94,.3);border-radius:11px;padding:10px;text-align:center;cursor:pointer;"><div style="font-size:17px;font-weight:800;color:#22c55e;">2</div><div style="font-size:9px;color:#8a9ab0;">🚚 W drodze</div></div>
@@ -947,13 +924,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
   </div>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-delivery">
@@ -975,16 +946,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div style="display:flex;flex-direction:column;gap:5px;">
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Zamówienie przyjęte · 06:15</span></div>
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">✓</div><span style="color:#8a9ab0;">Kierowca wyjechał · 07:02</span></div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">🚛</div><span style="font-weight:700;">15 km · Przyjazd 08:47</span></div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;"><div style="width:15px;height:15px;border-radius:50%;background:#e8601c;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;">🚛</div><span style="font-weight:700;">W drodze na budowę</span></div>
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;opacity:.4;"><div style="width:15px;height:15px;border-radius:50%;background:#1e2f42;flex-shrink:0;"></div><span style="color:#8a9ab0;">Dostarczono</span></div>
       </div>
     </div>
   </div>
   <div style="font-size:14px;font-weight:800;">📂 Centrum dokumentów</div>
   <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Faktura #FV-2026-0047</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 11 380 zł · 19 cze</div></div><div style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">WZ #0047</div><div style="font-size:10px;color:#8a9ab0;">Potwierdzenie dostawy</div></div><div style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">📷 Zdjęcie dostawy</div><div style="font-size:10px;color:#8a9ab0;">09:15 · Podpis: Jan K. · ✅ Odebrano</div></div><div style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Podgląd</div></div>
+    <div class="row"><div><div style="font-size:13px;font-weight:700;">Faktura #FV-2026-0047</div><div style="font-size:10px;color:#8a9ab0;">Baumit · 11 380 zł · 19 cze</div></div><div onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
+    <div class="row"><div><div style="font-size:13px;font-weight:700;">WZ #0047</div><div style="font-size:10px;color:#8a9ab0;">Potwierdzenie dostawy</div></div><div onclick="scSoon('Pobieranie plików PDF udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Pobierz</div></div>
+    <div class="row"><div><div style="font-size:13px;font-weight:700;">📷 Zdjęcie dostawy</div><div style="font-size:10px;color:#8a9ab0;">09:15 · Podpis: Jan K. · ✅ Odebrano</div></div><div onclick="scSoon('Podgląd zdjęć z dostawy udostępnimy w kolejnej wersji portalu.')" style="font-size:12px;color:#3b82f6;font-weight:700;cursor:pointer;">Podgląd</div></div>
   </div>
   <div class="card">
     <div style="padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:13px;font-weight:700;">Rękawice × 30, Kaski × 5</div><div style="font-size:10px;color:#8a9ab0;">Glovex · dziś 09:15</div></div><div style="font-size:11px;color:#22c55e;font-weight:700;">✅ Dostarczone</div></div>
@@ -996,13 +967,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-supplier">
@@ -1022,17 +987,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><div style="font-size:14px;font-weight:800;">🔥 Gorące leady</div><div style="background:#e8601c;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;">5 dziś</div></div>
     <div style="font-size:11px;color:#8a9ab0;margin-bottom:10px;">Gotowe leady zakupowe — nie zimne kontakty.</div>
     <div style="display:flex;flex-direction:column;gap:7px;">
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:10px;color:#8a9ab0;">SMS30+GK+Profile · pilne</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">18 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
+      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:10px;color:#8a9ab0;">SMS30+GK+Profile · pilne</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">15 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
       <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Pruszków</div><div style="font-size:10px;color:#8a9ab0;">Styropian grafit 300m²</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">31 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
       <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Warszawa Wola</div><div style="font-size:10px;color:#8a9ab0;">Chemia + BHP</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">12 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
     </div>
-    <div style="margin-top:9px;font-size:11px;color:#8a9ab0;text-align:center;">Łączna wartość: <span style="color:#22c55e;font-weight:700;">69 000 zł dziś</span></div>
+    <div style="margin-top:9px;font-size:11px;color:#8a9ab0;text-align:center;">Łączna wartość: <span style="color:#22c55e;font-weight:700;">58 000 zł dziś</span></div>
   </div>
   <div style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px;">
     <div style="font-size:13px;font-weight:800;margin-bottom:10px;">📊 Szanse wygranej</div>
     <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:11px;color:#22c55e;font-weight:700;">82%</div></div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:#8a9ab0;">Lead: 14 500 zł</span><span style="color:#22c55e;font-weight:700;">Oferta: 13 980 zł</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:#8a9ab0;">Lead: 15 000 zł</span><span style="color:#22c55e;font-weight:700;">Oferta: 11 200 zł</span></div>
       <div style="background:rgba(34,197,94,.1);border-radius:4px;height:5px;"><div style="background:#22c55e;height:100%;width:82%;border-radius:4px;"></div></div>
     </div>
     <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;">
@@ -1053,13 +1018,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="row"><div><div style="font-size:13px;font-weight:600;">Styropian EPS · 50m²</div><div style="font-size:10px;color:#8a9ab0;">Ursynów · 18 cze</div></div><div style="font-size:16px;font-weight:800;color:#22c55e;">3 200 zł</div></div>
   </div>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb on" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-bid">
@@ -1075,19 +1034,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);">
       <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:9px;">💰 Twoja oferta</div>
       <div style="display:flex;align-items:center;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;overflow:hidden;margin-bottom:7px;">
-        <input type="number" value="11200" style="flex:1;background:transparent;border:none;outline:none;padding:11px 12px;color:#fff;font-size:21px;font-weight:800;">
+        <input id="bid-amount" type="number" value="11200" oninput="bidRecalc()" style="flex:1;background:transparent;border:none;outline:none;padding:11px 12px;color:#fff;font-size:21px;font-weight:800;">
         <div style="padding:0 12px;color:#8a9ab0;font-size:13px;">zł</div>
       </div>
-      <div style="font-size:11px;color:#22c55e;margin-bottom:9px;">✓ Poniżej średniej rynkowej o 1 250 zł</div>
+      <div id="bid-vs-market" style="font-size:11px;color:#22c55e;margin-bottom:9px;">✓ Poniżej średniej rynkowej o 1 250 zł</div>
       <div style="display:flex;gap:7px;">
-        <div style="flex:1;padding:9px;background:#e8601c;border-radius:8px;text-align:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Dziś do 14:00</div>
-        <div style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;text-align:center;font-size:11px;color:#8a9ab0;cursor:pointer;">Jutro rano</div>
+        <div id="bd1" onclick="selBidTerm(1)" style="flex:1;padding:9px;background:#e8601c;border-radius:8px;text-align:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Dziś do 14:00</div>
+        <div id="bd2" onclick="selBidTerm(2)" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;text-align:center;font-size:11px;color:#8a9ab0;cursor:pointer;">Jutro rano</div>
       </div>
     </div>
     <div style="padding:13px;background:rgba(34,197,94,.05);">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Twoja oferta</span><span style="font-size:12px;color:#22c55e;font-weight:700;">11 200 zł netto</span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Prowizja OSG (3%)</span><span style="font-size:12px;color:#8a9ab0;">−336 zł</span></div>
-      <div style="border-top:1px solid rgba(255,255,255,.07);margin-top:7px;padding-top:7px;display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:700;">Twój przychód</span><span style="font-size:18px;font-weight:800;color:#22c55e;">10 864 zł</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Twoja oferta</span><span id="bid-net" style="font-size:12px;color:#22c55e;font-weight:700;">11 200 zł netto</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Prowizja OSG (3%)</span><span id="bid-fee" style="font-size:12px;color:#8a9ab0;">−336 zł</span></div>
+      <div style="border-top:1px solid rgba(255,255,255,.07);margin-top:7px;padding-top:7px;display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:700;">Twój przychód</span><span id="bid-income" style="font-size:18px;font-weight:800;color:#22c55e;">10 864 zł</span></div>
     </div>
   </div>
   <button class="btn" onclick="showBidOk()">✅ Wyślij ofertę do klienta</button>
@@ -1096,13 +1055,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div style="font-size:15px;font-weight:700;">Oferta wysłana! Ważna 2 godziny.</div>
   </div>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb on" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-smart">
@@ -1143,13 +1096,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
   </div>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-prices">
@@ -1198,18 +1145,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <input type="number" value="39" style="flex:1;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;color:#fff;font-size:16px;font-weight:700;outline:none;text-align:center;">
       <span style="font-size:14px;font-weight:700;">zł</span>
     </div>
-    <button class="btn" style="font-size:13px;padding:10px;">🔔 Ustaw alarm cenowy</button>
+    <button class="btn" onclick="scSoon('Alarmy cenowe uruchamiamy w kolejnej wersji — dziś powiadomienia przychodzą od opiekuna.')" style="font-size:13px;padding:10px;">🔔 Ustaw alarm cenowy</button>
   </div>
   <button class="btn" onclick="go('s-rfq')">📨 Zamów teraz po najlepszej cenie</button>
   <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-map">
@@ -1255,18 +1196,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
   <div class="card">
     <div class="row" onclick="go('s-building')" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">📍 Osiedle Bemowo</div><div style="font-size:10px;color:#8a9ab0;">Jan K.</div></div><div style="background:rgba(255,107,107,.15);color:#ff6b6b;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">2 braki</div></div>
-    <div class="row" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Wola</div><div style="font-size:10px;color:#8a9ab0;">Adam P.</div></div><div style="background:rgba(34,197,94,.15);color:#22c55e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">OK</div></div>
-    <div class="row" style="cursor:pointer;"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Ursus</div><div style="font-size:10px;color:#8a9ab0;">Piotr W.</div></div><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">1 brak</div></div>
+    <div class="row"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Wola</div><div style="font-size:10px;color:#8a9ab0;">Adam P.</div></div><div style="background:rgba(34,197,94,.15);color:#22c55e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">OK</div></div>
+    <div class="row"><div><div style="font-size:13px;font-weight:700;">📍 Budowa Ursus</div><div style="font-size:10px;color:#8a9ab0;">Piotr W.</div></div><div style="background:rgba(232,96,28,.15);color:#e8601c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;">1 brak</div></div>
   </div>
   <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-ranking">
@@ -1304,13 +1239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:11px;padding:12px 13px;font-size:11px;color:#8a9ab0;">💡 🛡️ Verified = terminowość powyżej 93%. Wyższy ranking = więcej zapytań.</div>
   <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-director">
@@ -1339,25 +1268,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="row"><div style="display:flex;align-items:center;gap:9px;"><div style="width:27px;height:27px;background:#1e2f42;border:2px solid #cd7c2f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#cd7c2f;">3</div><div><div style="font-size:13px;font-weight:700;">Marek Sikorski</div><div style="font-size:10px;color:#8a9ab0;">Pruszków</div></div></div><div style="text-align:right;"><div style="font-size:12px;color:#22c55e;font-weight:700;">−2 700 zł</div><div style="font-size:10px;color:#8a9ab0;">oszczędności</div></div></div>
   </div>
   <div onclick="renderPurchasing();go('s-purchasing')" style="background:#162130;border:1px solid rgba(232,96,28,.2);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
-    <span>🛒</span><span style="font-size:11px;color:#8a9ab0;">Centrum Zakupów — produkty i marże →</span>
+    <span>🛒</span><span style="font-size:11px;color:#8a9ab0;">Otwórz Centrum Zakupów w Command — produkty i marże →</span>
   </div>
   <div onclick="go('s-money')" style="background:#162130;border:1px solid rgba(245,158,11,.2);border-radius:11px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;">
     <span>💰</span><span style="font-size:11px;color:#8a9ab0;">Model zarabiania i potencjał skalowania →</span>
   </div>
   <button class="btn ghost" onclick="go('s-onboarding')">← Wróć</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-money">
 <div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Model zarabiania</span></div>
+<div class="hdr"><button class="back" onclick="go('s-director')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Model zarabiania</span></div>
 <div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
   <div style="text-align:center;margin-bottom:4px;"><div style="font-size:20px;font-weight:800;margin-bottom:3px;">Jak OSG Platform <span style="color:#e8601c;">zarabia</span></div><div style="font-size:12px;color:#8a9ab0;">4 strumienie · skalowalny model</div></div>
   <div class="card" style="padding:13px;"><div style="display:flex;align-items:center;gap:9px;margin-bottom:7px;"><div style="width:34px;height:34px;background:rgba(232,96,28,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">💰</div><div><div style="font-size:13px;font-weight:700;">Prowizja od zamówienia</div><div style="font-size:10px;color:#e8601c;">2–5% wartości transakcji</div></div></div><div style="background:#1e2f42;border-radius:8px;padding:8px 11px;display:flex;justify-content:space-between;"><span style="font-size:11px;color:#8a9ab0;">300 budów × 5 000 × 3%</span><span style="font-size:16px;font-weight:800;color:#e8601c;">45 000 zł/mies.</span></div></div>
@@ -1377,15 +1300,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       </div>
     </div>
   </div>
-  <button class="btn ghost" onclick="go('s-home')">← Wróć</button>
+  <button class="btn ghost" onclick="go('s-director')">← Wróć do panelu</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-how">
@@ -2533,13 +2450,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <button class="btn ghost" onclick="go('s-purchasing')">← Wróć do listy</button>
 </div>
-<div class="nav">
-  <button class="nb on" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div class="screen" id="s-voice">
@@ -2556,13 +2467,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <button onclick="go('s-rfq')" class="btn" style="font-size:13px;padding:10px;">📨 Wyślij jako zapytanie →</button>
   </div>
 </div>
-<div class="nav">
-  <button class="nb" onclick="go('s-home')"><span class="ic">🏠</span>Start</button>
-  <button class="nb on" onclick="go('s-rfq')"><span class="ic">📨</span>Zapytanie</button>
-  <button class="nb" onclick="go('s-compare')"><span class="ic">⚖️</span>Oferty</button>
-  <button class="nb" onclick="go('s-supplier')"><span class="ic">🏪</span>Dostawca</button>
-  <button class="nb" onclick="go('s-command')"><span class="ic">🎛️</span>Command</button>
-</div>
+<div class="nav"></div>
 </div>
 
 <div id="followup-prompt" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#162130;border-top:2px solid #e8601c;padding:16px;z-index:500;box-shadow:0 -8px 30px rgba(0,0,0,.5);">
@@ -6972,6 +6877,43 @@ window.addEventListener('resize',function(){
   if(b) b.style.display = window.innerWidth<=1024 ? 'flex' : 'none';
 });
 
+/* Showcase Polish Pack p.10.
+   Pasek zakladek byl skopiowany 16 razy, a stan aktywnosci zapisany na sztywno
+   w klasie 'on' w kazdej kopii. Skutki: s-confirm nie mial paska wcale,
+   a s-director i s-money podswietlaly "Start", mimo ze to inny profil.
+   Teraz jest jedna funkcja i jedna mapa. Router bez zmian — paintNav jest
+   dopisane na koncu go(), bramki rol i sbSync zostaja nietkniete. */
+var NAV_TABS=[
+  ['s-home','🏠','Start'],
+  ['s-rfq','📨','Zapytanie'],
+  ['s-compare','⚖️','Oferty'],
+  ['s-supplier','🏪','Dostawca'],
+  ['s-command','🎛️','Command']
+];
+/* Ekrany podrzedne dziedzicza podswietlenie po swojej galezi.
+   Ekrany spoza glownego przeplywu (s-director, s-money, s-how, s-onboarding)
+   nie podswietlaja niczego — zamiast klamac, ze jestesmy na "Start". */
+var NAV_ACTIVE_FOR={
+  's-home':'s-home','s-building':'s-home','s-delivery':'s-home',
+  's-map':'s-home','s-ranking':'s-home','s-prices':'s-home','s-smart':'s-home',
+  's-rfq':'s-rfq','s-voice':'s-rfq',
+  's-compare':'s-compare','s-order':'s-compare','s-confirm':'s-compare',
+  's-supplier':'s-supplier','s-bid':'s-supplier',
+  's-product':'s-command'
+};
+function paintNav(screenId){
+  var active=NAV_ACTIVE_FOR[screenId]||'';
+  document.querySelectorAll('.nav').forEach(function(box){
+    if(box.children.length!==NAV_TABS.length){
+      box.innerHTML=NAV_TABS.map(function(t){
+        return '<button class="nb" onclick="go(\''+t[0]+'\')"><span class="ic">'+t[1]+'</span>'+t[2]+'</button>';
+      }).join('');
+    }
+    [].forEach.call(box.children,function(el,i){
+      el.classList.toggle('on',NAV_TABS[i][0]===active);
+    });
+  });
+}
 function go(id){
   if(id==='s-contact-today') setTimeout(renderContactToday,0);
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
@@ -6985,6 +6927,7 @@ function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var el=document.getElementById(id);
   if(el){el.classList.add('active');window.scrollTo(0,0);}
+  paintNav(id);
   if(typeof sbSync==='function') sbSync();
 }
 function setUrg(v){
@@ -7010,6 +6953,88 @@ function showSent(){
   var sec=0;if(timerInt)clearInterval(timerInt);
   timerInt=setInterval(function(){sec++;var m=Math.floor(sec/60),s=sec%60;var t=document.getElementById('rfq-timer');if(t)t.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
 }
+/* ============ Showcase Polish Pack — logika demo ============
+   Wszystko ponizej dotyczy wylacznie profili showcase (Budowa / Dostawca /
+   Zarzadzanie). Zero zapytan do bazy, zero wplywu na Command.
+   Prefiks 'sc-' dla klas, zeby nie wejsc w nic istniejacego.
+   ============================================================ */
+
+/* p.8 i p.9: kontrolki, ktore wczesniej nie robily nic. Zamiast martwego
+   klikniecia — krotki, nieblokujacy komunikat. Bez alert(), bo blokuje watek. */
+var scToastT=null;
+function scSoon(msg){
+  var t=document.getElementById('sc-toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='sc-toast';
+    t.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(8px);'
+      +'max-width:calc(100% - 32px);background:#1e2f42;color:#fff;border:1px solid rgba(255,255,255,.14);'
+      +'border-radius:11px;padding:11px 15px;font-size:12px;line-height:1.45;z-index:200;'
+      +'box-shadow:0 8px 28px rgba(0,0,0,.45);opacity:0;transition:opacity .18s ease,transform .18s ease;'
+      +'pointer-events:none;text-align:center;';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  requestAnimationFrame(function(){
+    t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  });
+  if(scToastT)clearTimeout(scToastT);
+  scToastT=setTimeout(function(){
+    t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(8px)';
+  },2600);
+}
+
+/* p.5: pole kwoty oferty na s-bid nie mialo zadnej obslugi — mozna bylo wpisac
+   9 000, a prowizja i przychod stalyby w miejscu. Srednia rynkowa 12 450 zl
+   jest ta sama, ktora pokazuje ekran porownania ofert (s-compare). */
+var BID_MARKET=12450, BID_FEE_RATE=0.03;
+function scMoney(n){ return Math.round(n).toLocaleString('pl-PL')+' zł'; }
+function bidRecalc(){
+  var inp=document.getElementById('bid-amount'); if(!inp)return;
+  var v=parseFloat(inp.value); if(!isFinite(v)||v<0)v=0;
+  var fee=Math.round(v*BID_FEE_RATE), diff=BID_MARKET-v;
+  var set=function(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt;};
+  set('bid-net', scMoney(v)+' netto');
+  set('bid-fee', '−'+scMoney(fee));
+  set('bid-income', scMoney(v-fee));
+  var vs=document.getElementById('bid-vs-market');
+  if(vs){
+    if(diff>0){ vs.textContent='✓ Poniżej średniej rynkowej o '+scMoney(diff); vs.style.color='#22c55e'; }
+    else if(diff===0){ vs.textContent='= Dokładnie średnia rynkowa'; vs.style.color='#8a9ab0'; }
+    else { vs.textContent='▲ Powyżej średniej rynkowej o '+scMoney(-diff); vs.style.color='#f59e0b'; }
+  }
+}
+
+/* p.6: chipy terminu na s-bid byly martwymi divami, wygladajacymi identycznie
+   jak dzialajace chipy na s-rfq. Ten sam wzorzec co selD(). */
+function selBidTerm(n){
+  [1,2].forEach(function(i){
+    var el=document.getElementById('bd'+i); if(!el)return;
+    el.style.background=i===n?'#e8601c':'#1e2f42';
+    el.style.color=i===n?'#fff':'#8a9ab0';
+    el.style.fontWeight=i===n?'700':'400';
+    el.style.border=i===n?'none':'1px solid rgba(255,255,255,.07)';
+  });
+}
+
+/* p.7: "+ Dodaj" na s-rfq nie mialo onclick. Dopisuje edytowalny wiersz
+   do listy w DOM — bez zapisu, bo profil showcase nie ma warstwy danych. */
+function scDelRow(btn){ var r=btn.parentNode; if(r&&r.parentNode)r.parentNode.removeChild(r); }
+function rfqAddItem(){
+  var anchor=document.getElementById('rfq-total-row'); if(!anchor)return;
+  var row=document.createElement('div');
+  row.className='row';
+  row.style.gap='8px';
+  row.innerHTML='<input class="sc-i" placeholder="Nazwa materiału" style="flex:1;min-width:0;background:#1e2f42;'
+    +'border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 9px;color:#fff;font-size:12px;outline:none;">'
+    +'<input class="sc-i" type="number" min="0" placeholder="Ilość" style="width:74px;background:#1e2f42;'
+    +'border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 9px;color:#fff;font-size:12px;outline:none;">'
+    +'<button onclick="scDelRow(this)" title="Usuń pozycję" style="width:30px;height:30px;flex-shrink:0;'
+    +'background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#8a9ab0;font-size:13px;cursor:pointer;">✕</button>';
+  anchor.parentNode.insertBefore(row,anchor);
+  var f=row.querySelector('.sc-i'); if(f)f.focus();
+}
+
 function showBidOk(){
   var el=document.getElementById('bid-ok');el.style.display='block';
   setTimeout(function(){el.scrollIntoView({behavior:'smooth'});},100);
@@ -7043,11 +7068,9 @@ setTimeout(function(){
   var target=7842000,current=7820000;
   var iv=setInterval(function(){current+=Math.floor(Math.random()*50+10);if(current>=target){current=target;clearInterval(iv);}el.textContent=current.toLocaleString('pl-PL')+' zł';},60);
 },800);
-setInterval(function(){
-  var q=document.getElementById('stat-q'),s=document.getElementById('stat-s');
-  if(q)q.textContent=45+Math.floor(Math.random()*8);
-  if(s)s.textContent=15+Math.floor(Math.random()*5);
-},6000);
+/* Showcase Polish Pack p.1: statystyki byly losowane co 6 s (45-52 / 15-19).
+   Na demie liczba zmieniala sie w trakcie patrzenia i wygladalo to jak blad,
+   nie jak dane. Wartosci sa teraz stale i zgodne z tym, co mowi reszta ekranu. */
 var aiOpen=false,aiLoading=false,aiHist=[];
 var SYS='Jesteś OSG AI — asystentem budowlanym. Gdy użytkownik opisze zakres prac, odpowiedz listą materiałów: nazwa · ilość · ~cena. Na końcu powiedz "📋 Wyślij do 17 dostawców?" Odpowiadaj po polsku, krótko jak doświadczony majster.';
 function toggleAI(){
@@ -7502,8 +7525,12 @@ var memoryData=[
   {date:'20.06.2026 09:30',icon:'📷',type:'Zdjęcie',desc:'Zdjęcie dostawy — paleta Baumit przy wejściu, podpisano bez uwag.',author:'Kierowca',demo:true}
 ];
 var memoryDataDemoSeed=memoryData.slice(); // zachowujemy oryginalne demo osobno, żeby nie duplikować przy każdym wejściu w zakładkę
+var UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function loadMemory(clientId){
-  if(!sbEnabled){renderMemory();return;}
+  /* Showcase Polish Pack p.11: DEMO_CLIENT_ID='bemowo-demo' nie jest uuid,
+     a activities.client_id jest typu uuid — zapytanie i tak konczylo sie
+     bledem typu i cofnieciem do danych demo. Nie wolamy bazy bez potrzeby. */
+  if(!sbEnabled||!UUID_RE.test(String(clientId||''))){renderMemory();return;}
   sb.from('activities').select('*').eq('client_id',clientId).order('created_at',{ascending:false}).limit(50).then(function(res){
     if(res.error){console.warn('Błąd wczytywania Memory:',res.error);renderMemory();return;}
     var fetched=(res.data||[]).map(function(d){
