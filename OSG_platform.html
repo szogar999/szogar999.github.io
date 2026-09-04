@@ -6975,9 +6975,8 @@ function scSoon(msg){
     document.body.appendChild(t);
   }
   t.textContent=msg;
-  requestAnimationFrame(function(){
-    t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
-  });
+  var pokaz=function(){ t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; };
+  requestAnimationFrame(pokaz); setTimeout(pokaz,30);
   if(scToastT)clearTimeout(scToastT);
   scToastT=setTimeout(function(){
     t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(8px)';
@@ -6988,7 +6987,10 @@ function scSoon(msg){
    9 000, a prowizja i przychod stalyby w miejscu. Srednia rynkowa 12 450 zl
    jest ta sama, ktora pokazuje ekran porownania ofert (s-compare). */
 var BID_MARKET=12450, BID_FEE_RATE=0.03;
-function scMoney(n){ return Math.round(n).toLocaleString('pl-PL')+' zł'; }
+function scMoney(n){
+  var v=Math.round(Math.abs(n));
+  return (n<0?'−':'')+String(v).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0')+' zł';
+}
 function bidRecalc(){
   var inp=document.getElementById('bid-amount'); if(!inp)return;
   var v=parseFloat(inp.value); if(!isFinite(v)||v<0)v=0;
@@ -6999,7 +7001,8 @@ function bidRecalc(){
   set('bid-income', scMoney(v-fee));
   var vs=document.getElementById('bid-vs-market');
   if(vs){
-    if(diff>0){ vs.textContent='✓ Poniżej średniej rynkowej o '+scMoney(diff); vs.style.color='#22c55e'; }
+    if(v<=0){ vs.textContent='Wpisz kwotę oferty netto'; vs.style.color='#8a9ab0'; }
+    else if(diff>0){ vs.textContent='✓ Poniżej średniej rynkowej o '+scMoney(diff); vs.style.color='#22c55e'; }
     else if(diff===0){ vs.textContent='= Dokładnie średnia rynkowa'; vs.style.color='#8a9ab0'; }
     else { vs.textContent='▲ Powyżej średniej rynkowej o '+scMoney(-diff); vs.style.color='#f59e0b'; }
   }
