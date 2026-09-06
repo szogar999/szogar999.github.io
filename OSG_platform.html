@@ -693,6 +693,8 @@ button.pl-card:active,.pl-card[onclick]:active{transform:translateY(1px) scale(.
 .pl-btn.pl-lg{padding:16px 26px;font-size:16px;border-radius:14px;}
 .pl-btn:active{transform:scale(.975);}
 .pl-btn.pl-block{width:100%;}
+.pl-btn.pl-white{background:#fff;color:var(--pl-navy);}
+.pl-btn.pl-white:hover{background:#f2f4f8;}
 a.pl-btn,a.pl-link{text-decoration:none;}
 
 /* ---------- wiersze list ---------- */
@@ -704,6 +706,7 @@ button.pl-row{cursor:pointer;}
 button.pl-row:hover{background:var(--pl-surface-2);}
 button.pl-row:active{background:var(--pl-surface-3);}
 .pl-row-m{flex:1;min-width:0;display:flex;flex-direction:column;}
+.pl-row-m>.pl-chip{align-self:flex-start;}
 /* .pl-row-t i .pl-row-s to <span>-y — bez display:block zlewaly sie w jedna linie.
    Dokladnie ten sam blad zlapalismy wczesniej w kliencie; tu domykamy go od razu. */
 .pl-row-t{display:block;font-size:14.5px;font-weight:650;color:var(--pl-ink);line-height:1.3;}
@@ -1198,6 +1201,62 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 /* ---------- kolumna z mapa: na mobile lista przed mapa ---------- */
 .pl-mapcol{display:flex;flex-direction:column;}
 
+/* ---------- KPI dostawcy ---------- */
+.pl-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.pl-kpi>div{background:var(--pl-surface);border:1px solid var(--pl-line);border-radius:var(--pl-r);
+  box-shadow:var(--pl-sh);padding:16px 18px;}
+.pl-kpi b{display:block;font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.pl-kpi span{display:block;font-size:12px;color:var(--pl-ink-3);margin-top:7px;line-height:1.3;}
+.pl-kpi em{display:block;font-style:normal;font-size:11.5px;font-weight:700;margin-top:6px;}
+
+/* ---------- konkurencja ---------- */
+.pl-compet{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+.pl-cdots{display:flex;gap:5px;}
+.pl-cdot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);}
+.pl-cdot.pl-on{background:var(--pl-brand-2);}
+.pl-compet-t{font-size:13px;color:rgba(255,255,255,.68);}
+.pl-compet-t b{color:#fff;font-weight:700;}
+
+/* ---------- pozycja oferty wzgledem rynku ---------- */
+.pl-scale{margin-top:6px;}
+.pl-scale-t{position:relative;height:8px;border-radius:5px;
+  background:linear-gradient(90deg,var(--pl-ok-soft),var(--pl-surface-3) 55%,var(--pl-err-soft));
+  border:1px solid var(--pl-line);}
+.pl-scale-k{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;
+  background:var(--pl-ink-3);border-radius:2px;opacity:.75;}
+.pl-scale-m{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
+  background:var(--pl-brand);border:3px solid var(--pl-surface);box-shadow:var(--pl-sh);
+  transition:left 260ms var(--pl-e);}
+.pl-scale-l{display:flex;justify-content:space-between;gap:12px;margin-top:9px;font-size:11.5px;
+  color:var(--pl-ink-3);}
+.pl-scale-l b{display:block;color:var(--pl-ink-2);font-weight:700;font-variant-numeric:tabular-nums;
+  margin-top:2px;}
+.pl-scale-l>span:last-child{text-align:right;}
+
+/* ---------- miernik szansy ---------- */
+.pl-gauge-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.pl-gauge-n{font-size:34px;font-weight:800;letter-spacing:-.035em;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.pl-gauge-t{height:9px;border-radius:5px;background:var(--pl-surface-3);overflow:hidden;margin-top:13px;}
+.pl-gauge-f{display:block;height:100%;border-radius:5px;background:var(--pl-ok);
+  transition:width 300ms var(--pl-e),background-color 260ms;}
+
+/* ---------- karta leada ---------- */
+.pl-lead{padding:18px 20px;}
+.pl-lead-h{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.pl-lead-t{font-size:15.5px;font-weight:750;letter-spacing:-.015em;}
+.pl-lead-s{display:block;font-size:12.5px;color:var(--pl-ink-3);margin-top:4px;line-height:1.4;}
+.pl-lead-v{font-size:19px;font-weight:800;letter-spacing:-.028em;text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.pl-lead-f{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-top:15px;padding-top:14px;border-top:1px solid var(--pl-line-2);flex-wrap:wrap;}
+.pl-lead-m{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--pl-ink-3);}
+.pl-lead-m .pl-bar-t{width:74px;flex:none;}
+
+/* ---------- zegar odliczania ---------- */
+.pl-cd{font-variant-numeric:tabular-nums;}
+
 /* ---------- RESPONSYWNOSC ---------- */
 @media(max-width:1000px){
   .pl-hero,.pl-cols{grid-template-columns:1fr;}
@@ -1211,6 +1270,7 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-hero-main h1{font-size:32px;}
 }
 @media(max-width:720px){
+  .pl-kpi{grid-template-columns:1fr 1fr;}
   .pl-profiles{grid-template-columns:1fr;gap:12px;}
   .pl-proof{gap:0;}
   .pl-proof>div{padding:10px 18px;border-right:none;}
@@ -1275,6 +1335,7 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-bar-v{width:66px;font-size:12px;}
   .pl-price{font-size:17px;}
   .pl-mic{width:92px;height:92px;}
+  .pl-btn.pl-white{width:100%;justify-content:center;}
   .pl-rank{padding:17px 18px;}
   .pl-rank-nm{font-size:15px;}
   .pl-rank-h{gap:12px;}
@@ -1286,6 +1347,12 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   .pl-map .pl-ms{font-size:17px;}
   .pl-map .pl-mw{font-size:16px;}
   .pl-map .pl-mc{font-size:19px;}
+  .pl-kpi{gap:10px;}
+  .pl-kpi>div{padding:14px;}
+  .pl-kpi b{font-size:21px;}
+  .pl-lead{padding:16px 18px;}
+  .pl-lead-v{font-size:17px;}
+  .pl-gauge-n{font-size:29px;}
   /* Na 390 px iskierka zjada szerokosc nazwy materialu — nazwa jest wazniejsza. */
   .pl-spark{display:none;}
   /* Karta z akcja po prawej: przycisk schodzi do wlasnego wiersza zamiast dusic tytul. */
@@ -2098,89 +2165,294 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-supplier">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-home')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Panel Dostawcy</span><div style="background:rgba(34,197,94,.15);color:#22c55e;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;">● ONLINE</div></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div class="card" style="padding:12px;display:flex;gap:11px;align-items:center;">
-    <div style="width:46px;height:46px;background:#1e2f42;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;">🏪</div>
-    <div><div style="font-size:14px;font-weight:700;">3W Budowlana</div><div style="font-size:11px;color:#8a9ab0;">Partner OSG · 🛡️ OSG Verified</div><div style="font-size:11px;color:#22c55e;margin-top:2px;">★ 4.6 · 94% terminowość</div></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
-    <div class="card" style="padding:11px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#e8601c;">7</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Nowe leady</div></div>
-    <div class="card" style="padding:11px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#22c55e;">23</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Wygranych</div></div>
-    <div class="card" style="padding:11px;text-align:center;"><div style="font-size:22px;font-weight:800;">94%</div><div style="font-size:10px;color:#8a9ab0;margin-top:1px;">Terminowość</div></div>
-  </div>
-  <div style="background:linear-gradient(135deg,rgba(232,96,28,.12),rgba(232,96,28,.04));border:1px solid rgba(232,96,28,.5);border-radius:13px;padding:13px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><div style="font-size:14px;font-weight:800;">🔥 Gorące leady</div><div style="background:#e8601c;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;">5 dziś</div></div>
-    <div style="font-size:11px;color:#8a9ab0;margin-bottom:10px;">Gotowe leady zakupowe — nie zimne kontakty.</div>
-    <div style="display:flex;flex-direction:column;gap:7px;">
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:10px;color:#8a9ab0;">SMS30+GK+Profile · pilne</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">15 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Pruszków</div><div style="font-size:10px;color:#8a9ab0;">Styropian grafit 300m²</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">31 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
-      <div style="background:rgba(0,0,0,.2);border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:12px;font-weight:700;">Warszawa Wola</div><div style="font-size:10px;color:#8a9ab0;">Chemia + BHP</div></div><div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#22c55e;">12 000 zł</div><button onclick="go('s-bid')" style="background:#e8601c;color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-top:3px;display:block;width:100%;">Złóż ofertę</button></div></div>
+<div class="screen pl" id="s-supplier">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-onboarding')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">3W Budowlana</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-ok"><span class="pl-dot pl-live"></span>przyjmujesz zapytania</span>
+</div></header>
+
+<div class="pl-wrap">
+  <section class="pl-track pl-in" style="margin-top:24px;">
+    <span class="pl-eyebrow">Zapytanie wygasa najszybciej</span>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:10px;">
+      <div>
+        <div class="pl-eta pl-cd" id="sup-countdown">41:20</div>
+        <span class="pl-eta-s">Warszawa Bemowo &middot; SMS30 &times; 40, CT17 &times; 20, GK &times; 80</span>
+      </div>
+      <div class="pl-track-r">
+        <span class="pl-eta-s" style="margin-top:0;">Budżet klienta</span>
+        <span style="display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;margin-top:4px;">do 15 000 zł</span>
+      </div>
     </div>
-    <div style="margin-top:9px;font-size:11px;color:#8a9ab0;text-align:center;">Łączna wartość: <span style="color:#22c55e;font-weight:700;">58 000 zł dziś</span></div>
-  </div>
-  <div style="background:#162130;border:1px solid rgba(59,130,246,.3);border-radius:13px;padding:13px;">
-    <div style="font-size:13px;font-weight:800;margin-bottom:10px;">📊 Szanse wygranej</div>
-    <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:12px;font-weight:700;">Warszawa Bemowo</div><div style="font-size:11px;color:#22c55e;font-weight:700;">82%</div></div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:#8a9ab0;">Lead: 15 000 zł</span><span style="color:#22c55e;font-weight:700;">Oferta: 11 200 zł</span></div>
-      <div style="background:rgba(34,197,94,.1);border-radius:4px;height:5px;"><div style="background:#22c55e;height:100%;width:82%;border-radius:4px;"></div></div>
+
+    <div class="pl-compet" style="margin-top:24px;">
+      <span class="pl-cdots">
+        <span class="pl-cdot pl-on"></span><span class="pl-cdot pl-on"></span><span class="pl-cdot"></span>
+        <span class="pl-cdot"></span><span class="pl-cdot"></span><span class="pl-cdot"></span>
+      </span>
+      <span class="pl-compet-t"><b>2 z 6</b> firm już złożyło ofertę</span>
     </div>
-    <div style="background:#1e2f42;border-radius:10px;padding:11px 13px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:12px;font-weight:700;">Pruszków</div><div style="font-size:11px;color:#f59e0b;font-weight:700;">45%</div></div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:#8a9ab0;">Lead: 31 000 zł</span><span style="color:#f59e0b;font-weight:700;">Oferta: 29 500 zł</span></div>
-      <div style="background:rgba(245,158,11,.1);border-radius:4px;height:5px;"><div style="background:#f59e0b;height:100%;width:45%;border-radius:4px;"></div></div>
+
+    <button class="pl-btn pl-lg pl-white" style="margin-top:22px;"
+      onclick="go('s-bid')"><i data-pl-ico="coins" data-pl-s="18"></i>Złóż ofertę</button>
+  </section>
+
+  <div class="pl-kpi pl-in-2" style="margin-top:14px;">
+    <div><b style="color:var(--pl-brand);">7</b><span>nowych zapytań</span><em style="color:var(--pl-brand);">5 wygasa dziś</em></div>
+    <div><b>38%</b><span>skuteczność ofert</span><em style="color:var(--pl-ok);">+4 pkt m/m</em></div>
+    <div><b>23</b><span>wygrane w tym miesiącu</span><em style="color:var(--pl-ink-3);">z 61 ofert</em></div>
+    <div><b style="color:var(--pl-ok);">58 400 zł</b><span>przychód z OSG</span><em style="color:var(--pl-ok);">+12% m/m</em></div>
+  </div>
+
+  <div class="pl-cols" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Kolejka zapytań</span>
+          <span class="pl-chip">7 otwartych &middot; 58 000 zł</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+
+          <div class="pl-card pl-lead" style="border-color:var(--pl-brand);">
+            <div class="pl-lead-h">
+              <span class="pl-row-m">
+                <span class="pl-chip pl-err" style="margin-bottom:8px;"><i data-pl-ico="clock" data-pl-s="13"></i>wygasa za 41 min</span>
+                <span class="pl-lead-t">Warszawa Bemowo</span>
+                <span class="pl-lead-s">SMS30 &times; 40, CT17 &times; 20, GK &times; 80 &middot; dostawa dziś do 14:00</span>
+              </span>
+              <span><span class="pl-lead-v">15 000 zł</span>
+                <span class="pl-lead-s" style="text-align:right;">budżet klienta</span></span>
+            </div>
+            <div class="pl-lead-f">
+              <span class="pl-lead-m">
+                <span>Twoja szansa</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:82%;background:var(--pl-ok);"></span></span>
+                <b style="color:var(--pl-ok);font-weight:750;">82%</b>
+              </span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-bid')"><i data-pl-ico="coins" data-pl-s="15"></i>Złóż ofertę</button>
+            </div>
+          </div>
+
+          <div class="pl-card pl-lead">
+            <div class="pl-lead-h">
+              <span class="pl-row-m">
+                <span class="pl-chip pl-warn" style="margin-bottom:8px;"><i data-pl-ico="clock" data-pl-s="13"></i>wygasa za 3 h</span>
+                <span class="pl-lead-t">Pruszków</span>
+                <span class="pl-lead-s">Styropian grafit 300 m&sup2; &middot; odbiór własny klienta</span>
+              </span>
+              <span><span class="pl-lead-v">31 000 zł</span>
+                <span class="pl-lead-s" style="text-align:right;">budżet klienta</span></span>
+            </div>
+            <div class="pl-lead-f">
+              <span class="pl-lead-m">
+                <span>Twoja szansa</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:45%;background:var(--pl-warn);"></span></span>
+                <b style="color:var(--pl-warn);font-weight:750;">45%</b>
+              </span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-bid')"><i data-pl-ico="coins" data-pl-s="15"></i>Złóż ofertę</button>
+            </div>
+          </div>
+
+          <div class="pl-card pl-lead">
+            <div class="pl-lead-h">
+              <span class="pl-row-m">
+                <span class="pl-chip" style="margin-bottom:8px;"><i data-pl-ico="clock" data-pl-s="13"></i>wygasa jutro</span>
+                <span class="pl-lead-t">Warszawa Wola</span>
+                <span class="pl-lead-s">Chemia budowlana + BHP &middot; dostawa w piątek</span>
+              </span>
+              <span><span class="pl-lead-v">12 000 zł</span>
+                <span class="pl-lead-s" style="text-align:right;">budżet klienta</span></span>
+            </div>
+            <div class="pl-lead-f">
+              <span class="pl-lead-m">
+                <span>Twoja szansa</span>
+                <span class="pl-bar-t"><span class="pl-bar-f" style="width:64%;background:var(--pl-ok);"></span></span>
+                <b style="color:var(--pl-ok);font-weight:750;">64%</b>
+              </span>
+              <button class="pl-btn pl-pri pl-sm" onclick="go('s-bid')"><i data-pl-ico="coins" data-pl-s="15"></i>Złóż ofertę</button>
+            </div>
+          </div>
+        </div>
+        <p class="pl-meta" style="margin-top:13px;">Pozostałe cztery zapytania mają terminy na przyszły tydzień &mdash; zajmij się nimi po pilnych.</p>
+      </section>
+
+      <section class="pl-sec">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Oferty w grze</span>
+          <span class="pl-chip">2 czekają na decyzję</span></div>
+        <div class="pl-card">
+          <button class="pl-row" onclick="go('s-bid')">
+            <span class="pl-ico pl-sm pl-ok"><i data-pl-ico="coins" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Warszawa Bemowo &middot; 11 200 zł</span>
+              <span class="pl-row-s">Budżet 15 000 zł &middot; złożona 22 min temu</span></span>
+            <span class="pl-chip pl-ok">szansa 82%</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+          <button class="pl-row" onclick="go('s-bid')">
+            <span class="pl-ico pl-sm pl-warn"><i data-pl-ico="coins" data-pl-s="17"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">Pruszków &middot; 29 500 zł</span>
+              <span class="pl-row-s">Budżet 31 000 zł &middot; złożona wczoraj</span></span>
+            <span class="pl-chip pl-warn">szansa 45%</span>
+            <span class="pl-chev"><i data-pl-ico="chev" data-pl-s="16"></i></span></button>
+        </div>
+      </section>
     </div>
-  </div>
-  <div style="font-size:14px;font-weight:800;">⭐ Oceny budów przez dostawców</div>
-  <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Budowa Bemowo — Jan K.</div></div><div style="text-align:right;"><div style="font-size:12px;color:#22c55e;font-weight:700;">⭐⭐⭐⭐⭐</div><div style="font-size:10px;color:#8a9ab0;">Płatność na czas</div></div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Budowa Wola — Adam P.</div></div><div style="text-align:right;"><div style="font-size:12px;color:#f59e0b;font-weight:700;">⭐⭐⭐</div><div style="font-size:10px;color:#8a9ab0;">Opóźnienia w odbiorach</div></div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:700;">Budowa Ursus — Piotr W.</div></div><div style="text-align:right;"><div style="font-size:12px;color:#22c55e;font-weight:700;">⭐⭐⭐⭐</div><div style="font-size:10px;color:#8a9ab0;">Dobra współpraca</div></div></div>
-  </div>
-  <div style="font-size:14px;font-weight:800;">Historia wygranych</div>
-  <div class="card">
-    <div class="row"><div><div style="font-size:13px;font-weight:600;">Gładź Baumit × 30</div><div style="font-size:10px;color:#8a9ab0;">Wola · 19 cze</div></div><div style="font-size:16px;font-weight:800;color:#22c55e;">1 840 zł</div></div>
-    <div class="row"><div><div style="font-size:13px;font-weight:600;">Styropian EPS · 50m²</div><div style="font-size:10px;color:#8a9ab0;">Ursynów · 18 cze</div></div><div style="font-size:16px;font-weight:800;color:#22c55e;">3 200 zł</div></div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-insight pl-info">
+          <span class="pl-ico pl-info"><i data-pl-ico="spark" data-pl-s="20"></i></span>
+          <span class="pl-insight-m">
+            <span class="pl-insight-k">Co podnosi skuteczność</span>
+            <span class="pl-insight-t">Odpowiadaj w pierwszej godzinie</span>
+            <span class="pl-insight-s">Twoje oferty złożone w ciągu 60 minut wygrywają w <b>52%</b> przypadków. Po sześciu godzinach spada to do <b>19%</b>.</span>
+          </span>
+        </div>
+
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Twoja pozycja w OSG</span>
+          <div style="display:flex;align-items:center;gap:13px;margin-top:13px;">
+            <span class="pl-ico pl-lg"><i data-pl-ico="store" data-pl-s="24"></i></span>
+            <span class="pl-row-m"><span class="pl-row-t">3W Budowlana</span>
+              <span class="pl-row-s">3. miejsce w rankingu rejonu</span></span>
+          </div>
+          <div class="pl-kv" style="margin-top:14px;"><span>Terminowość</span><b>91%</b></div>
+          <div class="pl-kv"><span>Średni czas odpowiedzi</span><b>15 min</b></div>
+          <div class="pl-kv"><span>Ocena klientów</span><b>4,6 / 5</b></div>
+          <div class="pl-kv"><span>Do OSG Verified</span><b style="color:var(--pl-warn);">brakuje 2 pkt</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Znak dostają hurtownie z terminowością powyżej 93%.</p>
+        </div>
+
+        <section class="pl-sec" style="margin-top:0;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Ostatnio wygrane</span></div>
+          <div class="pl-card">
+            <div class="pl-row"><span class="pl-ico pl-sm pl-ok"><i data-pl-ico="check" data-pl-s="17" data-pl-w="2.4"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Gładź Baumit &times; 30</span>
+                <span class="pl-row-s">Wola &middot; 19 czerwca</span></span>
+              <span class="pl-row-v pl-num" style="color:var(--pl-ok);">1 840 zł</span></div>
+            <div class="pl-row"><span class="pl-ico pl-sm pl-ok"><i data-pl-ico="check" data-pl-s="17" data-pl-w="2.4"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Styropian EPS &middot; 50 m&sup2;</span>
+                <span class="pl-row-s">Ursynów &middot; 18 czerwca</span></span>
+              <span class="pl-row-v pl-num" style="color:var(--pl-ok);">3 200 zł</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 </div>
 <div class="nav"></div>
 </div>
 
-<div class="screen sc-w" id="s-bid">
-<div style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.06));border-bottom:1px solid rgba(245,158,11,.35);padding:7px 14px;font-size:10px;font-weight:800;color:#f59e0b;text-align:center;letter-spacing:.3px;">🎭 SHOWCASE / DEMO — dane przykładowe, nie realna praca firmy</div>
-<div class="hdr"><button class="back" onclick="go('s-supplier')">←</button><span style="font-size:18px;font-weight:800;flex:1;">Złóż ofertę</span></div>
-<div style="padding:13px 16px;display:flex;flex-direction:column;gap:11px;">
-  <div style="background:rgba(232,96,28,.08);border:1px solid rgba(232,96,28,.3);border-radius:13px;padding:13px;">
-    <div style="font-size:10px;color:#e8601c;font-weight:700;text-transform:uppercase;margin-bottom:4px;">🔴 PILNE · dziś do 14:00</div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:3px;">SMS30 × 40, CT17 × 20, GK × 80</div>
-    <div style="font-size:11px;color:#8a9ab0;">📍 Warszawa Bemowo · do 15 000 zł · 6 firm konkuruje</div>
+<div class="screen pl" id="s-bid">
+<div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
+<header class="pl-top"><div class="pl-top-in">
+  <button class="pl-back" onclick="go('s-supplier')" title="Wróć"><i data-pl-ico="back" data-pl-s="18"></i></button>
+  <span class="pl-top-h">Twoja oferta</span>
+  <span style="flex:1;"></span>
+  <span class="pl-chip pl-err"><i data-pl-ico="clock" data-pl-s="13"></i>wygasa za 41 min</span>
+</div></header>
+
+<div class="pl-wrap">
+  <div class="pl-head pl-in">
+    <span class="pl-eyebrow">Warszawa Bemowo &middot; pilne, dziś do 14:00</span>
+    <h1>SMS30 &times; 40, CT17 &times; 20, GK &times; 80</h1>
+    <p>Budżet klienta do 15 000 zł. Konkuruje sześć firm, dwie już złożyły ofertę.</p>
   </div>
-  <div class="card">
-    <div style="padding:13px;border-bottom:1px solid rgba(255,255,255,.07);">
-      <div style="font-size:11px;color:#8a9ab0;font-weight:700;text-transform:uppercase;margin-bottom:9px;">💰 Twoja oferta</div>
-      <div style="display:flex;align-items:center;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;overflow:hidden;margin-bottom:7px;">
-        <input id="bid-amount" type="number" value="11200" oninput="bidRecalc()" style="flex:1;min-width:0;background:transparent;border:none;outline:none;padding:11px 12px;color:#fff;font-size:21px;font-weight:800;">
-        <div style="padding:0 12px;color:#8a9ab0;font-size:13px;">zł</div>
+
+  <div class="pl-cols pl-in-2" style="margin-top:26px;">
+    <div>
+      <section class="pl-sec" style="margin-top:0;">
+        <div class="pl-sec-h"><span class="pl-eyebrow">Kwota oferty</span>
+          <span class="pl-chip">netto, z dostawą</span></div>
+        <div class="pl-card pl-card-p">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input id="bid-amount" class="pl-inp pl-num" type="number" value="11200" oninput="bidRecalc()"
+              style="font-size:30px;font-weight:800;letter-spacing:-.03em;padding:14px 16px;">
+            <span style="font-size:19px;font-weight:700;color:var(--pl-ink-2);flex-shrink:0;">zł</span>
+          </div>
+          <div id="bid-vs-market" class="pl-delta pl-down" style="margin-top:13px;">Poniżej średniej rynkowej o 1 250 zł</div>
+
+          <div class="pl-scale" style="margin-top:22px;">
+            <div class="pl-scale-t">
+              <span class="pl-scale-k" style="left:48.7%;" title="Najniższa znana oferta: 11 450 zł"></span>
+              <span class="pl-scale-m" id="bid-marker" style="left:35.9%;"></span>
+            </div>
+            <div class="pl-scale-l">
+              <span>Agresywnie<b>10 500 zł</b></span>
+              <span>Średnia rynkowa<b>12 450 zł</b></span>
+            </div>
+            <p class="pl-meta" style="margin-top:9px;">Kreska na skali to najniższa znana oferta w tym zapytaniu &mdash; 11 450 zł.</p>
+          </div>
+
+          <div style="margin-top:22px;">
+            <span class="pl-eyebrow" style="display:block;margin-bottom:10px;">Termin dostawy</span>
+            <div class="pl-seg">
+              <button class="pl-segb pl-on" id="bd1" onclick="selBidTerm(1)"><i data-pl-ico="truck" data-pl-s="16"></i>Dziś do 14:00</button>
+              <button class="pl-segb" id="bd2" onclick="selBidTerm(2)"><i data-pl-ico="clock" data-pl-s="16"></i>Jutro rano</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="pl-card pl-card-p" style="margin-top:14px;">
+        <span class="pl-eyebrow" style="display:block;">Szansa na wygraną</span>
+        <div class="pl-gauge-h" style="margin-top:11px;">
+          <span class="pl-gauge-n" id="bid-chance-n" style="color:var(--pl-ok);">82%</span>
+          <span class="pl-row-s" id="bid-chance-t">przy tej kwocie i terminie</span>
+        </div>
+        <span class="pl-gauge-t"><span class="pl-gauge-f" id="bid-chance-b" style="width:82%;"></span></span>
+        <p class="pl-meta" style="margin-top:13px;">Szacunek z 61 Twoich ofert w tym rejonie. Termin „dziś" podnosi szansę o kilka punktów.</p>
       </div>
-      <div id="bid-vs-market" style="font-size:11px;color:#22c55e;margin-bottom:9px;">✓ Poniżej średniej rynkowej o 1 250 zł</div>
-      <div style="display:flex;gap:7px;">
-        <div id="bd1" onclick="selBidTerm(1)" style="flex:1;padding:9px;background:#e8601c;border-radius:8px;text-align:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;">Dziś do 14:00</div>
-        <div id="bd2" onclick="selBidTerm(2)" style="flex:1;padding:9px;background:#1e2f42;border:1px solid rgba(255,255,255,.07);border-radius:8px;text-align:center;font-size:11px;color:#8a9ab0;cursor:pointer;">Jutro rano</div>
+
+      <div class="pl-card" style="margin-top:14px;">
+        <div class="pl-tot"><span>Twoja oferta</span><b id="bid-net">11 200 zł netto</b></div>
+        <div class="pl-tot"><span>Prowizja OSG (3%)</span><b id="bid-fee">&minus;336 zł</b></div>
+        <div class="pl-tot-g"><span>Twój przychód</span><b id="bid-income" style="color:var(--pl-ok);">10 864 zł</b></div>
+      </div>
+
+      <button class="pl-btn pl-pri pl-lg pl-block" style="margin-top:14px;" onclick="showBidOk()">
+        <i data-pl-ico="send" data-pl-s="18"></i>Wyślij ofertę</button>
+      <p class="pl-meta" style="text-align:center;margin-top:9px;">Oferta jest wiążąca przez 2 godziny.</p>
+
+      <div id="bid-ok" style="display:none;margin-top:16px;">
+        <div class="pl-card pl-feat" style="cursor:default;border-color:var(--pl-ok);">
+          <span class="pl-ico pl-lg pl-ok"><i data-pl-ico="check" data-pl-s="24" data-pl-w="2.4"></i></span>
+          <span class="pl-row-m"><span class="pl-row-t" style="font-size:16px;">Oferta wysłana do klienta</span>
+            <span class="pl-row-s">Ważna 2 godziny. Damy znać, gdy klient ją otworzy albo wybierze inną.</span></span>
+        </div>
       </div>
     </div>
-    <div style="padding:13px;background:rgba(34,197,94,.05);">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Twoja oferta</span><span id="bid-net" style="font-size:12px;color:#22c55e;font-weight:700;">11 200 zł netto</span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#8a9ab0;">Prowizja OSG (3%)</span><span id="bid-fee" style="font-size:12px;color:#8a9ab0;">−336 zł</span></div>
-      <div style="border-top:1px solid rgba(255,255,255,.07);margin-top:7px;padding-top:7px;display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:700;">Twój przychód</span><span id="bid-income" style="font-size:18px;font-weight:800;color:#22c55e;">10 864 zł</span></div>
+
+    <div>
+      <div class="pl-side">
+        <div class="pl-card pl-card-p">
+          <span class="pl-eyebrow" style="display:block;">Konkurencja</span>
+          <div class="pl-kv" style="margin-top:12px;"><span>Zaproszonych firm</span><b>6</b></div>
+          <div class="pl-kv"><span>Złożyło ofertę</span><b>2</b></div>
+          <div class="pl-kv"><span>Najniższa znana</span><b>11 450 zł</b></div>
+          <div class="pl-kv"><span>Średnia rynkowa</span><b>12 450 zł</b></div>
+          <p class="pl-meta" style="margin-top:12px;">Nie pokazujemy, kto złożył ofertę ani dokładnych kwot konkurencji &mdash; tylko widełki rynku.</p>
+        </div>
+
+        <section class="pl-sec" style="margin-top:0;">
+          <div class="pl-sec-h"><span class="pl-eyebrow">Czego oczekuje klient</span></div>
+          <div class="pl-card">
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">SMS30 Klej 25 kg</span>
+                <span class="pl-row-s">Baumit &middot; 2 palety</span></span>
+              <span class="pl-row-v pl-num">&times; 40</span></div>
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">CT17 Tynk 25 kg</span>
+                <span class="pl-row-s">Baumit &middot; 1 paleta</span></span>
+              <span class="pl-row-v pl-num">&times; 20</span></div>
+            <div class="pl-row"><span class="pl-ico pl-sm"><i data-pl-ico="box" data-pl-s="17"></i></span>
+              <span class="pl-row-m"><span class="pl-row-t">Płyta GK 12,5 mm</span>
+                <span class="pl-row-s">Knauf &middot; rozładunek HDS po Twojej stronie</span></span>
+              <span class="pl-row-v pl-num">&times; 80</span></div>
+          </div>
+          <p class="pl-meta" style="margin-top:12px;">Klient nie kupował u Ciebie wcześniej. Wygrana wchodzi w jego historię i podnosi Twoją pozycję w rankingu rejonu.</p>
+        </section>
+      </div>
     </div>
-  </div>
-  <button class="btn" onclick="showBidOk()">✅ Wyślij ofertę do klienta</button>
-  <div id="bid-ok" style="display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:13px;padding:16px;text-align:center;">
-    <div style="font-size:28px;margin-bottom:6px;">🎉</div>
-    <div style="font-size:15px;font-weight:700;">Oferta wysłana! Ważna 2 godziny.</div>
   </div>
 </div>
 <div class="nav"></div>
@@ -8662,13 +8934,20 @@ function scMoney(n){
   var v=Math.round(Math.abs(n));
   return (n<0?'−':'')+String(v).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0')+' zł';
 }
+/* Skala oferty: od kwoty agresywnej do sredniej rynkowej.
+   Znacznik pokazuje, gdzie stoi wpisana kwota; kreska — najnizsza znana oferta. */
+var BID_LOW=10500, BID_KNOWN=11450;
+function bidTermBonus(){
+  var el=document.getElementById('bd1');
+  return el&&el.classList.contains('pl-on')?7:0;
+}
 function bidRecalc(){
   var inp=document.getElementById('bid-amount'); if(!inp)return;
   var v=parseFloat(inp.value); if(!isFinite(v)||v<0)v=0;
   var fee=Math.round(v*BID_FEE_RATE), diff=BID_MARKET-v;
   var set=function(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt;};
   if(v<=0){
-    /* Pusta kwota: neutralna kreska zamiast "0 zl" i "−0 zl" — spojnie
+    /* Pusta kwota: neutralna kreska zamiast "0 zl" i "-0 zl" — spojnie
        z tym, jak reszta formularzy pokazuje brak wartosci. */
     set('bid-net','—'); set('bid-fee','—'); set('bid-income','—');
   }else{
@@ -8676,29 +8955,42 @@ function bidRecalc(){
     set('bid-fee', '−'+scMoney(fee));
     set('bid-income', scMoney(v-fee));
   }
+  /* Pozycja wzgledem rynku — klasa, nie kolor inline. */
   var vs=document.getElementById('bid-vs-market');
   if(vs){
-    if(v<=0){ vs.textContent='Wpisz kwotę oferty netto'; vs.style.color='#8a9ab0'; }
-    else if(diff>0){ vs.textContent='✓ Poniżej średniej rynkowej o '+scMoney(diff); vs.style.color='#22c55e'; }
-    else if(diff===0){ vs.textContent='= Dokładnie średnia rynkowa'; vs.style.color='#8a9ab0'; }
-    else { vs.textContent='▲ Powyżej średniej rynkowej o '+scMoney(-diff); vs.style.color='#f59e0b'; }
+    vs.classList.remove('pl-down','pl-up','pl-flat');
+    if(v<=0){ vs.textContent='Wpisz kwotę oferty netto'; vs.classList.add('pl-flat'); }
+    else if(diff>0){ vs.textContent='Poniżej średniej rynkowej o '+scMoney(diff); vs.classList.add('pl-down'); }
+    else if(diff===0){ vs.textContent='Dokładnie średnia rynkowa'; vs.classList.add('pl-flat'); }
+    else { vs.textContent='Powyżej średniej rynkowej o '+scMoney(-diff); vs.classList.add('pl-up'); }
   }
+  var m=document.getElementById('bid-marker');
+  if(m){
+    var pos=(v-BID_LOW)/(BID_MARKET-BID_LOW)*100;
+    if(!isFinite(pos))pos=0;
+    m.style.left=Math.max(0,Math.min(100,pos)).toFixed(1)+'%';
+  }
+  /* Szansa: im nizej wzgledem rynku, tym wyzej — plus premia za termin „dzis". */
+  var ch=0;
+  if(v>0)ch=Math.round(Math.max(4,Math.min(95, 50+(diff/BID_MARKET)*250+bidTermBonus() )));
+  var n=document.getElementById('bid-chance-n'), b=document.getElementById('bid-chance-b'),
+      t=document.getElementById('bid-chance-t');
+  var col=ch>=70?'var(--pl-ok)':(ch>=45?'var(--pl-warn)':'var(--pl-err)');
+  if(n){ n.textContent=v>0?ch+'%':'—'; n.style.color=v>0?col:'var(--pl-ink-3)'; }
+  if(b){ b.style.width=(v>0?ch:0)+'%'; b.style.background=col; }
+  if(t){ t.textContent=v>0?'przy tej kwocie i terminie':'wpisz kwotę, żeby policzyć'; }
 }
 
-/* p.6: chipy terminu na s-bid byly martwymi divami, wygladajacymi identycznie
-   jak dzialajace chipy na s-rfq. Ten sam wzorzec co selD(). */
+/* p.6: chipy terminu na s-bid byly martwymi divami. Teraz przelaczaja klase
+   .pl-on i przeliczaja szanse, bo termin realnie na nia wplywa. */
 function selBidTerm(n){
   [1,2].forEach(function(i){
-    var el=document.getElementById('bd'+i); if(!el)return;
-    el.style.background=i===n?'#e8601c':'#1e2f42';
-    el.style.color=i===n?'#fff':'#8a9ab0';
-    el.style.fontWeight=i===n?'700':'400';
-    el.style.border=i===n?'none':'1px solid rgba(255,255,255,.07)';
+    var el=document.getElementById('bd'+i);
+    if(el)el.classList.toggle('pl-on',i===n);
   });
+  bidRecalc();
 }
 
-/* p.7: "+ Dodaj" na s-rfq nie mialo onclick. Dopisuje edytowalny wiersz
-   do listy w DOM — bez zapisu, bo profil showcase nie ma warstwy danych. */
 function scDelRow(btn){ var r=btn.parentNode; if(r&&r.parentNode)r.parentNode.removeChild(r); }
 function rfqAddItem(){
   var anchor=document.getElementById('rfq-total-row'); if(!anchor)return;
@@ -8749,6 +9041,18 @@ function doVoice(){
   r.onerror=r.onend=function(){idle();if(st.textContent==='Slucham…')st.textContent='Nacisnij, aby mowic';};
   r.start();
 }
+/* Odliczanie do wygasniecia najpilniejszego zapytania na panelu Dostawcy.
+   Czysta prezentacja — zero zapytan do bazy. */
+/* Init po przypisaniu BID_MARKET/BID_FEE_RATE — wczesniej byloby NaN. */
+try{ bidRecalc(); }catch(e){}
+var supSec=41*60+20;
+setInterval(function(){
+  if(supSec>0)supSec--;
+  var m=Math.floor(supSec/60), sec=supSec%60;
+  var el=document.getElementById('sup-countdown');
+  if(el)el.textContent=m+':'+(sec<10?'0':'')+sec;
+},1000);
+
 var offerSec=6120;
 setInterval(function(){
   if(offerSec>0)offerSec--;
