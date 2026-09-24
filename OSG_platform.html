@@ -1391,6 +1391,38 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 </div>
 </div>
 
+<!-- ==================== BRAMKA AUTH: konto bez roli wewnetrznej ====================
+     Profil w public.users tworzy WYLACZNIE trigger bazy (migracja 0001).
+     Frontend nigdy nie robi INSERT do public.users i nigdy nie nadaje roli.
+     role='none' = konto istnieje, ale nie ma uprawnien pracowniczych. -->
+<div class="screen" id="s-pending-role">
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;">
+  <div style="font-size:44px;line-height:1;margin-bottom:18px;">&#9203;</div>
+  <div style="font-size:19px;font-weight:800;color:#fff;margin-bottom:10px;">Konto oczekuje na nadanie uprawnie&#324;</div>
+  <div style="font-size:13px;color:#8a9ab0;max-width:360px;line-height:1.6;">
+    Twoje konto zosta&#322;o utworzone poprawnie, ale nie ma jeszcze przypisanej roli w OSG Command.
+    Skontaktuj si&#281; z administratorem, aby nada&#322; Ci uprawnienia.
+  </div>
+  <div id="pending-email" style="margin-top:16px;font-size:12px;color:#5a6a80;"></div>
+  <button onclick="doLogout()" style="margin-top:26px;background:none;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;color:#8a9ab0;font-size:12px;cursor:pointer;">Wyloguj si&#281;</button>
+</div>
+</div>
+
+<!-- Sesja poprawna, ale profilu w public.users nie da sie odczytac.
+     Kontrolowany blad. Zadnego INSERT-u ratunkowego z frontendu. -->
+<div class="screen" id="s-profile-error">
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;">
+  <div style="font-size:44px;line-height:1;margin-bottom:18px;">&#9888;&#65039;</div>
+  <div style="font-size:19px;font-weight:800;color:#fff;margin-bottom:10px;">Nie uda&#322;o si&#281; za&#322;adowa&#263; profilu u&#380;ytkownika</div>
+  <div style="font-size:13px;color:#8a9ab0;max-width:360px;line-height:1.6;">
+    Zalogowano poprawnie, ale profil u&#380;ytkownika jest niedost&#281;pny.
+    Skontaktuj si&#281; z administratorem.
+  </div>
+  <div id="profile-error-detail" style="margin-top:16px;font-size:11px;color:#5a6a80;font-family:ui-monospace,Menlo,monospace;max-width:360px;word-break:break-word;"></div>
+  <button onclick="doLogout()" style="margin-top:26px;background:none;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;color:#8a9ab0;font-size:12px;cursor:pointer;">Wyloguj si&#281;</button>
+</div>
+</div>
+
 <div class="screen pl" id="s-onboarding">
 <div class="pl-demo">Wersja demonstracyjna &mdash; <b>dane przykładowe</b>, nie realna praca firmy</div>
 <div class="pl-ob"><div class="pl-wrap"><div class="pl-ob-in pl-in">
@@ -4394,7 +4426,7 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 </div>
 
 <script>
-var APP_VERSION = 'v0.69.0-final';
+var APP_VERSION = 'v0.86.0-auth-compat';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -4428,7 +4460,12 @@ try{
 var currentUser=null;   // obiekt Supabase Auth user
 var currentUid=null;
 var currentName='Oskar';
-var currentRole='owner'; // 'owner' | 'admin' | 'sales' | 'driver'
+var currentRole=null; // null | 'none' | 'owner' | 'admin' | 'sales' | 'driver'
+/* Brak roli to brak roli. Zaden zalogowany uzytkownik nie dostaje roli
+   operacyjnej domyslnie — role nadaje wylacznie baza (public.users.role,
+   ustawiana przez admin_set_user_role). Tryb demo ustawia ja jawnie. */
+var INTERNAL_ROLES=['owner','admin','sales','driver'];
+function isInternalRole(r){ return INTERNAL_ROLES.indexOf(r)>-1; }
 
 var ROLE_LABEL={owner:'👑 Właściciel',admin:'🛠️ Admin',sales:'📞 Handlowiec',driver:'🚚 Kierowca'};
 
@@ -4475,6 +4512,8 @@ function doLogin(){
 }
 function doLogout(){
   if(sbEnabled&&sb){sb.auth.signOut();}
+  currentUser=null;currentUid=null;currentRole=null;currentName='';
+  invalidateMyClientIdsCache();
   go('s-login');
 }
 function enterDemoMode(){
@@ -8245,18 +8284,60 @@ function applyRoleUI(){
   if(qaDelivery)qaDelivery.style.display=isOwnerOrAdmin?'block':'none';
 }
 
+/* ====================== PROFIL UZYTKOWNIKA (auth compatibility release) ======================
+   Model: signup/login -> trigger DB tworzy public.users -> frontend TYLKO odczytuje.
+   Frontend nie robi INSERT do public.users, nie ustawia roli i nie traktuje
+   braku roli jako 'sales'. Kazdy inny stan niz poprawna rola wewnetrzna
+   konczy sie ekranem bramki, nie wejsciem do Command. */
+function showPendingRole(){
+  currentRole='none';
+  var el=document.getElementById('pending-email');
+  if(el)el.textContent=(currentUser&&currentUser.email)||'';
+  applyRoleUI();
+  go('s-pending-role');
+}
+function showProfileError(kod,szczegol){
+  currentRole=null;
+  console.error('[auth][profil]',kod,szczegol||'');
+  var el=document.getElementById('profile-error-detail');
+  if(el)el.textContent='Kod: '+kod+(szczegol?' \u2014 '+szczegol:'');
+  applyRoleUI();
+  go('s-profile-error');
+}
 async function handleAuthedUser(user){
   currentUser=user;currentUid=user.id;
-  var res=await sb.from('users').select('*').eq('id',user.id).maybeSingle();
-  if(res.data){
-    currentName=res.data.name||user.email;
-    currentRole=res.data.role||'sales';
-  }else{
-    // Brak wiersza w users — pierwsze logowanie, tworzymy z domyślną rolą.
-    currentName=user.email;
-    currentRole='sales';
-    await sb.from('users').insert({id:user.id,name:user.email,email:user.email,role:'sales'});
+  currentName=user.email||'';
+  currentRole=null;
+  invalidateMyClientIdsCache();
+  var res;
+  try{
+    res=await sb.from('users').select('id,name,email,role').eq('id',user.id).maybeSingle();
+  }catch(e){
+    showProfileError('profile_fetch_exception', e&&e.message);
+    return;
   }
+  if(res&&res.error){
+    showProfileError('profile_query_error', res.error.message);
+    return;
+  }
+  if(!res||!res.data){
+    /* Profil tworzy trigger on_auth_user_created (migracja 0001).
+       Jego brak to blad bazy albo brak migracji \u2014 nie powod, zeby
+       frontend zakladal konto sam. */
+    showProfileError('profile_missing', 'uid='+user.id);
+    return;
+  }
+  currentName=res.data.name||user.email||'';
+  var rola=res.data.role;
+  if(!rola||rola==='none'){
+    showPendingRole();
+    return;
+  }
+  if(!isInternalRole(rola)){
+    showProfileError('unknown_role', String(rola));
+    return;
+  }
+  currentRole=rola;
   afterAuthReady();
 }
 
@@ -8857,7 +8938,14 @@ function paintNav(screenId){
     });
   });
 }
+var AUTH_GATE_SCREENS=['s-login','s-pending-role','s-profile-error'];
 function go(id){
+  /* Bramka twarda: zalogowany uzytkownik bez poprawnej roli wewnetrznej
+     nie wchodzi na zaden ekran aplikacji, nawet jesli jakis kod wywola go()
+     bezposrednio. Tryb demo (currentUser===null) nietkniety. */
+  if(sbEnabled && currentUser && !isInternalRole(currentRole) && AUTH_GATE_SCREENS.indexOf(id)===-1){
+    id = (currentRole==='none') ? 's-pending-role' : 's-profile-error';
+  }
   if(id==='s-contact-today') setTimeout(renderContactToday,0);
   if(OWNER_ONLY_SCREENS.indexOf(id)>-1 && currentRole!=='owner' && currentRole!=='admin'){
     alert('🔒 Brak dostępu — ten ekran jest dostępny tylko dla właściciela/admina.');
