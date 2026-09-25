@@ -3453,8 +3453,31 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
   </div>
   <div style="font-size:10px;color:#8a9ab0;">"Last sync" = moment ostatniego udanego pobrania danych z bazy przez tę przeglądarkę, nie ciągła synchronizacja w tle.</div>
   <button onclick="renderSystemStatus()" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">🔄 Odśwież</button>
+  <button id="ss-role-admin-btn" class="btn ghost" style="display:none;" onclick="go('s-role-admin');loadRoleAdmin();">👥 Uprawnienia użytkowników</button>
   <button class="btn ghost" onclick="go('s-onboarding')">🎭 Zobacz wersję Showcase (DEMO)</button>
   <button class="btn ghost" onclick="go('s-command')">← Wróć</button>
+</div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+</div>
+
+<div class="screen" id="s-role-admin">
+<div class="app-shell">
+  <div class="sb-mount"></div>
+  <div class="main">
+
+<div class="hdr"><button class="back" onclick="go('s-system-status')">←</button><span style="font-size:18px;font-weight:800;flex:1;">👥 Uprawnienia użytkowników</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+  <div style="font-size:14px;font-weight:800;">Konta oczekujące na uprawnienia</div>
+  <div id="ra-pending-empty" style="display:none;font-size:12px;color:#8a9ab0;">Brak kont oczekujących. Każde nowe konto pojawi się tutaj automatycznie.</div>
+  <div class="card" style="padding:0;overflow:hidden;"><div id="ra-pending-list"></div></div>
+  <div style="font-size:14px;font-weight:800;margin-top:6px;">Konta z rolą wewnętrzną</div>
+  <div class="card" style="padding:0;overflow:hidden;"><div id="ra-active-list"></div></div>
+  <div id="ra-msg" style="font-size:12px;color:#8a9ab0;min-height:16px;"></div>
+  <div style="font-size:10px;color:#8a9ab0;">Rolę zmienia baza danych, nie ten ekran. Odebranie roli ustawia konto z powrotem na „oczekujące”. Ostatniego właściciela nie da się zdegradować.</div>
+  <button onclick="loadRoleAdmin()" style="width:100%;background:#1e2f42;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">🔄 Odśwież</button>
+  <button class="btn ghost" onclick="go('s-system-status')">← Wróć</button>
 </div>
 
   </div><!-- /main -->
@@ -4426,7 +4449,7 @@ button.pl-ai,.pl-ai{background:linear-gradient(140deg,#141c2e,#101828);border:no
 </div>
 
 <script>
-var APP_VERSION = 'v0.86.0-auth-compat';
+var APP_VERSION = 'v0.87.0-role-ui';
 
 /* Czcionka PDF (DejaVu Sans, subset ASCII+polskie znaki) — jsPDF domyślnie ma tylko
    Helvetica/Times/Courier bez polskich diakrytyków (WinAnsi), więc bez tego "ł"/"ż"/"ę"
@@ -8282,6 +8305,83 @@ function applyRoleUI(){
   if(ceoWrap)ceoWrap.style.display=isOwnerOrAdmin?'flex':'none';
   var qaDelivery=document.getElementById('cd-qa-delivery');
   if(qaDelivery)qaDelivery.style.display=isOwnerOrAdmin?'block':'none';
+  var raBtn=document.getElementById('ss-role-admin-btn');
+  if(raBtn)raBtn.style.display=isOwnerOrAdmin?'block':'none';
+}
+
+/* ====================== ROLE UI — nadawanie rol wewnetrznych ======================
+   Model: ekran NIE decyduje o uprawnieniach. Decyduje baza (0001):
+     OSG40 wolajacy nie jest owner/admin · OSG41 zla rola · OSG42 tylko owner nadaje owner
+     OSG43 nie ma takiego uzytkownika · OSG45 ostatni owner
+   Ukrywanie opcji to wygoda, nie zabezpieczenie. */
+var RA_ROLE_LABEL={owner:'Właściciel',admin:'Administrator',sales:'Handlowiec',driver:'Kierowca',none:'Bez uprawnień'};
+function raNadawalneRole(){ var r=['admin','sales','driver']; if(currentRole==='owner')r.unshift('owner'); return r; }
+function raBladPoPolsku(err){
+  var m=(err&&err.message)||'';
+  if(m.indexOf('OSG40')>-1)return 'Nie masz uprawnień do nadawania ról.';
+  if(m.indexOf('OSG41')>-1)return 'Niedozwolona rola.';
+  if(m.indexOf('OSG42')>-1)return 'Rolę właściciela może nadać wyłącznie inny właściciel.';
+  if(m.indexOf('OSG43')>-1)return 'Nie ma takiego użytkownika.';
+  if(m.indexOf('OSG44')>-1)return 'Roli nie zmienia się bezpośrednio — użyj tego ekranu.';
+  if(m.indexOf('OSG45')>-1)return 'To ostatni właściciel — nie można odebrać mu roli.';
+  if(m.indexOf('42501')>-1)return 'Brak uprawnień do tej operacji.';
+  return 'Nie udało się zmienić roli: '+m;
+}
+function raKomunikat(tekst,blad){
+  var el=document.getElementById('ra-msg'); if(!el)return;
+  el.textContent=tekst||''; el.style.color=blad?'#ef4444':'#8a9ab0';
+}
+function raEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function raWierszOczekujacy(u){
+  var opcje=raNadawalneRole().map(function(r){return '<option value="'+r+'">'+RA_ROLE_LABEL[r]+'</option>';}).join('');
+  return '<div class="row" data-uid="'+raEsc(u.id)+'">'
+    +'<div><div style="font-size:13px;font-weight:700;">'+raEsc(u.name||'(bez nazwy)')+'</div>'
+    +'<div style="font-size:10px;color:#8a9ab0;">'+raEsc(u.email)+'</div></div>'
+    +'<div style="display:flex;gap:6px;align-items:center;">'
+    +'<select id="ra-sel-'+raEsc(u.id)+'" style="background:#1e2f42;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 8px;font-size:12px;">'+opcje+'</select>'
+    +'<button onclick="raNadaj(\''+raEsc(u.id)+'\')" style="background:#e8601c;border:none;border-radius:8px;padding:7px 11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Nadaj</button>'
+    +'</div></div>';
+}
+function raWierszAktywny(u){
+  var mozeOdebrac=(currentRole==='owner')||(u.role!=='owner');
+  return '<div class="row" data-uid="'+raEsc(u.id)+'">'
+    +'<div><div style="font-size:13px;font-weight:700;">'+raEsc(u.name||'(bez nazwy)')+'</div>'
+    +'<div style="font-size:10px;color:#8a9ab0;">'+raEsc(u.email)+' — '+raEsc(RA_ROLE_LABEL[u.role]||u.role)+'</div></div>'
+    +(mozeOdebrac
+      ? '<button onclick="raOdbierz(\''+raEsc(u.id)+'\',\''+raEsc(u.email)+'\')" style="background:#1e2f42;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Odbierz rolę</button>'
+      : '<span style="font-size:10px;color:#8a9ab0;">tylko właściciel</span>')
+    +'</div>';
+}
+async function loadRoleAdmin(){
+  if(!sbEnabled)return;
+  if(currentRole!=='owner'&&currentRole!=='admin'){ go('s-command'); return; }
+  raKomunikat('');
+  var res=await sb.from('users').select('id,name,email,role').order('role');
+  if(res.error){ raKomunikat(raBladPoPolsku(res.error),true); return; }
+  var pending=res.data.filter(function(u){return u.role==='none';});
+  var active=res.data.filter(function(u){return u.role!=='none';});
+  var pe=document.getElementById('ra-pending-empty'); if(pe)pe.style.display=pending.length?'none':'block';
+  var pl=document.getElementById('ra-pending-list'); if(pl)pl.innerHTML=pending.map(raWierszOczekujacy).join('');
+  var al=document.getElementById('ra-active-list'); if(al)al.innerHTML=active.map(raWierszAktywny).join('');
+}
+async function raWykonaj(uid,rola){
+  raKomunikat('Zapisuję…');
+  var res=await sb.rpc('admin_set_user_role',{p_user_id:uid,p_role:rola});
+  if(res.error){ raKomunikat(raBladPoPolsku(res.error),true); return; }
+  /* Kolejnosc ma znaczenie: loadRoleAdmin() zaczyna od raKomunikat(''), wiec komunikat
+     sukcesu ustawiamy PO odswiezeniu listy — inaczej znika i nie ma potwierdzenia. */
+  await loadRoleAdmin();
+  raKomunikat('Zapisano: '+(RA_ROLE_LABEL[rola]||rola)+'.');
+}
+async function raNadaj(uid){
+  var sel=document.getElementById('ra-sel-'+uid); if(!sel)return;
+  var rola=sel.value;
+  if(!confirm('Nadać rolę „'+RA_ROLE_LABEL[rola]+'”? Użytkownik zyska dostęp natychmiast.'))return;
+  await raWykonaj(uid,rola);
+}
+async function raOdbierz(uid,email){
+  if(!confirm('Odebrać uprawnienia kontu '+email+'? Zobaczy ekran oczekiwania przy następnym wejściu.'))return;
+  await raWykonaj(uid,'none');
 }
 
 /* ====================== PROFIL UZYTKOWNIKA (auth compatibility release) ======================
