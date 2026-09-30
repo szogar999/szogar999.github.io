@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>OSG — portal klienta (staging)</title>
+<!--
+  OSG 0009-F (czesc) — PORTAL KLIENTA, WERSJA STAGINGOWA / WERYFIKACYJNA
+  STATUS: przygotowane, NIEWDROZONE.
+
+  Cel na tym etapie: NIE jest to docelowy portal. To powierzchnia weryfikacyjna
+  dla testu end-to-end 0009 — pokazuje, co konto KLIENTA faktycznie widzi
+  po zalogowaniu, czytajac wylacznie widoki przeznaczone dla klienta.
+
+  Dopoki 0009-C (funkcja akceptujaca zaproszenie) nie jest wdrozona, konto
+  nie ma membershipu i widoki zwroca zero. To jest OCZEKIWANY wynik i wlasnie
+  on dowodzi, ze RLS dziala — a nie ze cos jest zepsute.
+-->
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--tx:#e8eaf0;--mut:#98a0b3;--acc:#3b82f6;--err:#f87171;--ok:#34d399}
+  @media (prefers-color-scheme: light){:root{--bg:#f5f6f8;--card:#fff;--line:#e3e6ec;--tx:#171a21;--mut:#5b6476}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;
+       display:flex;align-items:flex-start;justify-content:center}
+  .wrap{width:100%;max-width:640px;margin-top:6vh}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:14px}
+  h1{font-size:19px;margin:0 0 4px}
+  .sub{color:var(--mut);font-size:13px;margin:0 0 16px}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .row:last-child{border-bottom:0}
+  .k{color:var(--mut)}
+  .v{font-variant-numeric:tabular-nums}
+  label{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+  input{width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:15px}
+  button{margin-top:16px;padding:11px 16px;border:0;border-radius:9px;background:var(--acc);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+  .ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .msg{margin-top:12px;font-size:13.5px;padding:10px 12px;border-radius:9px;display:none}
+  .msg.err{display:block;background:rgba(248,113,113,.12);color:var(--err)}
+  .msg.ok{display:block;background:rgba(52,211,153,.12);color:var(--ok)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card" id="c-login">
+    <h1>Portal klienta OSG</h1>
+    <p class="sub">Staging. Zaloguj się adresem, na który przyszło zaproszenie.</p>
+    <label for="em">E-mail</label><input id="em" type="email" autocomplete="username">
+    <label for="pw">Hasło</label><input id="pw" type="password" autocomplete="current-password">
+    <button id="btn-login" type="button">Zaloguj</button>
+    <div id="m-login" class="msg"></div>
+  </div>
+
+  <div class="card hidden" id="c-konto">
+    <h1>Twoje konto</h1>
+    <p class="sub" id="konto-mail">—</p>
+    <div class="row"><span class="k">E-mail potwierdzony</span><span class="v" id="k-conf">—</span></div>
+    <div class="row"><span class="k">Rola w OSG (z bazy)</span><span class="v" id="k-rola">—</span></div>
+    <button id="btn-out" class="ghost" type="button">Wyloguj</button>
+  </div>
+
+  <div class="card hidden" id="c-dane">
+    <h1>Twoje dane</h1>
+    <p class="sub">Liczby pochodzą z widoków klienckich — to dokładnie tyle, ile RLS pozwala zobaczyć temu kontu.</p>
+    <div class="row"><span class="k">Przypisane firmy</span><span class="v" id="d-clients">—</span></div>
+    <div class="row"><span class="k">Oferty</span><span class="v" id="d-offers">—</span></div>
+    <div class="row"><span class="k">Pozycje ofert</span><span class="v" id="d-items">—</span></div>
+    <div class="row"><span class="k">Dostawy</span><span class="v" id="d-deliv">—</span></div>
+    <div class="row"><span class="k">Budowy</span><span class="v" id="d-build">—</span></div>
+    <div id="m-dane" class="msg"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var SB_URL  = 'https://vrhpyfglxrbemaqxkock.supabase.co';
+var SB_ANON = 'sb_publishable__SctEgU_qiswNeid1-KOIQ_IHpot_2A';
+
+var sb = window.supabase.createClient(SB_URL, SB_ANON);
+var $ = function(id){ return document.getElementById(id); };
+function msg(id,kl,t){ var m=$(id); m.className='msg '+kl; m.textContent=t; }
+
+async function ile(nazwa){
+  try{
+    var r = await sb.from(nazwa).select('*', { count:'exact', head:true });
+    if (r.error) return 'błąd: ' + (r.error.code || r.error.message);
+    return String(r.count === null ? 0 : r.count);
+  }catch(e){ return 'błąd'; }
+}
+
+async function rolaZBackendu(uid){
+  try{ var r = await sb.rpc('my_role'); if(!r.error && r.data!==null && typeof r.data!=='undefined') return String(r.data); }catch(e){}
+  try{ var u = await sb.from('users').select('role').eq('id',uid).maybeSingle(); if(!u.error && u.data) return String(u.data.role); }catch(e){}
+  return '(nieodczytana)';
+}
+
+async function pokazPanel(sess){
+  $('c-login').classList.add('hidden');
+  $('c-konto').classList.remove('hidden');
+  $('c-dane').classList.remove('hidden');
+
+  var u = sess.user;
+  $('konto-mail').textContent = u.email || '—';
+  $('k-conf').textContent = u.email_confirmed_at ? 'tak' : 'NIE';
+  $('k-rola').textContent = await rolaZBackendu(u.id);
+
+  var cli = '—';
+  try{
+    var r = await sb.rpc('osg_my_client_ids');
+    cli = r.error ? ('błąd: '+(r.error.code||'')) : String((r.data||[]).length);
+  }catch(e){ cli='błąd'; }
+  $('d-clients').textContent = cli;
+  $('d-offers').textContent = await ile('v_cust_offers');
+  $('d-items').textContent  = await ile('v_cust_offer_items');
+  $('d-deliv').textContent  = await ile('v_cust_deliveries');
+  $('d-build').textContent  = await ile('v_cust_buildings');
+
+  if (cli === '0'){
+    msg('m-dane','ok','Konto działa, ale nie ma jeszcze przypisanej organizacji — zera są oczekiwane. '
+      + 'Przypisanie powstaje dopiero po wdrożeniu 0009-C (akceptacja zaproszenia).');
+  }
+}
+
+$('btn-login').onclick = async function(){
+  var r = await sb.auth.signInWithPassword({ email: $('em').value.trim(), password: $('pw').value });
+  if (r.error){ msg('m-login','err','Nie udało się zalogować: ' + (r.error.message||'')); return; }
+  pokazPanel(r.data.session);
+};
+$('btn-out').onclick = async function(){ await sb.auth.signOut(); location.reload(); };
+
+(async function(){
+  if (SB_ANON.indexOf('__WKLEJ')===0){ msg('m-login','err','Brak SB_ANON — uzupełnij przed wdrożeniem.'); return; }
+  var s = await sb.auth.getSession();
+  if (s && s.data && s.data.session) pokazPanel(s.data.session);
+})();
+</script>
+</body>
+</html>
