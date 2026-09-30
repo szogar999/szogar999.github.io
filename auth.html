@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>OSG — dostęp do konta</title>
+<!--
+  OSG 0009-F (czesc) — EKRAN CALLBACKU AUTH, WERSJA STAGINGOWA
+  STATUS: przygotowane, NIEWDROZONE.
+
+  Obsluguje CZTERY przeplywy Supabase Auth, bo Site URL jest jeden na projekt:
+    invite, signup confirmation, password recovery, password setup.
+
+  ZASADY (te same, co w reszcie OSG):
+   * UI nie decyduje o uprawnieniach — decyduje baza. Ten ekran jedynie
+     KIERUJE uzytkownika tam, gdzie ma sens, a granica bezpieczenstwa to RLS.
+   * Rola czytana WYLACZNIE z backendu w kontekscie swiezej sesji.
+     Nigdy z URL-a, nigdy z localStorage.
+   * Token z fragmentu jest kasowany z paska adresu natychmiast po utworzeniu
+     sesji, zeby nie zostal w historii przegladarki.
+   * Kazdy blad z linku (wygasly, uzyty, niepoprawny) ma polski komunikat.
+
+  ZAKRES: ustawienie hasla + rozgalezienie staff/klient. Akceptacja zaproszenia
+  do organizacji NALEZY DO 0009-C i NIE jest tu zaimplementowana — portal.html
+  pokaze wtedy stan "konto aktywne, brak organizacji".
+-->
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--tx:#e8eaf0;--mut:#98a0b3;--acc:#3b82f6;--err:#f87171;--ok:#34d399}
+  @media (prefers-color-scheme: light){:root{--bg:#f5f6f8;--card:#fff;--line:#e3e6ec;--tx:#171a21;--mut:#5b6476}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+  .card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+  h1{font-size:19px;margin:0 0 4px}
+  .sub{color:var(--mut);font-size:13px;margin:0 0 20px}
+  label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px}
+  input{width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--line);
+        background:var(--bg);color:var(--tx);font-size:15px}
+  button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:9px;background:var(--acc);
+         color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+  button[disabled]{opacity:.5;cursor:default}
+  .msg{margin-top:14px;font-size:13.5px;padding:10px 12px;border-radius:9px;display:none}
+  .msg.err{display:block;background:rgba(248,113,113,.12);color:var(--err)}
+  .msg.ok{display:block;background:rgba(52,211,153,.12);color:var(--ok)}
+  .who{font-size:13px;color:var(--mut);margin-top:16px;text-align:center}
+  .who a{color:var(--mut)}
+  .hint{font-size:12.5px;color:var(--mut);margin-top:6px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1 id="tytul">Weryfikuję link…</h1>
+  <p class="sub" id="podtytul">Chwila, sprawdzam Twoje zaproszenie.</p>
+
+  <form id="form" class="hidden" onsubmit="return false">
+    <label for="p1">Nowe hasło</label>
+    <input id="p1" type="password" autocomplete="new-password" minlength="8">
+    <div class="hint">Minimum 8 znaków.</div>
+    <label for="p2">Powtórz hasło</label>
+    <input id="p2" type="password" autocomplete="new-password" minlength="8">
+    <button id="submit" type="button">Ustaw hasło i zaloguj</button>
+  </form>
+
+  <div id="msg" class="msg"></div>
+  <div class="who" id="who"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================== KONFIGURACJA =========================== */
+/* STAGING. Anon key jest kluczem publicznym (jedzie do przegladarki),
+   ale swiadomie NIE wpisuje go tutaj za Ciebie — wklej przed uploadem. */
+var SB_URL   = 'https://vrhpyfglxrbemaqxkock.supabase.co';
+var SB_ANON  = 'sb_publishable__SctEgU_qiswNeid1-KOIQ_IHpot_2A';
+
+/* Dokad odeslac po sukcesie. Staff trafia do aplikacji pracowniczej,
+   klient do portalu. Na produkcji STAFF_URL zmieni sie na app.osglogistics.pl. */
+var STAFF_URL  = 'https://szogar999.github.io/OSG_platform.html';
+var PORTAL_URL = './portal.html';
+
+/* Role uznawane za personel OSG. Zrodlem prawdy jest baza — ta lista sluzy
+   wylacznie do wyboru adresu przekierowania. */
+var ROLE_STAFF = ['owner','admin','sales','driver'];
+
+/* ===================================================================== */
+var sb = window.supabase.createClient(SB_URL, SB_ANON, {
+  auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+});
+
+var $ = function(id){ return document.getElementById(id); };
+
+function pokazBlad(t){ var m=$('msg'); m.className='msg err'; m.textContent=t; }
+function pokazOk(t){ var m=$('msg'); m.className='msg ok'; m.textContent=t; }
+function naglowek(t,s){ $('tytul').textContent=t; $('podtytul').textContent=s; }
+
+/* Bledy przychodza we fragmencie (#error=...) albo w query (?error=...).
+   Mapujemy na polski — bez tego uzytkownik widzi pusta strone i uznaje,
+   ze "nie dziala". */
+function bladZLinku(){
+  var f = new URLSearchParams((location.hash||'').replace(/^#/,''));
+  var q = new URLSearchParams(location.search||'');
+  var code = f.get('error_code') || q.get('error_code') || f.get('error') || q.get('error');
+  if (!code) return null;
+  var opis = f.get('error_description') || q.get('error_description') || '';
+  if (/otp_expired|expired/i.test(code) || /expired/i.test(opis))
+    return 'Ten link wygasł. Poproś o nowe zaproszenie — stary link przestaje działać po upływie ważności.';
+  if (/access_denied/i.test(code))
+    return 'Ten link został już użyty albo jest nieprawidłowy. Poproś o nowe zaproszenie.';
+  return 'Link jest nieprawidłowy. Poproś o nowe zaproszenie.';
+}
+
+/* Token nie ma prawa zostac w pasku adresu ani w historii przegladarki. */
+function wyczyscAdres(){
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+}
+
+/* Rola WYLACZNIE z backendu. Dwie proby, obie serwerowe.
+   Gdy obie zawioda — traktujemy jak klienta (mniejsze uprawnienie),
+   bo pomylka w te strone jest nieszkodliwa, a w druga myląca. */
+async function rolaZBackendu(uid){
+  try {
+    var r = await sb.rpc('my_role');
+    if (!r.error && typeof r.data !== 'undefined' && r.data !== null) return String(r.data);
+  } catch(e){}
+  try {
+    var u = await sb.from('users').select('role').eq('id', uid).maybeSingle();
+    if (!u.error && u.data && u.data.role) return String(u.data.role);
+  } catch(e){}
+  return null;
+}
+
+async function poUstawieniuHasla(user){
+  pokazOk('Hasło ustawione. Przenoszę…');
+  var rola = await rolaZBackendu(user.id);
+  var cel = (rola && ROLE_STAFF.indexOf(rola) > -1) ? STAFF_URL : PORTAL_URL;
+  setTimeout(function(){ location.replace(cel); }, 900);
+}
+
+async function start(){
+  if (SB_ANON.indexOf('__WKLEJ') === 0){
+    naglowek('Konfiguracja niedokończona','Brakuje klucza anon dla stagingu.');
+    pokazBlad('W pliku auth.html nie podstawiono SB_ANON. Uzupełnij przed wdrożeniem.');
+    return;
+  }
+
+  var b = bladZLinku();
+  if (b){ wyczyscAdres(); naglowek('Link nie działa','Nie udało się otworzyć zaproszenia.'); pokazBlad(b); return; }
+
+  /* Wariant PKCE / verifyOtp: link niesie token_hash + type i sesja
+     powstaje dopiero po naszej decyzji. */
+  var q = new URLSearchParams(location.search||'');
+  var th = q.get('token_hash'), ty = q.get('type');
+  if (th && ty){
+    var v = await sb.auth.verifyOtp({ token_hash: th, type: ty });
+    if (v.error){
+      wyczyscAdres(); naglowek('Link nie działa','Nie udało się potwierdzić zaproszenia.');
+      pokazBlad('Ten link wygasł albo został już użyty. Poproś o nowe zaproszenie.');
+      return;
+    }
+  }
+
+  var s = await sb.auth.getSession();
+  var sess = s && s.data ? s.data.session : null;
+  wyczyscAdres();
+
+  if (!sess){
+    naglowek('Brak aktywnego zaproszenia','Ta strona otwiera się z linku wysłanego e-mailem.');
+    pokazBlad('Nie wykryłem ważnego linku. Otwórz stronę bezpośrednio z wiadomości e-mail.');
+    return;
+  }
+
+  var user = sess.user;
+  naglowek('Ustaw hasło', 'Konto: ' + (user.email || '—'));
+  $('form').classList.remove('hidden');
+  $('who').innerHTML = 'To nie Twoje konto? <a href="#" id="wyloguj">Wyloguj</a>';
+  $('wyloguj').onclick = async function(e){
+    e.preventDefault();
+    await sb.auth.signOut();
+    location.replace(location.pathname);
+  };
+
+  $('submit').onclick = async function(){
+    var p1 = $('p1').value, p2 = $('p2').value;
+    if (p1.length < 8){ pokazBlad('Hasło musi mieć co najmniej 8 znaków.'); return; }
+    if (p1 !== p2){ pokazBlad('Hasła nie są identyczne.'); return; }
+    $('submit').disabled = true;
+    var r = await sb.auth.updateUser({ password: p1 });
+    if (r.error){
+      $('submit').disabled = false;
+      pokazBlad('Nie udało się ustawić hasła: ' + (r.error.message || 'błąd nieznany'));
+      return;
+    }
+    await poUstawieniuHasla(user);
+  };
+}
+
+start();
+</script>
+</body>
+</html>
