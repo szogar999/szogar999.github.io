@@ -267,8 +267,13 @@ $('btn-zapros').onclick = async function(){
 };
 
 (async function(){
-  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  /* KOLEJNOSC MA ZNACZENIE.
+     getSession() jest tym, co zmusza supabase-js do odczytania tokenu z
+     fragmentu adresu. Czyszczenie adresu MUSI byc po nim — odwrotna kolejnosc
+     kasuje token zanim ktokolwiek go przeczyta i sesja nigdy nie powstaje.
+     Zaplacone bledem 2026-10-07: magic link logowal w nicosc. */
   var s = await sb.auth.getSession();
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
   if (s && s.data && s.data.session) pokazPanel();
 })();
 </script>
