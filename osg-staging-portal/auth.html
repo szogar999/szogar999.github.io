@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<!-- Token zaproszenia siedzi w query. Domyslna polityka i tak nie wysyla
+     sciezki poza origin, ale przy sekrecie na okaziciela wolimy zero. -->
+<meta name="referrer" content="no-referrer">
 <title>OSG — dostęp do konta</title>
 <!--
   OSG 0009-F (czesc) — EKRAN CALLBACKU AUTH, WERSJA STAGINGOWA
@@ -21,9 +24,21 @@
      sesji, zeby nie zostal w historii przegladarki.
    * Kazdy blad z linku (wygasly, uzyty, niepoprawny) ma polski komunikat.
 
-  ZAKRES: ustawienie hasla + rozgalezienie staff/klient. Akceptacja zaproszenia
-  do organizacji NALEZY DO 0009-C i NIE jest tu zaimplementowana — portal.html
-  pokaze wtedy stan "konto aktywne, brak organizacji".
+  ZAKRES: akceptacja zaproszenia do organizacji (0009-C) + ustawienie hasla
+  + rozgalezienie staff/klient.
+
+  TOKEN ZAPROSZENIA (0009-B/0009-C):
+   * przychodzi w query jako ?zap=<token>, bo Supabase zachowuje query string
+     z redirect_to i dokleja swoje parametry;
+   * jest sekretem na okaziciela, wiec: czytamy go RAZ, na poczatku, trzymamy
+     wylacznie w zmiennej lokalnej, nigdy w localStorage, i kasujemy z paska
+     adresu razem z reszta URL-a;
+   * sam token NIE wystarcza — baza dodatkowo wymaga sesji z POTWIERDZONYM
+     adresem rownym adresowi zaproszenia. To sa dwa niezalezne sekrety.
+   * akceptacja idzie PRZED formularzem hasla: momentem zuzycia zaproszenia
+     jest otwarcie wlasnego linku we wlasnej sesji, a nie ustawienie hasla.
+     Gdyby bylo odwrotnie, blad przy zapisie hasla zostawialby zaproszenie
+     w stanie nie do odzyskania; tak — haslo zawsze mozna ustawic resetem.
 -->
 <style>
   :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--tx:#e8eaf0;--mut:#98a0b3;--acc:#3b82f6;--err:#f87171;--ok:#34d399}
@@ -111,6 +126,18 @@ function bladZLinku(){
   return 'Link jest nieprawidłowy. Poproś o nowe zaproszenie.';
 }
 
+/* Kody 0009-C na polski. OSG62 jest CELOWO jednym kodem dla pieciu przyczyn
+   (brak / wygasle / cofniete / na inny adres / juz uzyte) — nie rozbijamy go
+   tutaj z powrotem, bo wtedy ekran stalby sie wyrocznia dla zgadywania. */
+function bladAkceptacji(e){
+  var t = (e && (e.message || e.details || '')) + '';
+  if (/OSG60/.test(t)) return 'Twoja sesja wygasła. Otwórz link z e-maila jeszcze raz.';
+  if (/OSG61/.test(t)) return 'Adres e-mail nie jest jeszcze potwierdzony. Otwórz link z wiadomości, nie wpisuj adresu ręcznie.';
+  if (/OSG62/.test(t)) return 'To zaproszenie jest nieaktywne: mogło wygasnąć, zostać cofnięte, już wykorzystane albo jest wystawione na inny adres.';
+  if (/permission denied|42501/.test(t)) return 'Brak uprawnień do przyjęcia zaproszenia. Zaloguj się z linku w wiadomości.';
+  return 'Nie udało się przyjąć zaproszenia. Spróbuj ponownie albo poproś o nowe.';
+}
+
 /* Token nie ma prawa zostac w pasku adresu ani w historii przegladarki. */
 function wyczyscAdres(){
   try { history.replaceState(null, '', location.pathname); } catch(e){}
@@ -131,6 +158,15 @@ async function rolaZBackendu(uid){
   return null;
 }
 
+/* 0009-C. Zwraca {stan:'brak'|'ok'|'blad'}. Nic z odpowiedzi nie steruje
+   uprawnieniami — sluzy wylacznie do komunikatu dla czlowieka. */
+async function akceptujZaproszenie(token){
+  if (!token) return { stan:'brak' };
+  var r = await sb.rpc('osg_accept_organization_invitation', { p_token: token });
+  if (r.error) return { stan:'blad', tekst: bladAkceptacji(r.error) };
+  return { stan:'ok' };
+}
+
 async function poUstawieniuHasla(user){
   pokazOk('Hasło ustawione. Przenoszę…');
   var rola = await rolaZBackendu(user.id);
@@ -144,6 +180,10 @@ async function start(){
     pokazBlad('W pliku auth.html nie podstawiono SB_ANON. Uzupełnij przed wdrożeniem.');
     return;
   }
+
+  /* NAJPIERW token, dopiero potem cokolwiek, co dotyka adresu.
+     Odwrotna kolejnosc = cicha utrata zaproszenia. */
+  var zap = (new URLSearchParams(location.search||'')).get('zap') || '';
 
   var b = bladZLinku();
   if (b){ wyczyscAdres(); naglowek('Link nie działa','Nie udało się otworzyć zaproszenia.'); pokazBlad(b); return; }
@@ -172,7 +212,21 @@ async function start(){
   }
 
   var user = sess.user;
-  naglowek('Ustaw hasło', 'Konto: ' + (user.email || '—'));
+
+  /* Akceptacja zaproszenia — tylko gdy link faktycznie niosl token.
+     Bez tokenu to zwykly reset hasla / potwierdzenie konta i nic sie nie dzieje. */
+  var akc = await akceptujZaproszenie(zap);
+  zap = '';                       /* token przestaje istniec w pamieci strony */
+  if (akc.stan === 'blad'){
+    naglowek('Zaproszenie nieprzyjęte', 'Konto: ' + (user.email || '—'));
+    pokazBlad(akc.tekst + ' Hasło możesz ustawić mimo to.');
+  } else if (akc.stan === 'ok'){
+    naglowek('Ustaw hasło', 'Konto: ' + (user.email || '—'));
+    pokazOk('Dostęp do organizacji aktywny.');
+  } else {
+    naglowek('Ustaw hasło', 'Konto: ' + (user.email || '—'));
+  }
+
   $('form').classList.remove('hidden');
   $('who').innerHTML = 'To nie Twoje konto? <a href="#" id="wyloguj">Wyloguj</a>';
   $('wyloguj').onclick = async function(e){

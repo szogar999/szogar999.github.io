@@ -65,6 +65,7 @@
   <div class="card hidden" id="c-dane">
     <h1>Twoje dane</h1>
     <p class="sub">Liczby pochodzą z widoków klienckich — to dokładnie tyle, ile RLS pozwala zobaczyć temu kontu.</p>
+    <div class="row"><span class="k">Członkostwa w organizacjach</span><span class="v" id="d-memb">—</span></div>
     <div class="row"><span class="k">Przypisane firmy</span><span class="v" id="d-clients">—</span></div>
     <div class="row"><span class="k">Oferty</span><span class="v" id="d-offers">—</span></div>
     <div class="row"><span class="k">Pozycje ofert</span><span class="v" id="d-items">—</span></div>
@@ -108,6 +109,10 @@ async function pokazPanel(sess){
   $('k-conf').textContent = u.email_confirmed_at ? 'tak' : 'NIE';
   $('k-rola').textContent = await rolaZBackendu(u.id);
 
+  /* Czlonkostwo czytamy wprost — to ono jest wynikiem 0009-C. Widac tylko
+     wlasne wiersze, przez polityke memberships_select_own. */
+  $('d-memb').textContent = await ile('organization_memberships');
+
   var cli = '—';
   try{
     var r = await sb.rpc('osg_my_client_ids');
@@ -121,7 +126,7 @@ async function pokazPanel(sess){
 
   if (cli === '0'){
     msg('m-dane','ok','Konto działa, ale nie ma jeszcze przypisanej organizacji — zera są oczekiwane. '
-      + 'Przypisanie powstaje dopiero po wdrożeniu 0009-C (akceptacja zaproszenia).');
+      + 'Przypisanie powstaje po przyjęciu zaproszenia (link z e-maila).');
   }
 }
 
