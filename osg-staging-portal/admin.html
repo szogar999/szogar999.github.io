@@ -96,7 +96,7 @@
   <div id="m-lista" class="msg"></div>
 </div>
 
-<script src="/vendor/supabase-js-2.117.2.js" integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"></script>
+<script src="vendor/supabase-js-2.117.2.js" integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"></script>
 <script>
 var SB_URL  = 'https://vrhpyfglxrbemaqxkock.supabase.co';
 var SB_ANON = 'sb_publishable__SctEgU_qiswNeid1-KOIQ_IHpot_2A';
@@ -127,7 +127,7 @@ var KOMUNIKATY = {
   BAD_EMAIL: 'Adres e-mail wygląda niepoprawnie.',
   BAD_INPUT: 'Niepoprawne dane formularza.',
   NO_JWT: 'Sesja wygasła. Zaloguj się ponownie.',
-  MAIL_FAILED: 'Zaproszenie zostało utworzone, ale wysyłka nie powiodła się. Użyj „Wyślij ponownie".',
+  MAIL_FAILED: 'Zaproszenie zostało utworzone, ale wysyłka nie powiodła się. Spróbuj „Wyślij ponownie” za kilka minut.',
   INTERNAL: 'Błąd po stronie serwera. Spróbuj ponownie.'
 };
 function opis(kod){ return KOMUNIKATY[kod] || ('Nieznany błąd (' + (kod||'—') + ').'); }
