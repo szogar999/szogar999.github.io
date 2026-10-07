@@ -82,7 +82,11 @@
   <div class="who" id="who"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Biblioteka z WLASNEGO originu. Wersja przypieta: 2.117.2.
+     Bajty zweryfikowane 2026-10-07 na dwoch niezaleznych mirrorach npm
+     (jsDelivr i unpkg) — identyczny SHA-384. SRI pilnuje, zeby podmiana
+     pliku w repo wywalila sie glosno, a nie po cichu. -->
+<script src="/vendor/supabase-js-2.117.2.js" integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"></script>
 <script>
 /* =========================== KONFIGURACJA =========================== */
 /* STAGING. Anon key jest kluczem publicznym (jedzie do przegladarki),

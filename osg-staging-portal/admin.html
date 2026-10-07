@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>OSG — zaproszenia (staging)</title>
+<!--
+  OSG 0009-C.1 — PANEL ZAPROSZEN, WERSJA STAGINGOWA
+
+  DLACZEGO OSOBNY PLIK, A NIE OSG_platform.html:
+  tamten plik wskazuje na projekt PRODUKCYJNY. Doklejenie do niego panelu
+  znaczyloby zmiane artefaktu produkcyjnego i wycelowanie UI w baze, w ktorej
+  nie ma jeszcze ani Edge Function, ani poprawnych Auth URL. Integracja do
+  aplikacji staff nalezy do checklisty produkcyjnej, nie do tego sprintu.
+
+  ZASADY:
+   * Ten ekran NIE jest zabezpieczeniem. Ukrycie przycisku niczego nie chroni —
+     granica to OSG50 w bazie. Panel chowa sie tylko po to, zeby nie mylic ludzi.
+   * UI nie dostaje i nie pokazuje tokenu zaproszenia. Edge Function go nie zwraca.
+   * Rola czytana WYLACZNIE z backendu (my_role()), nigdy z URL ani localStorage.
+   * Biblioteka serwowana z WLASNEGO originu — zero trzeciej strony w runtime.
+-->
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--tx:#e8eaf0;--mut:#98a0b3;--acc:#3b82f6;--err:#f87171;--ok:#34d399;--warn:#fbbf24}
+  @media (prefers-color-scheme: light){:root{--bg:#f5f6f8;--card:#fff;--line:#e3e6ec;--tx:#171a21;--mut:#5b6476}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;
+       display:flex;flex-direction:column;align-items:center;gap:16px}
+  .card{width:100%;max-width:760px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  h1{font-size:19px;margin:0 0 4px}
+  h2{font-size:15px;margin:0 0 12px}
+  .sub{color:var(--mut);font-size:13px;margin:0 0 18px}
+  label{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+  input,select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);
+        background:var(--bg);color:var(--tx);font-size:15px}
+  button{padding:10px 16px;border:0;border-radius:9px;background:var(--acc);color:#fff;
+         font-size:14px;font-weight:600;cursor:pointer}
+  button.lite{background:transparent;border:1px solid var(--line);color:var(--tx);font-weight:500}
+  button[disabled]{opacity:.5;cursor:default}
+  .rzad{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+  .msg{margin-top:14px;font-size:13.5px;padding:10px 12px;border-radius:9px;display:none}
+  .msg.err{display:block;background:rgba(248,113,113,.12);color:var(--err)}
+  .msg.ok{display:block;background:rgba(52,211,153,.12);color:var(--ok)}
+  .msg.warn{display:block;background:rgba(251,191,36,.12);color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;color:var(--mut);font-weight:500;padding:8px 6px;border-bottom:1px solid var(--line)}
+  td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .hidden{display:none}
+  .mut{color:var(--mut);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="card" id="c-login">
+  <h1>Panel zaproszeń OSG</h1>
+  <p class="sub">Staging. Zaloguj się linkiem wysłanym na adres służbowy.</p>
+  <label for="em">E-mail</label>
+  <input id="em" type="email" autocomplete="username">
+  <div class="rzad"><button id="btn-link">Wyślij link logowania</button></div>
+  <div id="m-login" class="msg"></div>
+</div>
+
+<div class="card hidden" id="c-konto">
+  <h2>Zalogowano</h2>
+  <div class="mut" id="konto-mail">—</div>
+  <div class="mut">Rola z bazy: <b id="konto-rola">—</b></div>
+  <div class="rzad"><button class="lite" id="btn-out">Wyloguj</button></div>
+  <div id="m-rola" class="msg"></div>
+</div>
+
+<div class="card hidden" id="c-zapros">
+  <h2>Nowe zaproszenie</h2>
+  <label for="org">Organizacja</label>
+  <select id="org"></select>
+  <label for="mail">E-mail zapraszanego</label>
+  <input id="mail" type="email" autocomplete="off">
+  <label for="rola">Rola w organizacji</label>
+  <select id="rola">
+    <option value="member">member</option>
+    <option value="admin">admin</option>
+    <option value="owner">owner</option>
+  </select>
+  <div class="rzad"><button id="btn-zapros">Zaproś</button></div>
+  <div id="m-zapros" class="msg"></div>
+</div>
+
+<div class="card hidden" id="c-lista">
+  <h2>Zaproszenia oczekujące</h2>
+  <table>
+    <thead><tr><th>Organizacja</th><th>E-mail</th><th>Rola</th><th>Status</th><th>Ważne do</th><th>Wysłań</th><th></th></tr></thead>
+    <tbody id="lista"><tr><td colspan="7" class="mut">—</td></tr></tbody>
+  </table>
+  <div id="m-lista" class="msg"></div>
+</div>
+
+<script src="/vendor/supabase-js-2.117.2.js" integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"></script>
+<script>
+var SB_URL  = 'https://vrhpyfglxrbemaqxkock.supabase.co';
+var SB_ANON = 'sb_publishable__SctEgU_qiswNeid1-KOIQ_IHpot_2A';
+var FN_URL  = SB_URL + '/functions/v1/invite_organization_user';
+var ROLE_STAFF = ['owner','admin'];
+
+var sb = window.supabase.createClient(SB_URL, SB_ANON, {
+  auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+});
+var $ = function(id){ return document.getElementById(id); };
+function msg(id, typ, t){ var e=$(id); e.className='msg '+typ; e.textContent=t; }
+function schowaj(id){ $(id).className='msg'; $(id).textContent=''; }
+
+/* Kody z bazy i z Edge Function na polski. OSG62-podobnej wyroczni tu nie ma —
+   te komunikaty widzi wylacznie staff, ktory i tak zna stan swoich zaproszen. */
+var KOMUNIKATY = {
+  OSG50: 'Nie masz uprawnień do zapraszania. To decyzja bazy, nie tego ekranu.',
+  OSG51: 'Organizacja nie jest aktywna.',
+  OSG52: 'To organizacja wewnętrzna OSG — nie wolno do niej zapraszać osób z zewnątrz.',
+  OSG53: 'Niedozwolona rola.',
+  OSG54: 'Niedozwolony zakres dostępu.',
+  OSG55: 'Adres e-mail wygląda niepoprawnie.',
+  OSG56: 'Dla tego adresu w tej organizacji istnieje już oczekujące zaproszenie.',
+  OSG57: 'Ta osoba ma już aktywny dostęp do tej organizacji.',
+  OSG58: 'Wyczerpany limit 5 wysyłek. Cofnij zaproszenie i wystaw nowe.',
+  OSG59: 'Ostatnia wysyłka była mniej niż 5 minut temu. Odczekaj chwilę.',
+  OSG64: 'Nie ma takiego zaproszenia albo nie jest już aktywne.',
+  BAD_EMAIL: 'Adres e-mail wygląda niepoprawnie.',
+  BAD_INPUT: 'Niepoprawne dane formularza.',
+  NO_JWT: 'Sesja wygasła. Zaloguj się ponownie.',
+  MAIL_FAILED: 'Zaproszenie zostało utworzone, ale wysyłka nie powiodła się. Użyj „Wyślij ponownie".',
+  INTERNAL: 'Błąd po stronie serwera. Spróbuj ponownie.'
+};
+function opis(kod){ return KOMUNIKATY[kod] || ('Nieznany błąd (' + (kod||'—') + ').'); }
+
+/* Rola WYLACZNIE z backendu. */
+async function rolaZBackendu(){
+  try { var r = await sb.rpc('my_role');
+        if (!r.error && r.data !== null && typeof r.data !== 'undefined') return String(r.data); } catch(e){}
+  return null;
+}
+
+async function wolajFunkcje(cialo){
+  var s = await sb.auth.getSession();
+  var sesja = s && s.data ? s.data.session : null;
+  if (!sesja) return { status: 401, body: { kod: 'NO_JWT' } };
+  var r = await fetch(FN_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sesja.access_token,   /* JWT STAFFA, nie sekret */
+      'apikey': SB_ANON,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cialo)
+  });
+  var body = {};
+  try { body = await r.json(); } catch(e){}
+  return { status: r.status, body: body };
+}
+
+function dataPl(iso){
+  if(!iso) return '—';
+  try { return new Date(iso).toLocaleString('pl-PL', {dateStyle:'short', timeStyle:'short'}); }
+  catch(e){ return String(iso).slice(0,16); }
+}
+
+async function wczytajOrganizacje(){
+  var r = await sb.from('organizations').select('id,name,is_internal,status')
+                  .eq('status','active').order('name');
+  var sel = $('org');
+  sel.innerHTML = '';
+  (r.data || []).forEach(function(o){
+    var opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.name + (o.is_internal ? ' (wewnętrzna — zaproszenie odrzuci OSG52)' : '');
+    sel.appendChild(opt);
+  });
+  if (!(r.data||[]).length){
+    var opt = document.createElement('option');
+    opt.value = ''; opt.textContent = '— brak widocznych organizacji —';
+    sel.appendChild(opt);
+  }
+}
+
+async function wczytajListe(){
+  var r = await sb.from('organization_invitations')
+    .select('id,email,membership_role,status,expires_at,send_count,organization_id')
+    .eq('status','pending').order('expires_at');
+  var tb = $('lista');
+  if (r.error){ tb.innerHTML = '<tr><td colspan="7" class="mut">Brak dostępu do listy zaproszeń.</td></tr>'; return; }
+  var org = await sb.from('organizations').select('id,name');
+  var nazwy = {}; (org.data||[]).forEach(function(o){ nazwy[o.id] = o.name; });
+  var w = r.data || [];
+  if (!w.length){ tb.innerHTML = '<tr><td colspan="7" class="mut">Brak oczekujących zaproszeń.</td></tr>'; return; }
+  tb.innerHTML = '';
+  w.forEach(function(z){
+    var tr = document.createElement('tr');
+    [nazwy[z.organization_id] || '—', z.email, z.membership_role, z.status,
+     dataPl(z.expires_at), String(z.send_count)].forEach(function(v){
+      var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+    });
+    var td = document.createElement('td');
+    var b = document.createElement('button');
+    b.className = 'lite'; b.textContent = 'Wyślij ponownie';
+    b.onclick = async function(){
+      b.disabled = true; schowaj('m-lista');
+      var o = await wolajFunkcje({ akcja: 'resend', invitation_id: z.id });
+      b.disabled = false;
+      if (o.status === 200) msg('m-lista','ok','Wysłano ponownie. Poprzedni link przestał działać.');
+      else if (o.status === 502) msg('m-lista','warn', opis('MAIL_FAILED'));
+      else msg('m-lista','err', opis(o.body && o.body.kod));
+      wczytajListe();
+    };
+    td.appendChild(b); tr.appendChild(td);
+    tb.appendChild(tr);
+  });
+}
+
+async function pokazPanel(){
+  $('c-login').classList.add('hidden');
+  $('c-konto').classList.remove('hidden');
+  var u = (await sb.auth.getUser()).data.user;
+  $('konto-mail').textContent = u ? u.email : '—';
+  var rola = await rolaZBackendu();
+  $('konto-rola').textContent = rola || '—';
+
+  if (ROLE_STAFF.indexOf(rola) > -1){
+    $('c-zapros').classList.remove('hidden');
+    $('c-lista').classList.remove('hidden');
+    await wczytajOrganizacje();
+    await wczytajListe();
+  } else {
+    msg('m-rola','warn','To konto nie ma roli owner/admin, więc panel zaproszeń jest ukryty. '
+      + 'Uwaga: ukrycie nie jest zabezpieczeniem — próba wywołania endpointu i tak skończy się OSG50.');
+  }
+}
+
+$('btn-link').onclick = async function(){
+  schowaj('m-login');
+  var mail = $('em').value.trim();
+  if (!mail){ msg('m-login','err','Podaj adres.'); return; }
+  this.disabled = true;
+  var r = await sb.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: location.href } });
+  this.disabled = false;
+  if (r.error) msg('m-login','err','Nie udało się wysłać linku: ' + (r.error.message||''));
+  else msg('m-login','ok','Jeśli ten adres ma konto, link został wysłany.');
+};
+
+$('btn-out').onclick = async function(){ await sb.auth.signOut(); location.replace(location.pathname); };
+
+$('btn-zapros').onclick = async function(){
+  schowaj('m-zapros');
+  var org = $('org').value, mail = $('mail').value.trim(), rola = $('rola').value;
+  if (!org){ msg('m-zapros','err','Wybierz organizację.'); return; }
+  if (!mail){ msg('m-zapros','err','Podaj adres e-mail.'); return; }
+  this.disabled = true;
+  var o = await wolajFunkcje({ akcja:'invite', organization_id: org, email: mail, role: rola, scopes: ['customer'] });
+  this.disabled = false;
+  if (o.status === 200){
+    msg('m-zapros','ok','Zaproszenie wysłane. Ważne do ' + dataPl(o.body.expires_at) + '.');
+    $('mail').value = '';
+  } else if (o.status === 502){
+    msg('m-zapros','warn', opis('MAIL_FAILED'));
+  } else {
+    msg('m-zapros','err', opis(o.body && o.body.kod));
+  }
+  wczytajListe();
+};
+
+(async function(){
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  var s = await sb.auth.getSession();
+  if (s && s.data && s.data.session) pokazPanel();
+})();
+</script>
+</body>
+</html>
